@@ -43,6 +43,7 @@ namespace WindowTextExtractor.Forms
                 _isButtonTargetMouseDown = true;
                 _currentCursor = Cursor.Current;
                 Cursor.Current = _targetCursor;
+                SendToBack();
             }
         }
 
@@ -55,6 +56,7 @@ namespace WindowTextExtractor.Forms
                 {
                     _isButtonTargetMouseDown = false;
                     Cursor.Current = _currentCursor;
+                    BringToFront();
                 }
             }
             return false;
