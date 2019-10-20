@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.btnTarget = new System.Windows.Forms.ToolStripButton();
+            this.txtContent = new System.Windows.Forms.TextBox();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -40,7 +41,7 @@
             this.btnTarget});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(624, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(734, 25);
             this.toolStrip1.TabIndex = 0;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -54,11 +55,22 @@
             this.btnTarget.Text = "toolStripButton1";
             this.btnTarget.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTarget_MouseDown);
             // 
+            // txtContent
+            // 
+            this.txtContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtContent.Location = new System.Drawing.Point(0, 25);
+            this.txtContent.Multiline = true;
+            this.txtContent.Name = "txtContent";
+            this.txtContent.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.txtContent.Size = new System.Drawing.Size(734, 487);
+            this.txtContent.TabIndex = 1;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(624, 375);
+            this.ClientSize = new System.Drawing.Size(734, 512);
+            this.Controls.Add(this.txtContent);
             this.Controls.Add(this.toolStrip1);
             this.Name = "MainForm";
             this.Text = "Window Text Extractor";
@@ -73,6 +85,7 @@
 
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton btnTarget;
+        private System.Windows.Forms.TextBox txtContent;
     }
 }
 
