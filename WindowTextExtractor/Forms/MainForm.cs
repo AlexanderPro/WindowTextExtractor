@@ -6,11 +6,16 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Diagnostics;
+using System.Windows.Automation;
+using System.Windows.Automation.Text;
+using WindowTextExtractor.Extensions;
 
 namespace WindowTextExtractor.Forms
 {
     public partial class MainForm : Form, IMessageFilter
     {
+        private readonly int _processId;
         private bool _isButtonTargetMouseDown;
         private Cursor _targetCursor;
         private Cursor _currentCursor;
@@ -20,6 +25,7 @@ namespace WindowTextExtractor.Forms
             InitializeComponent();
             _isButtonTargetMouseDown = false;
             _targetCursor = new Cursor(Properties.Resources.Target.Handle);
+            _processId = Process.GetCurrentProcess().Id;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -50,13 +56,28 @@ namespace WindowTextExtractor.Forms
         public bool PreFilterMessage(ref Message m)
         {
             const int WM_LBUTTONUP = 0x0202;
-            if (m.Msg == WM_LBUTTONUP)
+            const int WM_MOUSEMOVE = 0x0200;
+            if (_isButtonTargetMouseDown)
             {
-                if (_isButtonTargetMouseDown)
+                switch (m.Msg)
                 {
-                    _isButtonTargetMouseDown = false;
-                    Cursor.Current = _currentCursor;
-                    BringToFront();
+                    case WM_LBUTTONUP :
+                        {
+                            _isButtonTargetMouseDown = false;
+                            Cursor.Current = _currentCursor;
+                            BringToFront();
+                        } break;
+
+                    case WM_MOUSEMOVE :
+                        {
+                            var cursorPosition = System.Windows.Forms.Cursor.Position;
+                            var element = AutomationElement.FromPoint(new System.Windows.Point(cursorPosition.X, cursorPosition.Y));
+                            if (element != null && element.Current.ProcessId != _processId)
+                            {
+                                txtContent.Text = element.GetText();
+                                txtContent.ScrollTextToEnd();
+                            }
+                        } break;
                 }
             }
             return false;
