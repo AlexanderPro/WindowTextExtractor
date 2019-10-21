@@ -13,7 +13,7 @@ namespace WindowTextExtractor.Extensions
             var length = textBox.Text.Length;
             if (length > 0)
             {
-                textBox.Select(length - 1, 1);
+                textBox.Select(length, 1);
                 textBox.ScrollToCaret();
             }
         }

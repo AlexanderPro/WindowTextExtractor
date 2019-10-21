@@ -74,13 +74,21 @@ namespace WindowTextExtractor.Forms
                             var element = AutomationElement.FromPoint(new System.Windows.Point(cursorPosition.X, cursorPosition.Y));
                             if (element != null && element.Current.ProcessId != _processId)
                             {
-                                txtContent.Text = element.GetText();
+                                var text = element.GetText();
+                                txtContent.Text = text;
                                 txtContent.ScrollTextToEnd();
+                                UpdateStatusBar();
                             }
                         } break;
                 }
             }
             return false;
+        }
+
+        private void UpdateStatusBar()
+        {
+            lblTotalChars.Text = "Total Chars: " + txtContent.Text.Length;
+            lblTotalLines.Text = "Total Lines: " + txtContent.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None).Length;
         }
     }
 }
