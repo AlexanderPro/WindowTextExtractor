@@ -53,6 +53,16 @@ namespace WindowTextExtractor.Forms
             }
         }
 
+        private void txtContent_TextChanged(object sender, EventArgs e)
+        {
+            UpdateStatusBar();
+        }
+
+        private void txtContent_MultilineChanged(object sender, EventArgs e)
+        {
+            UpdateStatusBar();
+        }
+
         public bool PreFilterMessage(ref Message m)
         {
             const int WM_LBUTTONUP = 0x0202;

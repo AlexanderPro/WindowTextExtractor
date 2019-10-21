@@ -62,13 +62,17 @@
             // 
             // txtContent
             // 
-            this.txtContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtContent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtContent.Location = new System.Drawing.Point(0, 25);
             this.txtContent.Multiline = true;
             this.txtContent.Name = "txtContent";
             this.txtContent.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtContent.Size = new System.Drawing.Size(734, 487);
+            this.txtContent.Size = new System.Drawing.Size(734, 464);
             this.txtContent.TabIndex = 1;
+            this.txtContent.MultilineChanged += new System.EventHandler(this.txtContent_MultilineChanged);
+            this.txtContent.TextChanged += new System.EventHandler(this.txtContent_TextChanged);
             // 
             // statusStrip
             // 
