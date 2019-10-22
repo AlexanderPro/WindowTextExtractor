@@ -63,6 +63,11 @@ namespace WindowTextExtractor.Forms
             UpdateStatusBar();
         }
 
+        private void menuItemExit_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
         public bool PreFilterMessage(ref Message m)
         {
             const int WM_LBUTTONUP = 0x0202;
