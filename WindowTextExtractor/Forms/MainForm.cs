@@ -68,6 +68,18 @@ namespace WindowTextExtractor.Forms
             Close();
         }
 
+        private void menuItemFont_Click(object sender, EventArgs e)
+        {
+            var dialog = new FontDialog();
+            dialog.ShowHelp = false;
+            dialog.ShowColor = false;
+            dialog.Font = txtContent.Font;
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.Cancel)
+            {
+                txtContent.Font = dialog.Font;
+            }
+        }
+
         public bool PreFilterMessage(ref Message m)
         {
             const int WM_LBUTTONUP = 0x0202;

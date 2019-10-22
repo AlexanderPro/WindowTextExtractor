@@ -167,6 +167,7 @@
             this.menuItemFont.Name = "menuItemFont";
             this.menuItemFont.Size = new System.Drawing.Size(154, 22);
             this.menuItemFont.Text = "Font...";
+            this.menuItemFont.Click += new System.EventHandler(this.menuItemFont_Click);
             // 
             // menuItemHelp
             // 
