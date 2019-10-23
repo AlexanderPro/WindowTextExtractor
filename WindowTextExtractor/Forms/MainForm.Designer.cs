@@ -143,7 +143,7 @@
             // menuItemExit
             // 
             this.menuItemExit.Name = "menuItemExit";
-            this.menuItemExit.Size = new System.Drawing.Size(152, 22);
+            this.menuItemExit.Size = new System.Drawing.Size(92, 22);
             this.menuItemExit.Text = "Exit";
             this.menuItemExit.Click += new System.EventHandler(this.menuItemExit_Click);
             // 
@@ -161,6 +161,7 @@
             this.menuItemAlwaysOnTop.Name = "menuItemAlwaysOnTop";
             this.menuItemAlwaysOnTop.Size = new System.Drawing.Size(154, 22);
             this.menuItemAlwaysOnTop.Text = "Always On Top";
+            this.menuItemAlwaysOnTop.Click += new System.EventHandler(this.menuItemAlwaysOnTop_Click);
             // 
             // menuItemFont
             // 
@@ -180,7 +181,7 @@
             // menuItemAbout
             // 
             this.menuItemAbout.Name = "menuItemAbout";
-            this.menuItemAbout.Size = new System.Drawing.Size(152, 22);
+            this.menuItemAbout.Size = new System.Drawing.Size(107, 22);
             this.menuItemAbout.Text = "About";
             // 
             // MainForm

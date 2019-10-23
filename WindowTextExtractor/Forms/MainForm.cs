@@ -49,7 +49,10 @@ namespace WindowTextExtractor.Forms
                 _isButtonTargetMouseDown = true;
                 _currentCursor = Cursor.Current;
                 Cursor.Current = _targetCursor;
-                SendToBack();
+                if (!TopMost)
+                {
+                    SendToBack();
+                }
             }
         }
 
@@ -80,6 +83,12 @@ namespace WindowTextExtractor.Forms
             }
         }
 
+        private void menuItemAlwaysOnTop_Click(object sender, EventArgs e)
+        {
+            TopMost = !TopMost;
+            menuItemAlwaysOnTop.Checked = TopMost;
+        }
+
         public bool PreFilterMessage(ref Message m)
         {
             const int WM_LBUTTONUP = 0x0202;
@@ -92,7 +101,10 @@ namespace WindowTextExtractor.Forms
                         {
                             _isButtonTargetMouseDown = false;
                             Cursor.Current = _currentCursor;
-                            BringToFront();
+                            if (!TopMost)
+                            {
+                                BringToFront();
+                            }
                         } break;
 
                     case WM_MOUSEMOVE :
