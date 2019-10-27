@@ -111,8 +111,7 @@ namespace WindowTextExtractor.Forms
                                 var element = AutomationElement.FromPoint(new System.Windows.Point(cursorPosition.X, cursorPosition.Y));
                                 if (element != null && !element.Current.IsPassword && element.Current.ProcessId != _processId)
                                 {
-                                    var text = element.GetTextFromConsole() ?? element.GetTextFromWindow();
-                                    txtContent.Text = text;
+                                    txtContent.Text = element.GetTextFromConsole() ?? element.GetTextFromWindow();
                                     txtContent.ScrollTextToEnd();
                                     UpdateStatusBar();
                                 }
