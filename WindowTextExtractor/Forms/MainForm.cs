@@ -87,6 +87,12 @@ namespace WindowTextExtractor.Forms
             menuItemAlwaysOnTop.Checked = TopMost;
         }
 
+        private void menuItemAbout_Click(object sender, EventArgs e)
+        {
+            var dialog = new AboutForm();
+            dialog.ShowDialog(this);
+        }
+
         public bool PreFilterMessage(ref Message m)
         {
             if (_isButtonTargetMouseDown)
