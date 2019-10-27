@@ -31,14 +31,12 @@ namespace WindowTextExtractor.Forms
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-
             Application.AddMessageFilter(this);
         }
 
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
-
             Application.RemoveMessageFilter(this);
         }
 
@@ -91,13 +89,11 @@ namespace WindowTextExtractor.Forms
 
         public bool PreFilterMessage(ref Message m)
         {
-            const int WM_LBUTTONUP = 0x0202;
-            const int WM_MOUSEMOVE = 0x0200;
             if (_isButtonTargetMouseDown)
             {
                 switch (m.Msg)
                 {
-                    case WM_LBUTTONUP :
+                    case NativeConstants.WM_LBUTTONUP:
                         {
                             _isButtonTargetMouseDown = false;
                             Cursor.Current = _currentCursor;
@@ -107,16 +103,22 @@ namespace WindowTextExtractor.Forms
                             }
                         } break;
 
-                    case WM_MOUSEMOVE :
+                    case NativeConstants.WM_MOUSEMOVE:
                         {
-                            var cursorPosition = System.Windows.Forms.Cursor.Position;
-                            var element = AutomationElement.FromPoint(new System.Windows.Point(cursorPosition.X, cursorPosition.Y));
-                            if (element != null && element.Current.ProcessId != _processId)
+                            try
                             {
-                                var text = element.GetText();
-                                txtContent.Text = text;
-                                txtContent.ScrollTextToEnd();
-                                UpdateStatusBar();
+                                var cursorPosition = System.Windows.Forms.Cursor.Position;
+                                var element = AutomationElement.FromPoint(new System.Windows.Point(cursorPosition.X, cursorPosition.Y));
+                                if (element != null && !element.Current.IsPassword && element.Current.ProcessId != _processId)
+                                {
+                                    var text = element.GetTextFromConsole() ?? element.GetTextFromWindow();
+                                    txtContent.Text = text;
+                                    txtContent.ScrollTextToEnd();
+                                    UpdateStatusBar();
+                                }
+                            }
+                            catch
+                            {
                             }
                         } break;
                 }
