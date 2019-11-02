@@ -30,7 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.toolStrip = new System.Windows.Forms.ToolStrip();
-            this.btnTarget = new System.Windows.Forms.ToolStripButton();
+            this.btnTargetText = new System.Windows.Forms.ToolStripButton();
+            this.btnTargetPassword = new System.Windows.Forms.ToolStripButton();
             this.txtContent = new System.Windows.Forms.TextBox();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.lblTotalLines = new System.Windows.Forms.ToolStripStatusLabel();
@@ -53,21 +54,32 @@
             // toolStrip
             // 
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnTarget});
+            this.btnTargetText,
+            this.btnTargetPassword});
             this.toolStrip.Location = new System.Drawing.Point(0, 24);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(734, 25);
             this.toolStrip.TabIndex = 0;
             // 
-            // btnTarget
+            // btnTargetText
             // 
-            this.btnTarget.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnTarget.Image = ((System.Drawing.Image)(resources.GetObject("btnTarget.Image")));
-            this.btnTarget.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnTarget.Name = "btnTarget";
-            this.btnTarget.Size = new System.Drawing.Size(23, 22);
-            this.btnTarget.Text = "Find window and extract text";
-            this.btnTarget.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTarget_MouseDown);
+            this.btnTargetText.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnTargetText.Image = ((System.Drawing.Image)(resources.GetObject("btnTargetText.Image")));
+            this.btnTargetText.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnTargetText.Name = "btnTargetText";
+            this.btnTargetText.Size = new System.Drawing.Size(23, 22);
+            this.btnTargetText.Text = "Find window and extract text";
+            this.btnTargetText.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTargetText_MouseDown);
+            // 
+            // btnTargetPassword
+            // 
+            this.btnTargetPassword.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnTargetPassword.Image = ((System.Drawing.Image)(resources.GetObject("btnTargetPassword.Image")));
+            this.btnTargetPassword.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnTargetPassword.Name = "btnTargetPassword";
+            this.btnTargetPassword.Size = new System.Drawing.Size(23, 22);
+            this.btnTargetPassword.Text = "Find window and extract password";
+            this.btnTargetPassword.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTargetPassword_MouseDown);
             // 
             // txtContent
             // 
@@ -98,7 +110,7 @@
             // lblTotalLines
             // 
             this.lblTotalLines.Name = "lblTotalLines";
-            this.lblTotalLines.Size = new System.Drawing.Size(67, 17);
+            this.lblTotalLines.Size = new System.Drawing.Size(66, 17);
             this.lblTotalLines.Text = "Total Lines:";
             // 
             // toolStripSeparatorLeft
@@ -111,7 +123,7 @@
             // lblTotalChars
             // 
             this.lblTotalChars.Name = "lblTotalChars";
-            this.lblTotalChars.Size = new System.Drawing.Size(70, 17);
+            this.lblTotalChars.Size = new System.Drawing.Size(69, 17);
             this.lblTotalChars.Text = "Total Chars:";
             // 
             // toolStripSeparatorRight
@@ -159,14 +171,14 @@
             // menuItemAlwaysOnTop
             // 
             this.menuItemAlwaysOnTop.Name = "menuItemAlwaysOnTop";
-            this.menuItemAlwaysOnTop.Size = new System.Drawing.Size(154, 22);
+            this.menuItemAlwaysOnTop.Size = new System.Drawing.Size(153, 22);
             this.menuItemAlwaysOnTop.Text = "Always On Top";
             this.menuItemAlwaysOnTop.Click += new System.EventHandler(this.menuItemAlwaysOnTop_Click);
             // 
             // menuItemFont
             // 
             this.menuItemFont.Name = "menuItemFont";
-            this.menuItemFont.Size = new System.Drawing.Size(154, 22);
+            this.menuItemFont.Size = new System.Drawing.Size(153, 22);
             this.menuItemFont.Text = "Font...";
             this.menuItemFont.Click += new System.EventHandler(this.menuItemFont_Click);
             // 
@@ -212,7 +224,7 @@
         #endregion
 
         private System.Windows.Forms.ToolStrip toolStrip;
-        private System.Windows.Forms.ToolStripButton btnTarget;
+        private System.Windows.Forms.ToolStripButton btnTargetText;
         private System.Windows.Forms.TextBox txtContent;
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel lblTotalLines;
@@ -227,6 +239,7 @@
         private System.Windows.Forms.ToolStripMenuItem menuItemFont;
         private System.Windows.Forms.ToolStripMenuItem menuItemHelp;
         private System.Windows.Forms.ToolStripMenuItem menuItemAbout;
+        private System.Windows.Forms.ToolStripButton btnTargetPassword;
     }
 }
 

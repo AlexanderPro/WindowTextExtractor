@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Runtime.InteropServices;
 
 namespace WindowTextExtractor
@@ -23,5 +22,20 @@ namespace WindowTextExtractor
 
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern IntPtr GetStdHandle(int nStdHandle);
+
+        [DllImport("user32.dll")]
+        public static extern int RegisterWindowMessage(string lpString);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetCursor(IntPtr handle);
+
+        [DllImport("WindowTextExtractorHook.dll", SetLastError = true)]
+        public static extern bool SetHook(IntPtr hwndCaller, IntPtr hwndTarget, int msg);
+
+        [DllImport("WindowTextExtractorHook.dll")]
+        public static extern bool UnsetHook(IntPtr hwndCaller, IntPtr hwndTarget);
+
+        [DllImport("WindowTextExtractorHook.dll")]
+        public static extern bool QueryPasswordEdit();
     }
 }
