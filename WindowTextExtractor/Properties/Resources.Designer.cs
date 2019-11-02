@@ -19,7 +19,7 @@ namespace WindowTextExtractor.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -63,9 +63,19 @@ namespace WindowTextExtractor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon Target {
+        internal static System.Drawing.Icon TargetPassword {
             get {
-                object obj = ResourceManager.GetObject("Target", resourceCulture);
+                object obj = ResourceManager.GetObject("TargetPassword", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon TargetText {
+            get {
+                object obj = ResourceManager.GetObject("TargetText", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -73,9 +83,9 @@ namespace WindowTextExtractor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Target_x24 {
+        internal static System.Drawing.Bitmap TargetText_x24 {
             get {
-                object obj = ResourceManager.GetObject("Target_x24", resourceCulture);
+                object obj = ResourceManager.GetObject("TargetText_x24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

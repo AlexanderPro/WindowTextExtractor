@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Runtime.InteropServices;
 
 namespace WindowTextExtractor
@@ -34,5 +33,13 @@ namespace WindowTextExtractor
         public ushort wAttributes;
         public SmallRect srWindow;
         public Coord dwMaximumWindowSize;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct CopyDataStruct
+    {
+        public IntPtr dwData;
+        public int cbData;
+        public IntPtr lpData;
     }
 }
