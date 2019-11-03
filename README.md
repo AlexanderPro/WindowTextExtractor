@@ -1,7 +1,7 @@
 WindowTextExtractor
 =============
 
-WindowTextExtractor allows you to get a text from any window of an operating system including microsoft office programs, console windows and any window with support of Microsoft UI Automation (UIA). Password windows are being developed.
+WindowTextExtractor allows you to get a text from any window of an operating system including microsoft office programs, console windows, asterisk passwords and any window with support of Microsoft UI Automation (UIA).
 
 Requirements
 --------------------

@@ -77,5 +77,15 @@ namespace WindowTextExtractor.Utils
                 return location;
             }
         }
+
+        public static void ExtractFileFromAssembly(string resourceName, string path)
+        {
+            Assembly currentAssembly = Assembly.GetExecutingAssembly();
+            FileStream outputFileStream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            Stream resouceStream = currentAssembly.GetManifestResourceStream(resourceName);
+            resouceStream.CopyTo(outputFileStream);
+            resouceStream.Close();
+            outputFileStream.Close();
+        }
     }
 }

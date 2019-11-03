@@ -3,7 +3,9 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Windows.Automation;
 using System.Runtime.InteropServices;
+using System.IO;
 using WindowTextExtractor.Extensions;
+using WindowTextExtractor.Utils;
 
 namespace WindowTextExtractor.Forms
 {
@@ -15,6 +17,9 @@ namespace WindowTextExtractor.Forms
         private bool _isButtonTargetPasswordMouseDown;
         private Cursor _targetTextCursor;
         private Cursor _targetPasswordCursor;
+#if WIN32
+        private string _64BitFilePath;
+#endif
 
         public MainForm()
         {
@@ -31,12 +36,48 @@ namespace WindowTextExtractor.Forms
         {
             base.OnLoad(e);
             Application.AddMessageFilter(this);
+
+#if WIN32
+            if (Environment.Is64BitOperatingSystem)
+            {
+                var resourceName = "WindowTextExtractor.WindowTextExtractor64.exe";
+                var fileName = "WindowTextExtractor64.exe";
+                var directoryName = Path.GetDirectoryName(AssemblyUtils.AssemblyLocation);
+                _64BitFilePath = Path.Combine(directoryName, fileName);
+                try
+                {
+                    if (!File.Exists(_64BitFilePath))
+                    {
+                        AssemblyUtils.ExtractFileFromAssembly(resourceName, _64BitFilePath);
+                    }
+                }
+                catch
+                {
+                    var message = string.Format("Failed to load {0} process!", fileName);
+                    MessageBox.Show(message, AssemblyUtils.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Close();
+                }
+            }
+#endif
         }
 
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
             Application.RemoveMessageFilter(this);
+
+#if WIN32
+            if (Environment.Is64BitOperatingSystem && File.Exists(_64BitFilePath))
+            {
+                try
+                {
+                    File.Delete(_64BitFilePath);
+                }
+                catch
+                {
+                }
+            }
+#endif
         }
 
         private void btnTargetText_MouseDown(object sender, MouseEventArgs e)
@@ -150,9 +191,23 @@ namespace WindowTextExtractor.Forms
                                     if (element.Current.IsPassword && _isButtonTargetPasswordMouseDown)
                                     {
                                         var elementHandle = new IntPtr(element.Current.NativeWindowHandle);
-                                        NativeMethods.SetHook(Handle, elementHandle, _messageId);
-                                        NativeMethods.QueryPasswordEdit();
-                                        NativeMethods.UnsetHook(Handle, elementHandle);
+                                        int processId;
+                                        NativeMethods.GetWindowThreadProcessId(elementHandle, out processId);
+                                        var process = Process.GetProcessById(processId);
+                                        if (Environment.Is64BitOperatingSystem && !process.HasExited && !process.IsWow64Process())
+                                        {
+                                            Process.Start(new ProcessStartInfo
+                                            {
+                                                FileName = _64BitFilePath,
+                                                Arguments = string.Format("{0} {1} {2}", Handle.ToInt32(), element.Current.NativeWindowHandle, _messageId)
+                                            });
+                                        }
+                                        else
+                                        {
+                                            NativeMethods.SetHook(Handle, elementHandle, _messageId);
+                                            NativeMethods.QueryPasswordEdit();
+                                            NativeMethods.UnsetHook(Handle, elementHandle);
+                                        }
                                     }
 
                                     if (!element.Current.IsPassword && _isButtonTargetTextMouseDown)

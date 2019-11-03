@@ -29,7 +29,14 @@ namespace WindowTextExtractor
         [DllImport("user32.dll")]
         public static extern IntPtr SetCursor(IntPtr handle);
 
-        [DllImport("WindowTextExtractorHook.dll", SetLastError = true)]
+        [DllImport("user32.dll")]
+        public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
+
+        [DllImport("kernel32.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool IsWow64Process([In] IntPtr process, [Out] out bool wow64Process);
+
+        [DllImport("WindowTextExtractorHook.dll")]
         public static extern bool SetHook(IntPtr hwndCaller, IntPtr hwndTarget, int msg);
 
         [DllImport("WindowTextExtractorHook.dll")]
@@ -37,5 +44,14 @@ namespace WindowTextExtractor
 
         [DllImport("WindowTextExtractorHook.dll")]
         public static extern bool QueryPasswordEdit();
+
+        [DllImport("WindowTextExtractorHook64.dll", EntryPoint = "SetHook")]
+        public static extern bool SetHook64(IntPtr hwndCaller, IntPtr hwndTarget, int msg);
+
+        [DllImport("WindowTextExtractorHook64.dll", EntryPoint = "UnsetHook")]
+        public static extern bool UnsetHook64(IntPtr hwndCaller, IntPtr hwndTarget);
+
+        [DllImport("WindowTextExtractorHook64.dll", EntryPoint = "QueryPasswordEdit")]
+        public static extern bool QueryPasswordEdit64();
     }
 }
