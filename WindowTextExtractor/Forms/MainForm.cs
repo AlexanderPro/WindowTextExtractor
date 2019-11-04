@@ -15,8 +15,6 @@ namespace WindowTextExtractor.Forms
         private readonly int _messageId;
         private bool _isButtonTargetTextMouseDown;
         private bool _isButtonTargetPasswordMouseDown;
-        private Cursor _targetTextCursor;
-        private Cursor _targetPasswordCursor;
         private string _64BitFilePath;
 
         public MainForm()
@@ -24,8 +22,6 @@ namespace WindowTextExtractor.Forms
             InitializeComponent();
             _isButtonTargetTextMouseDown = false;
             _isButtonTargetPasswordMouseDown = false;
-            _targetTextCursor = new Cursor(Properties.Resources.TargetText.Handle);
-            _targetPasswordCursor = new Cursor(Properties.Resources.TargetPassword.Handle);
             _processId = Process.GetCurrentProcess().Id;
             _messageId = NativeMethods.RegisterWindowMessage("WINDOW_TEXT_EXTRACTOR_HOOK");
             _64BitFilePath = "";
@@ -85,7 +81,6 @@ namespace WindowTextExtractor.Forms
             if (!_isButtonTargetTextMouseDown)
             {
                 _isButtonTargetTextMouseDown = true;
-                Cursor.Current = _targetTextCursor;
                 if (!TopMost)
                 {
                     SendToBack();
@@ -98,7 +93,6 @@ namespace WindowTextExtractor.Forms
             if (!_isButtonTargetPasswordMouseDown)
             {
                 _isButtonTargetPasswordMouseDown = true;
-                Cursor.Current = _targetPasswordCursor;
                 if (!TopMost)
                 {
                     SendToBack();
@@ -173,7 +167,7 @@ namespace WindowTextExtractor.Forms
                         {
                             _isButtonTargetTextMouseDown = false;
                             _isButtonTargetPasswordMouseDown = false;
-                            Cursor.Current = Cursors.Default;
+                            NativeMethods.SetCursor(Cursors.Default.Handle);
                             if (!TopMost)
                             {
                                 BringToFront();
@@ -184,6 +178,18 @@ namespace WindowTextExtractor.Forms
                         {
                             try
                             {
+                                if (_isButtonTargetTextMouseDown)
+                                {
+                                    NativeMethods.SetCursor(Properties.Resources.TargetText.Handle);
+                                }
+                                else if (_isButtonTargetPasswordMouseDown)
+                                {
+                                    NativeMethods.SetCursor(Properties.Resources.TargetPassword.Handle);
+                                }
+                                else
+                                {
+                                    NativeMethods.SetCursor(Cursors.Default.Handle);
+                                }
                                 var cursorPosition = System.Windows.Forms.Cursor.Position;
                                 var element = AutomationElement.FromPoint(new System.Windows.Point(cursorPosition.X, cursorPosition.Y));
                                 if (element != null && element.Current.ProcessId != _processId)
