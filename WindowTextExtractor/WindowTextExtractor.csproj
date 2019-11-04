@@ -88,6 +88,7 @@
   <ItemGroup>
     <Compile Include="Extensions\AutomationElementExtensions.cs" />
     <Compile Include="Extensions\ProcessExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\TextBoxExtensions.cs" />
     <Compile Include="Forms\AboutForm.cs">
       <SubType>Form</SubType>

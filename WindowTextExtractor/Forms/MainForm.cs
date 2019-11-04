@@ -218,8 +218,8 @@ namespace WindowTextExtractor.Forms
 
                                     if (!element.Current.IsPassword && _isButtonTargetTextMouseDown)
                                     {
-                                        var text = element.GetTextFromConsole() ?? element.GetTextFromWindow();
-                                        txtContent.Text = text;
+                                        var text = element.GetTextFromWindow();
+                                        txtContent.Text = text == null ? "" : text.TrimEnd().TrimEnd(Environment.NewLine);
                                         txtContent.ScrollTextToEnd();
                                         UpdateStatusBar();
                                     }
