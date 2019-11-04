@@ -69,7 +69,7 @@ LRESULT CALLBACK CallWndProcHookCallback(int nCode, WPARAM wParam, LPARAM lParam
 			TCHAR szBuffer[4096] = { _T('\0') };
 			SendMessage(g_hwndTarget, WM_GETTEXT, sizeof(szBuffer) / sizeof(TCHAR), (LPARAM)szBuffer);
 			COPYDATASTRUCT cds = { 0 };
-			cds.dwData = (DWORD)g_hwndTarget;
+			cds.dwData = HandleToUlong(g_hwndTarget);
 			cds.cbData = (lstrlen(szBuffer) + 1) * sizeof(TCHAR);
 			cds.lpData = szBuffer;
 			SendMessage(g_hwndCaller, WM_COPYDATA, (WPARAM)g_hwndTarget, (LPARAM)&cds);
