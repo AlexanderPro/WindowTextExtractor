@@ -3,6 +3,11 @@ WindowTextExtractor
 
 WindowTextExtractor allows you to get a text from any window of an operating system including microsoft office programs, console windows and any window with support of Microsoft UI Automation (UIA). It can recover password stored behind asterisks (*****) from most of the windows apps.
 
+Screenshots
+------------------
+
+![alt tag](https://user-images.githubusercontent.com/8102586/68136609-9d118a00-ff36-11e9-9889-2a1b4f142f60.png)
+
 Requirements
 --------------------
 
