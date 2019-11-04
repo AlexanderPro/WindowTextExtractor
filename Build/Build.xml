@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <WindowTextExtractorProjectPath>..\WindowTextExtractor</WindowTextExtractorProjectPath>
+    <WindowTextExtractorProjectName>WindowTextExtractor</WindowTextExtractorProjectName>
+    <WindowTextExtractorHookProjectPath>..\WindowTextExtractorHook</WindowTextExtractorHookProjectPath>
+    <WindowTextExtractorHookProjectName>WindowTextExtractorHook</WindowTextExtractorHookProjectName>
+    <ApplicationPath>..\Application</ApplicationPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <WindowTextExtractorHookSourceFileWin32 Include="$(WindowTextExtractorHookProjectPath)\Release32\WindowTextExtractorHook.dll" />
+    <WindowTextExtractorHookSourceFileWin64 Include="$(WindowTextExtractorHookProjectPath)\Release64\WindowTextExtractorHook.dll" />
+    <WindowTextExtractorHookDestFileWin32 Include="$(ApplicationPath)\WindowTextExtractorHook.dll" />
+    <WindowTextExtractorHookDestFileWin64 Include="$(ApplicationPath)\WindowTextExtractorHook64.dll" />
+    <WindowTextExtractorSourceFileWin32 Include="$(WindowTextExtractorProjectPath)\bin\x86\Release\WindowTextExtractor.exe" />
+    <WindowTextExtractorSourceFileWin64 Include="$(WindowTextExtractorProjectPath)\bin\x64\Release\WindowTextExtractor.exe" />
+    <WindowTextExtractorDestFileWin32 Include="$(ApplicationPath)\WindowTextExtractor.exe" />
+    <WindowTextExtractorDestFileWin64 Include="$(WindowTextExtractorProjectPath)\WindowTextExtractor64.exe" />
+    <EmptyTextForFile Include="Empty File" />
+  </ItemGroup>
+
+  <Target Name="BuildSolution">
+    <CallTarget Targets="Build_Release_x32_WindowTextExtractorHook" />
+    <CallTarget Targets="Copy_Release_x32_WindowTextExtractorHook" />
+    <CallTarget Targets="Build_Release_x64_WindowTextExtractorHook" />
+    <CallTarget Targets="Copy_Release_x64_WindowTextExtractorHook" />
+    <CallTarget Targets="WriteEmptyTextToEmbeddedResourceInWindowTextExtractor" />
+    <CallTarget Targets="Build_Release_x64_WindowTextExtractor" />
+    <CallTarget Targets="Copy_Release_x64_WindowTextExtractor" />
+    <CallTarget Targets="Build_Release_x32_WindowTextExtractor" />
+    <CallTarget Targets="Copy_Release_x32_WindowTextExtractor" />
+  </Target>
+
+  <Target Name="Build_Release_x32_WindowTextExtractorHook">
+    <Message Text="Build $(WindowTextExtractorHookProjectName) Realese x32" />
+    <MSBuild Projects="$(WindowTextExtractorHookProjectPath)\$(WindowTextExtractorHookProjectName).vcxproj" Targets="Clean;Rebuild" Properties="Configuration=Release;Platform=Win32" />
+    <Message Text="Build Completed $(WindowTextExtractorHookProjectName) Realese x32" />
+  </Target>
+
+  <Target Name="Build_Release_x64_WindowTextExtractorHook">
+    <Message Text="Build $(WindowTextExtractorHookProjectName) Realese x64" />
+    <MSBuild Projects="$(WindowTextExtractorHookProjectPath)\$(WindowTextExtractorHookProjectName).vcxproj" Targets="Clean;Rebuild" Properties="Configuration=Release;Platform=x64" />
+    <Message Text="Build Completed $(WindowTextExtractorHookProjectName) Realese x64" />
+  </Target>
+
+ <Target Name="Build_Release_x32_WindowTextExtractor">
+    <Message Text="Build $(WindowTextExtractorProjectName) Realese x32" />
+    <MSBuild Projects="$(WindowTextExtractorProjectPath)\$(WindowTextExtractorProjectName).csproj" Targets="Clean;Rebuild" Properties="Configuration=Release;Platform=x86" />
+    <Message Text="Build Completed $(WindowTextExtractorProjectName) Realese x32" />
+  </Target>
+
+  <Target Name="Build_Release_x64_WindowTextExtractor">
+    <Message Text="Build $(WindowTextExtractorProjectName) Realese x64" />
+    <MSBuild Projects="$(WindowTextExtractorProjectPath)\$(WindowTextExtractorProjectName).csproj" Targets="Clean;Rebuild" Properties="Configuration=Release;Platform=x64" />
+    <Message Text="Build Completed $(WindowTextExtractorProjectName) Realese x64" />
+  </Target>
+
+  <Target Name="Copy_Release_x32_WindowTextExtractorHook">
+    <Message Text="Copy $(WindowTextExtractorHookProjectName) Realese x32" />
+    <MakeDir Directories="$(ApplicationPath)"/>
+    <Copy SourceFiles="@(WindowTextExtractorHookSourceFileWin32)" DestinationFiles="@(WindowTextExtractorHookDestFileWin32)" />
+    <Message Text="Copy Completed $(WindowTextExtractorHookProjectName) Realese x32" />
+  </Target>
+
+  <Target Name="Copy_Release_x64_WindowTextExtractorHook">
+    <Message Text="Copy $(WindowTextExtractorHookProjectName) Realese x64" />
+    <MakeDir Directories="$(ApplicationPath)"/>
+    <Copy SourceFiles="@(WindowTextExtractorHookSourceFileWin64)" DestinationFiles="@(WindowTextExtractorHookDestFileWin64)" />
+    <Message Text="Copy Completed $(WindowTextExtractorHookProjectName) Realese x64" />
+  </Target>
+
+  <Target Name="Copy_Release_x32_WindowTextExtractor">
+    <Message Text="Copy $(WindowTextExtractorProjectName) Realese x32" />
+    <MakeDir Directories="$(ApplicationPath)"/>
+    <Copy SourceFiles="@(WindowTextExtractorSourceFileWin32)" DestinationFiles="@(WindowTextExtractorDestFileWin32)" />
+    <Message Text="Copy Completed $(WindowTextExtractorProjectName) Realese x32" />
+  </Target>
+
+  <Target Name="Copy_Release_x64_WindowTextExtractor">
+    <Message Text="Copy $(WindowTextExtractorProjectName) Realese x64" />
+    <MakeDir Directories="$(ApplicationPath)"/>
+    <Copy SourceFiles="@(WindowTextExtractorSourceFileWin64)" DestinationFiles="@(WindowTextExtractorDestFileWin64)" />
+    <Message Text="Copy Completed $(WindowTextExtractorProjectName) Realese x64" />
+  </Target>
+
+  <Target Name="WriteEmptyTextToEmbeddedResourceInWindowTextExtractor">
+    <Message Text="Write Empty Embedded Resource $(WindowTextExtractorProjectName)" />
+    <WriteLinesToFile File="@(WindowTextExtractorDestFileWin64)" Lines="@(EmptyTextForFile)" Overwrite="true" />
+    <Message Text="Write Empty Embedded Resource Completed $(WindowTextExtractorProjectName)" />
+  </Target>
+</Project>

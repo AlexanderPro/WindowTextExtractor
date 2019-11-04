@@ -17,9 +17,7 @@ namespace WindowTextExtractor.Forms
         private bool _isButtonTargetPasswordMouseDown;
         private Cursor _targetTextCursor;
         private Cursor _targetPasswordCursor;
-#if WIN32
         private string _64BitFilePath;
-#endif
 
         public MainForm()
         {
@@ -30,6 +28,7 @@ namespace WindowTextExtractor.Forms
             _targetPasswordCursor = new Cursor(Properties.Resources.TargetPassword.Handle);
             _processId = Process.GetCurrentProcess().Id;
             _messageId = NativeMethods.RegisterWindowMessage("WINDOW_TEXT_EXTRACTOR_HOOK");
+            _64BitFilePath = "";
         }
 
         protected override void OnLoad(EventArgs e)
