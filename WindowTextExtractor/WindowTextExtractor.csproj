@@ -135,11 +135,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="TargetText.ico" />
-    <EmbeddedResource Include="TargetText_x24.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="TargetPassword.ico" />
-    <Content Include="TargetPassword_x24.png" />
+    <Content Include="TargetPassword_x48.png" />
+    <Content Include="TargetText_x48.png" />
     <Content Include="WindowTextExtractor.ico" />
     <Content Include="WindowTextExtractor.png" />
     <EmbeddedResource Include="WindowTextExtractor64.exe" />

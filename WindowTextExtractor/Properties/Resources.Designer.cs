@@ -83,16 +83,6 @@ namespace WindowTextExtractor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap TargetText_x24 {
-            get {
-                object obj = ResourceManager.GetObject("TargetText_x24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap WindowTextExtractor {
             get {
                 object obj = ResourceManager.GetObject("WindowTextExtractor", resourceCulture);

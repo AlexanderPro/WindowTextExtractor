@@ -29,9 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.toolStrip = new System.Windows.Forms.ToolStrip();
-            this.btnTargetText = new System.Windows.Forms.ToolStripButton();
-            this.btnTargetPassword = new System.Windows.Forms.ToolStripButton();
             this.txtContent = new System.Windows.Forms.TextBox();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.lblTotalLines = new System.Windows.Forms.ToolStripStatusLabel();
@@ -46,52 +43,23 @@
             this.menuItemFont = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemAbout = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStrip.SuspendLayout();
+            this.btnTargetText = new System.Windows.Forms.Button();
+            this.btnTargetPassword = new System.Windows.Forms.Button();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // toolStrip
-            // 
-            this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.btnTargetText,
-            this.btnTargetPassword});
-            this.toolStrip.Location = new System.Drawing.Point(0, 24);
-            this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(734, 25);
-            this.toolStrip.TabIndex = 0;
-            // 
-            // btnTargetText
-            // 
-            this.btnTargetText.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnTargetText.Image = ((System.Drawing.Image)(resources.GetObject("btnTargetText.Image")));
-            this.btnTargetText.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnTargetText.Name = "btnTargetText";
-            this.btnTargetText.Size = new System.Drawing.Size(23, 22);
-            this.btnTargetText.Text = "Find window and extract text";
-            this.btnTargetText.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTargetText_MouseDown);
-            // 
-            // btnTargetPassword
-            // 
-            this.btnTargetPassword.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnTargetPassword.Image = ((System.Drawing.Image)(resources.GetObject("btnTargetPassword.Image")));
-            this.btnTargetPassword.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnTargetPassword.Name = "btnTargetPassword";
-            this.btnTargetPassword.Size = new System.Drawing.Size(23, 22);
-            this.btnTargetPassword.Text = "Find window and extract password";
-            this.btnTargetPassword.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTargetPassword_MouseDown);
             // 
             // txtContent
             // 
             this.txtContent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtContent.Location = new System.Drawing.Point(0, 52);
+            this.txtContent.Location = new System.Drawing.Point(0, 112);
             this.txtContent.Multiline = true;
             this.txtContent.Name = "txtContent";
             this.txtContent.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtContent.Size = new System.Drawing.Size(734, 436);
-            this.txtContent.TabIndex = 1;
+            this.txtContent.Size = new System.Drawing.Size(734, 376);
+            this.txtContent.TabIndex = 3;
             this.txtContent.MultilineChanged += new System.EventHandler(this.txtContent_MultilineChanged);
             this.txtContent.TextChanged += new System.EventHandler(this.txtContent_TextChanged);
             // 
@@ -105,7 +73,7 @@
             this.statusStrip.Location = new System.Drawing.Point(0, 490);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(734, 22);
-            this.statusStrip.TabIndex = 2;
+            this.statusStrip.TabIndex = 4;
             // 
             // lblTotalLines
             // 
@@ -142,7 +110,7 @@
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(734, 24);
-            this.menuStrip.TabIndex = 3;
+            this.menuStrip.TabIndex = 0;
             // 
             // menuItemFile
             // 
@@ -197,21 +165,40 @@
             this.menuItemAbout.Text = "About";
             this.menuItemAbout.Click += new System.EventHandler(this.menuItemAbout_Click);
             // 
+            // btnTargetText
+            // 
+            this.btnTargetText.Image = ((System.Drawing.Image)(resources.GetObject("btnTargetText.Image")));
+            this.btnTargetText.Location = new System.Drawing.Point(12, 38);
+            this.btnTargetText.Name = "btnTargetText";
+            this.btnTargetText.Size = new System.Drawing.Size(60, 60);
+            this.btnTargetText.TabIndex = 1;
+            this.btnTargetText.UseVisualStyleBackColor = true;
+            this.btnTargetText.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTargetText_MouseDown);
+            // 
+            // btnTargetPassword
+            // 
+            this.btnTargetPassword.Image = ((System.Drawing.Image)(resources.GetObject("btnTargetPassword.Image")));
+            this.btnTargetPassword.Location = new System.Drawing.Point(78, 38);
+            this.btnTargetPassword.Name = "btnTargetPassword";
+            this.btnTargetPassword.Size = new System.Drawing.Size(60, 60);
+            this.btnTargetPassword.TabIndex = 2;
+            this.btnTargetPassword.UseVisualStyleBackColor = true;
+            this.btnTargetPassword.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTargetPassword_MouseDown);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(734, 512);
+            this.Controls.Add(this.btnTargetPassword);
+            this.Controls.Add(this.btnTargetText);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.txtContent);
-            this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip;
             this.Name = "MainForm";
             this.Text = "WindowTextExtractor";
-            this.toolStrip.ResumeLayout(false);
-            this.toolStrip.PerformLayout();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.menuStrip.ResumeLayout(false);
@@ -222,9 +209,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.ToolStrip toolStrip;
-        private System.Windows.Forms.ToolStripButton btnTargetText;
         private System.Windows.Forms.TextBox txtContent;
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel lblTotalLines;
@@ -239,7 +223,8 @@
         private System.Windows.Forms.ToolStripMenuItem menuItemFont;
         private System.Windows.Forms.ToolStripMenuItem menuItemHelp;
         private System.Windows.Forms.ToolStripMenuItem menuItemAbout;
-        private System.Windows.Forms.ToolStripButton btnTargetPassword;
+        private System.Windows.Forms.Button btnTargetText;
+        private System.Windows.Forms.Button btnTargetPassword;
     }
 }
 

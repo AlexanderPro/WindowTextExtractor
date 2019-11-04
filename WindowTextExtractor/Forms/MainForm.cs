@@ -35,6 +35,7 @@ namespace WindowTextExtractor.Forms
         {
             base.OnLoad(e);
             Application.AddMessageFilter(this);
+            menuItemAlwaysOnTop_Click(this, EventArgs.Empty);
 
 #if WIN32
             if (Environment.Is64BitOperatingSystem)
