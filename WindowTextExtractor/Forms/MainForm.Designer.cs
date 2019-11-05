@@ -43,8 +43,7 @@
             this.menuItemFont = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemAbout = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnTargetText = new System.Windows.Forms.Button();
-            this.btnTargetPassword = new System.Windows.Forms.Button();
+            this.btnTarget = new System.Windows.Forms.Button();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -58,7 +57,7 @@
             this.txtContent.Multiline = true;
             this.txtContent.Name = "txtContent";
             this.txtContent.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtContent.Size = new System.Drawing.Size(734, 376);
+            this.txtContent.Size = new System.Drawing.Size(734, 377);
             this.txtContent.TabIndex = 3;
             this.txtContent.MultilineChanged += new System.EventHandler(this.txtContent_MultilineChanged);
             this.txtContent.TextChanged += new System.EventHandler(this.txtContent_TextChanged);
@@ -165,33 +164,22 @@
             this.menuItemAbout.Text = "About";
             this.menuItemAbout.Click += new System.EventHandler(this.menuItemAbout_Click);
             // 
-            // btnTargetText
+            // btnTarget
             // 
-            this.btnTargetText.Image = ((System.Drawing.Image)(resources.GetObject("btnTargetText.Image")));
-            this.btnTargetText.Location = new System.Drawing.Point(12, 38);
-            this.btnTargetText.Name = "btnTargetText";
-            this.btnTargetText.Size = new System.Drawing.Size(60, 60);
-            this.btnTargetText.TabIndex = 1;
-            this.btnTargetText.UseVisualStyleBackColor = true;
-            this.btnTargetText.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTargetText_MouseDown);
-            // 
-            // btnTargetPassword
-            // 
-            this.btnTargetPassword.Image = ((System.Drawing.Image)(resources.GetObject("btnTargetPassword.Image")));
-            this.btnTargetPassword.Location = new System.Drawing.Point(78, 38);
-            this.btnTargetPassword.Name = "btnTargetPassword";
-            this.btnTargetPassword.Size = new System.Drawing.Size(60, 60);
-            this.btnTargetPassword.TabIndex = 2;
-            this.btnTargetPassword.UseVisualStyleBackColor = true;
-            this.btnTargetPassword.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTargetPassword_MouseDown);
+            this.btnTarget.Image = ((System.Drawing.Image)(resources.GetObject("btnTarget.Image")));
+            this.btnTarget.Location = new System.Drawing.Point(12, 38);
+            this.btnTarget.Name = "btnTarget";
+            this.btnTarget.Size = new System.Drawing.Size(60, 60);
+            this.btnTarget.TabIndex = 1;
+            this.btnTarget.UseVisualStyleBackColor = true;
+            this.btnTarget.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTarget_MouseDown);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(734, 512);
-            this.Controls.Add(this.btnTargetPassword);
-            this.Controls.Add(this.btnTargetText);
+            this.Controls.Add(this.btnTarget);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.txtContent);
             this.Controls.Add(this.menuStrip);
@@ -223,8 +211,7 @@
         private System.Windows.Forms.ToolStripMenuItem menuItemFont;
         private System.Windows.Forms.ToolStripMenuItem menuItemHelp;
         private System.Windows.Forms.ToolStripMenuItem menuItemAbout;
-        private System.Windows.Forms.Button btnTargetText;
-        private System.Windows.Forms.Button btnTargetPassword;
+        private System.Windows.Forms.Button btnTarget;
     }
 }
 

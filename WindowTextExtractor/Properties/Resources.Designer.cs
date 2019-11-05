@@ -63,19 +63,9 @@ namespace WindowTextExtractor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon TargetPassword {
+        internal static System.Drawing.Icon Target {
             get {
-                object obj = ResourceManager.GetObject("TargetPassword", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon TargetText {
-            get {
-                object obj = ResourceManager.GetObject("TargetText", resourceCulture);
+                object obj = ResourceManager.GetObject("Target", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

@@ -13,15 +13,13 @@ namespace WindowTextExtractor.Forms
     {
         private readonly int _processId;
         private readonly int _messageId;
-        private bool _isButtonTargetTextMouseDown;
-        private bool _isButtonTargetPasswordMouseDown;
+        private bool _isButtonTargetMouseDown;
         private string _64BitFilePath;
 
         public MainForm()
         {
             InitializeComponent();
-            _isButtonTargetTextMouseDown = false;
-            _isButtonTargetPasswordMouseDown = false;
+            _isButtonTargetMouseDown = false;
             _processId = Process.GetCurrentProcess().Id;
             _messageId = NativeMethods.RegisterWindowMessage("WINDOW_TEXT_EXTRACTOR_HOOK");
             _64BitFilePath = "";
@@ -76,23 +74,11 @@ namespace WindowTextExtractor.Forms
 #endif
         }
 
-        private void btnTargetText_MouseDown(object sender, MouseEventArgs e)
+        private void btnTarget_MouseDown(object sender, MouseEventArgs e)
         {
-            if (!_isButtonTargetTextMouseDown)
+            if (!_isButtonTargetMouseDown)
             {
-                _isButtonTargetTextMouseDown = true;
-                if (!TopMost)
-                {
-                    SendToBack();
-                }
-            }
-        }
-
-        private void btnTargetPassword_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (!_isButtonTargetPasswordMouseDown)
-            {
-                _isButtonTargetPasswordMouseDown = true;
+                _isButtonTargetMouseDown = true;
                 if (!TopMost)
                 {
                     SendToBack();
@@ -159,42 +145,34 @@ namespace WindowTextExtractor.Forms
 
         public bool PreFilterMessage(ref Message m)
         {
-            if (_isButtonTargetTextMouseDown || _isButtonTargetPasswordMouseDown)
+            switch (m.Msg)
             {
-                switch (m.Msg)
-                {
-                    case NativeConstants.WM_LBUTTONUP:
+                case NativeConstants.WM_LBUTTONUP:
+                    {
+                        if (_isButtonTargetMouseDown)
                         {
-                            _isButtonTargetTextMouseDown = false;
-                            _isButtonTargetPasswordMouseDown = false;
+                            _isButtonTargetMouseDown = false;
                             NativeMethods.SetCursor(Cursors.Default.Handle);
                             if (!TopMost)
                             {
                                 BringToFront();
                             }
-                        } break;
+                        }
+                    }
+                    break;
 
-                    case NativeConstants.WM_MOUSEMOVE:
+                case NativeConstants.WM_MOUSEMOVE:
+                    {
+                        try
                         {
-                            try
+                            if (_isButtonTargetMouseDown)
                             {
-                                if (_isButtonTargetTextMouseDown)
-                                {
-                                    NativeMethods.SetCursor(Properties.Resources.TargetText.Handle);
-                                }
-                                else if (_isButtonTargetPasswordMouseDown)
-                                {
-                                    NativeMethods.SetCursor(Properties.Resources.TargetPassword.Handle);
-                                }
-                                else
-                                {
-                                    NativeMethods.SetCursor(Cursors.Default.Handle);
-                                }
+                                NativeMethods.SetCursor(Properties.Resources.Target.Handle);
                                 var cursorPosition = System.Windows.Forms.Cursor.Position;
                                 var element = AutomationElement.FromPoint(new System.Windows.Point(cursorPosition.X, cursorPosition.Y));
                                 if (element != null && element.Current.ProcessId != _processId)
                                 {
-                                    if (element.Current.IsPassword && _isButtonTargetPasswordMouseDown)
+                                    if (element.Current.IsPassword)
                                     {
                                         var elementHandle = new IntPtr(element.Current.NativeWindowHandle);
                                         int processId;
@@ -214,9 +192,8 @@ namespace WindowTextExtractor.Forms
                                             NativeMethods.QueryPasswordEdit();
                                             NativeMethods.UnsetHook(Handle, elementHandle);
                                         }
-                                    }
-
-                                    if (!element.Current.IsPassword && _isButtonTargetTextMouseDown)
+                                    } 
+                                    else
                                     {
                                         var text = element.GetTextFromConsole() ?? element.GetTextFromWindow();
                                         txtContent.Text = text == null ? "" : text.TrimEnd().TrimEnd(Environment.NewLine);
@@ -225,11 +202,12 @@ namespace WindowTextExtractor.Forms
                                     }
                                 }
                             }
-                            catch
-                            {
-                            }
-                        } break;
-                }
+                        }
+                        catch
+                        {
+                        }
+                    }
+                    break;
             }
 
             return false;
