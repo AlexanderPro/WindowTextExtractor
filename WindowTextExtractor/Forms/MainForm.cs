@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Windows.Automation;
 using System.Runtime.InteropServices;
 using System.IO;
+using System.Drawing;
 using WindowTextExtractor.Extensions;
 using WindowTextExtractor.Utils;
 
@@ -11,6 +12,9 @@ namespace WindowTextExtractor.Forms
 {
     public partial class MainForm : Form, IMessageFilter
     {
+        private const string DEFAULT_FONT_NAME = "Courier New";
+        private const int DEFAULT_FONT_SIZE = 10;
+
         private readonly int _processId;
         private readonly int _messageId;
         private bool _isButtonTargetMouseDown;
@@ -28,8 +32,20 @@ namespace WindowTextExtractor.Forms
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+
             Application.AddMessageFilter(this);
+
             menuItemAlwaysOnTop_Click(this, EventArgs.Empty);
+
+            var font = new Font(DEFAULT_FONT_NAME, DEFAULT_FONT_SIZE, FontStyle.Regular, GraphicsUnit.Point);
+            if (font.Name == DEFAULT_FONT_NAME)
+            {
+                txtContent.Font = font;
+            }
+            else
+            {
+                font.Dispose();
+            }
 
 #if WIN32
             if (Environment.Is64BitOperatingSystem)
@@ -192,7 +208,7 @@ namespace WindowTextExtractor.Forms
                                             NativeMethods.QueryPasswordEdit();
                                             NativeMethods.UnsetHook(Handle, elementHandle);
                                         }
-                                    } 
+                                    }
                                     else
                                     {
                                         var text = element.GetTextFromConsole() ?? element.GetTextFromWindow();
