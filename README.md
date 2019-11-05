@@ -6,7 +6,7 @@ WindowTextExtractor allows you to get a text from any window of an operating sys
 Screenshot
 ------------------
 
-![alt tag](https://user-images.githubusercontent.com/8102586/68136609-9d118a00-ff36-11e9-9889-2a1b4f142f60.png)
+![alt tag](https://user-images.githubusercontent.com/8102586/68193503-2d49e080-ffc4-11e9-8d53-32b1aa426e53.png)
 
 Requirements
 --------------------
