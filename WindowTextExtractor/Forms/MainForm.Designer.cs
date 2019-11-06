@@ -44,6 +44,8 @@
             this.menuItemHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.btnTarget = new System.Windows.Forms.Button();
+            this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.menuItemSaveFileAs = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -114,6 +116,8 @@
             // menuItemFile
             // 
             this.menuItemFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemSaveFileAs,
+            this.toolStripSeparator,
             this.menuItemExit});
             this.menuItemFile.Name = "menuItemFile";
             this.menuItemFile.Size = new System.Drawing.Size(37, 20);
@@ -122,7 +126,7 @@
             // menuItemExit
             // 
             this.menuItemExit.Name = "menuItemExit";
-            this.menuItemExit.Size = new System.Drawing.Size(92, 22);
+            this.menuItemExit.Size = new System.Drawing.Size(180, 22);
             this.menuItemExit.Text = "Exit";
             this.menuItemExit.Click += new System.EventHandler(this.menuItemExit_Click);
             // 
@@ -138,14 +142,14 @@
             // menuItemAlwaysOnTop
             // 
             this.menuItemAlwaysOnTop.Name = "menuItemAlwaysOnTop";
-            this.menuItemAlwaysOnTop.Size = new System.Drawing.Size(153, 22);
+            this.menuItemAlwaysOnTop.Size = new System.Drawing.Size(180, 22);
             this.menuItemAlwaysOnTop.Text = "Always On Top";
             this.menuItemAlwaysOnTop.Click += new System.EventHandler(this.menuItemAlwaysOnTop_Click);
             // 
             // menuItemFont
             // 
             this.menuItemFont.Name = "menuItemFont";
-            this.menuItemFont.Size = new System.Drawing.Size(153, 22);
+            this.menuItemFont.Size = new System.Drawing.Size(180, 22);
             this.menuItemFont.Text = "Font...";
             this.menuItemFont.Click += new System.EventHandler(this.menuItemFont_Click);
             // 
@@ -160,7 +164,7 @@
             // menuItemAbout
             // 
             this.menuItemAbout.Name = "menuItemAbout";
-            this.menuItemAbout.Size = new System.Drawing.Size(107, 22);
+            this.menuItemAbout.Size = new System.Drawing.Size(180, 22);
             this.menuItemAbout.Text = "About";
             this.menuItemAbout.Click += new System.EventHandler(this.menuItemAbout_Click);
             // 
@@ -173,6 +177,18 @@
             this.btnTarget.TabIndex = 1;
             this.btnTarget.UseVisualStyleBackColor = true;
             this.btnTarget.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTarget_MouseDown);
+            // 
+            // toolStripSeparator
+            // 
+            this.toolStripSeparator.Name = "toolStripSeparator";
+            this.toolStripSeparator.Size = new System.Drawing.Size(177, 6);
+            // 
+            // menuItemSaveFileAs
+            // 
+            this.menuItemSaveFileAs.Name = "menuItemSaveFileAs";
+            this.menuItemSaveFileAs.Size = new System.Drawing.Size(180, 22);
+            this.menuItemSaveFileAs.Text = "Save File As...";
+            this.menuItemSaveFileAs.Click += new System.EventHandler(this.menuItemSaveFileAs_Click);
             // 
             // MainForm
             // 
@@ -212,6 +228,8 @@
         private System.Windows.Forms.ToolStripMenuItem menuItemHelp;
         private System.Windows.Forms.ToolStripMenuItem menuItemAbout;
         private System.Windows.Forms.Button btnTarget;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
+        private System.Windows.Forms.ToolStripMenuItem menuItemSaveFileAs;
     }
 }
 

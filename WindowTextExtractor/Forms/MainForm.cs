@@ -5,6 +5,7 @@ using System.Windows.Automation;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Drawing;
+using System.Text;
 using WindowTextExtractor.Extensions;
 using WindowTextExtractor.Utils;
 
@@ -19,6 +20,7 @@ namespace WindowTextExtractor.Forms
         private readonly int _messageId;
         private bool _isButtonTargetMouseDown;
         private string _64BitFilePath;
+        private string _fileName;
 
         public MainForm()
         {
@@ -27,6 +29,7 @@ namespace WindowTextExtractor.Forms
             _processId = Process.GetCurrentProcess().Id;
             _messageId = NativeMethods.RegisterWindowMessage("WINDOW_TEXT_EXTRACTOR_HOOK");
             _64BitFilePath = "";
+            _fileName = "";
         }
 
         protected override void OnLoad(EventArgs e)
@@ -36,6 +39,7 @@ namespace WindowTextExtractor.Forms
             Application.AddMessageFilter(this);
 
             menuItemAlwaysOnTop_Click(this, EventArgs.Empty);
+            OnTextContentChanged();
 
             var font = new Font(DEFAULT_FONT_NAME, DEFAULT_FONT_SIZE, FontStyle.Regular, GraphicsUnit.Point);
             if (font.Name == DEFAULT_FONT_NAME)
@@ -104,12 +108,32 @@ namespace WindowTextExtractor.Forms
 
         private void txtContent_TextChanged(object sender, EventArgs e)
         {
-            UpdateStatusBar();
+            OnTextContentChanged();
         }
 
         private void txtContent_MultilineChanged(object sender, EventArgs e)
         {
-            UpdateStatusBar();
+            OnTextContentChanged();
+        }
+
+        private void menuItemSaveFileAs_Click(object sender, EventArgs e)
+        {
+            var dialog = new SaveFileDialog
+            {
+                OverwritePrompt = true,
+                ValidateNames = true,
+                Title = "Save As",
+                FileName = File.Exists(_fileName) ? Path.GetFileName(_fileName) : "*.txt",
+                DefaultExt = "txt",
+                RestoreDirectory = false,
+                Filter = "Text Documents (.txt)|*.txt"
+            };
+
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.Cancel)
+            {
+                _fileName = dialog.FileName;
+                File.WriteAllText(_fileName, txtContent.Text, Encoding.UTF8);
+            }
         }
 
         private void menuItemExit_Click(object sender, EventArgs e)
@@ -151,7 +175,7 @@ namespace WindowTextExtractor.Forms
                         var password = Marshal.PtrToStringAuto(cds.lpData);
                         txtContent.Text = password;
                         txtContent.ScrollTextToEnd();
-                        UpdateStatusBar();
+                        OnTextContentChanged();
                     }
                     break;
             }
@@ -214,7 +238,7 @@ namespace WindowTextExtractor.Forms
                                         var text = element.GetTextFromConsole() ?? element.GetTextFromWindow();
                                         txtContent.Text = text == null ? "" : text.TrimEnd().TrimEnd(Environment.NewLine);
                                         txtContent.ScrollTextToEnd();
-                                        UpdateStatusBar();
+                                        OnTextContentChanged();
                                     }
                                 }
                             }
@@ -229,10 +253,11 @@ namespace WindowTextExtractor.Forms
             return false;
         }
 
-        private void UpdateStatusBar()
+        private void OnTextContentChanged()
         {
             lblTotalChars.Text = "Total Chars: " + txtContent.Text.Length;
             lblTotalLines.Text = "Total Lines: " + txtContent.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None).Length;
+            menuItemSaveFileAs.Enabled = txtContent.Text.Length > 0;
         }
     }
 }
