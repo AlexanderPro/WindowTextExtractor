@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.txtContent = new System.Windows.Forms.TextBox();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
@@ -46,6 +47,7 @@
             this.btnTarget = new System.Windows.Forms.Button();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.menuItemSaveFileAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolTipForButton = new System.Windows.Forms.ToolTip(this.components);
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -60,7 +62,7 @@
             this.txtContent.Name = "txtContent";
             this.txtContent.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtContent.Size = new System.Drawing.Size(734, 377);
-            this.txtContent.TabIndex = 3;
+            this.txtContent.TabIndex = 2;
             this.txtContent.MultilineChanged += new System.EventHandler(this.txtContent_MultilineChanged);
             this.txtContent.TextChanged += new System.EventHandler(this.txtContent_TextChanged);
             // 
@@ -74,7 +76,7 @@
             this.statusStrip.Location = new System.Drawing.Point(0, 490);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(734, 22);
-            this.statusStrip.TabIndex = 4;
+            this.statusStrip.TabIndex = 3;
             // 
             // lblTotalLines
             // 
@@ -175,6 +177,7 @@
             this.btnTarget.Name = "btnTarget";
             this.btnTarget.Size = new System.Drawing.Size(60, 60);
             this.btnTarget.TabIndex = 1;
+            this.toolTipForButton.SetToolTip(this.btnTarget, "Find Window (drag over window)");
             this.btnTarget.UseVisualStyleBackColor = true;
             this.btnTarget.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnTarget_MouseDown);
             // 
@@ -230,6 +233,7 @@
         private System.Windows.Forms.Button btnTarget;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
         private System.Windows.Forms.ToolStripMenuItem menuItemSaveFileAs;
+        private System.Windows.Forms.ToolTip toolTipForButton;
     }
 }
 
