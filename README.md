@@ -18,7 +18,7 @@ How to Use
 --------------------
 
 * Launch WindowTextExtractor on your system
-* Now simply drag the 'Find window and extract text' icon to get a window text or 'Find window and extract password' icon to any password box to reveal the passwords.
+* Now simply drag the 'Find window' button to get a window text or password.
 
 
 Limitations
