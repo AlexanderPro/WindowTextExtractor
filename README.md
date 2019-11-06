@@ -1,4 +1,4 @@
-WindowTextExtractor
+![WindowTextExtractor](https://user-images.githubusercontent.com/8102586/68278238-f6d29b00-0081-11ea-8c64-e6999283b65f.png) WindowTextExtractor
 =============
 
 WindowTextExtractor allows you to get a text from any window of an operating system including microsoft office programs, console windows and any window with support of Microsoft UI Automation (UIA). It can recover password stored behind asterisks (*****) from most of the windows apps.
