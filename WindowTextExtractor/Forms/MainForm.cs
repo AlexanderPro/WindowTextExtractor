@@ -126,7 +126,7 @@ namespace WindowTextExtractor.Forms
                 FileName = File.Exists(_fileName) ? Path.GetFileName(_fileName) : "*.txt",
                 DefaultExt = "txt",
                 RestoreDirectory = false,
-                Filter = "Text Documents (.txt)|*.txt"
+                Filter = "Text Documents (*.txt)|*.txt|All Files (*.*)|*.*"
             };
 
             if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.Cancel)
