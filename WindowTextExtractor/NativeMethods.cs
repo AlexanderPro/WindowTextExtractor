@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Text;
 using System.Runtime.InteropServices;
+using System.Drawing;
+using mshtml;
 
 namespace WindowTextExtractor
 {
     static class NativeMethods
     {
+        public delegate int EnumProc(IntPtr hWnd, ref IntPtr lParam);
+
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool AttachConsole(int processID);
 
@@ -31,6 +36,21 @@ namespace WindowTextExtractor
 
         [DllImport("user32.dll")]
         public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
+
+        [DllImport("user32.dll")]
+        public static extern int GetClassName(IntPtr hwnd, StringBuilder lpClassName, int nMaxCount);
+
+        [DllImport("user32.dll")]
+        public static extern int EnumChildWindows(IntPtr hWndParent, EnumProc lpEnumFunc, ref IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        public static extern int SendMessageTimeout(IntPtr hwnd, int msg, int wParam, int lParam, int fuFlags, int uTimeout, out int lpdwResult);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr WindowFromPoint(Point p);
+
+        [DllImport("OLEACC.dll")]
+        public static extern int ObjectFromLresult(int lResult, ref Guid riid, int wParam, ref IHTMLDocument2 ppvObject);
 
         [DllImport("kernel32.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
         [return: MarshalAs(UnmanagedType.Bool)]

@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.IO;
 using System.Drawing;
 using System.Text;
+using System.Linq;
 using WindowTextExtractor.Extensions;
 using WindowTextExtractor.Utils;
 
@@ -215,10 +216,21 @@ namespace WindowTextExtractor.Forms
                                     if (element.Current.IsPassword)
                                     {
                                         var elementHandle = new IntPtr(element.Current.NativeWindowHandle);
-                                        int processId;
-                                        NativeMethods.GetWindowThreadProcessId(elementHandle, out processId);
-                                        var process = Process.GetProcessById(processId);
-                                        if (Environment.Is64BitOperatingSystem && !process.HasExited && !process.IsWow64Process())
+                                        var process = Process.GetProcessById(element.Current.ProcessId);
+                                        if (process.ProcessName.ToLower() == "iexplore")
+                                        {
+                                            elementHandle = elementHandle == IntPtr.Zero ? NativeMethods.WindowFromPoint(new Point(cursorPosition.X, cursorPosition.Y)) : elementHandle;
+                                            if (elementHandle != IntPtr.Zero)
+                                            {
+                                                var passwords = WindowUtils.GetPasswordsFromHtmlPage(elementHandle);
+                                                if (passwords.Any())
+                                                {
+                                                    txtContent.Text = passwords.Count > 1 ? string.Join(Environment.NewLine, passwords.Select((x, i) => "Password " + (i + 1) + ": " + x)) : passwords[0];
+                                                    txtContent.ScrollTextToEnd();
+                                                    OnTextContentChanged();
+                                                }
+                                            }
+                                        } else if (Environment.Is64BitOperatingSystem && !process.HasExited && !process.IsWow64Process())
                                         {
                                             Process.Start(new ProcessStartInfo
                                             {
