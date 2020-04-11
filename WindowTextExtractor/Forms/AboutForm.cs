@@ -14,7 +14,7 @@ namespace WindowTextExtractor.Forms
             InitializeComponent();
             Text = "About " + AssemblyUtils.AssemblyProductName;
             lblProductName.Text = string.Format("{0} v{1}", AssemblyUtils.AssemblyProductName, AssemblyUtils.AssemblyProductVersion);
-            lblCopyright.Text = string.Format("{0} {1}", AssemblyUtils.AssemblyCopyright, AssemblyUtils.AssemblyCompany);
+            lblCopyright.Text = string.Format("{0}-{1} {2}", AssemblyUtils.AssemblyCopyright, DateTime.Now.Year, AssemblyUtils.AssemblyCompany);
             linkUrl.Text = URL;
         }
 
