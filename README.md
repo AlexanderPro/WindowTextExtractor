@@ -7,6 +7,7 @@ Screenshot
 ------------------
 
 ![alt tag](https://user-images.githubusercontent.com/8102586/68193503-2d49e080-ffc4-11e9-8d53-32b1aa426e53.png)
+![alt tag](https://user-images.githubusercontent.com/8102586/79045746-562a6d80-7c15-11ea-89fa-0abf98f8b600.gif)
 
 Requirements
 --------------------
@@ -24,4 +25,4 @@ How to Use
 Limitations
 --------------------
 
-This tool can't work properly with non-windows based applications such as GTK, Flash, QT or applications not using standard edit box for the password. It does not work with HTML pages in the browsers such as IE, Firefox, Chrome, etc.
+This tool can't work properly with non-windows based applications such as GTK, Flash, QT or applications not using standard edit box for the password. It does not work with HTML pages in the browsers such as Firefox, Chrome, etc.
