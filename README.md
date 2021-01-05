@@ -7,6 +7,7 @@ Screenshot
 ------------------
 
 ![alt tag](https://user-images.githubusercontent.com/8102586/79045746-562a6d80-7c15-11ea-89fa-0abf98f8b600.gif)
+![alt tag](https://user-images.githubusercontent.com/8102586/103627876-4135fd00-4f4f-11eb-8245-b5cb26c32f6a.gif)
 
 Requirements
 --------------------
