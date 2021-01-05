@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using WindowTextExtractor.Native;
 
 namespace WindowTextExtractor.Extensions
 {

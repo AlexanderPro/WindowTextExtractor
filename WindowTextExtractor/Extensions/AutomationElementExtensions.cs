@@ -3,6 +3,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Windows.Automation;
+using WindowTextExtractor.Native;
 
 namespace WindowTextExtractor.Extensions
 {

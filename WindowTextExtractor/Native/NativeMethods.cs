@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Drawing;
 using mshtml;
 
-namespace WindowTextExtractor
+namespace WindowTextExtractor.Native
 {
     static class NativeMethods
     {
@@ -32,19 +32,19 @@ namespace WindowTextExtractor
         public static extern int RegisterWindowMessage(string lpString);
 
         [DllImport("user32.dll")]
-        public static extern IntPtr SetCursor(IntPtr handle);
+        public static extern IntPtr SetCursor(IntPtr hWnd);
 
         [DllImport("user32.dll")]
         public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
 
         [DllImport("user32.dll")]
-        public static extern int GetClassName(IntPtr hwnd, StringBuilder lpClassName, int nMaxCount);
+        public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
         [DllImport("user32.dll")]
         public static extern int EnumChildWindows(IntPtr hWndParent, EnumProc lpEnumFunc, ref IntPtr lParam);
 
         [DllImport("user32.dll")]
-        public static extern int SendMessageTimeout(IntPtr hwnd, int msg, int wParam, int lParam, int fuFlags, int uTimeout, out int lpdwResult);
+        public static extern int SendMessageTimeout(IntPtr hWnd, int msg, int wParam, int lParam, int fuFlags, int uTimeout, out int lpdwResult);
 
         [DllImport("user32.dll")]
         public static extern IntPtr WindowFromPoint(Point p);
@@ -73,5 +73,13 @@ namespace WindowTextExtractor
 
         [DllImport("WindowTextExtractorHook64.dll", EntryPoint = "QueryPasswordEdit")]
         public static extern bool QueryPasswordEdit64();
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool PrintWindow(IntPtr hWnd, IntPtr hdc, int nFlags);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetWindowRect(IntPtr hWnd, out Rect lpRect);
     }
 }

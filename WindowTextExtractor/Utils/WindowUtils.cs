@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Drawing;
+using System.Drawing.Imaging;
 using mshtml;
+using WindowTextExtractor.Native;
 
 namespace WindowTextExtractor.Utils
 {
@@ -52,6 +55,20 @@ namespace WindowTextExtractor.Utils
                 result = 0;
             }
             return result;
+        }
+
+        public static Bitmap PrintWindow(IntPtr hWnd)
+        {
+            Rect rect;
+            NativeMethods.GetWindowRect(hWnd, out rect);
+            var bitmap = new Bitmap(rect.Width, rect.Height, PixelFormat.Format32bppArgb);
+            using (var graphics = Graphics.FromImage(bitmap))
+            {
+                var hdc = graphics.GetHdc();
+                NativeMethods.PrintWindow(hWnd, hdc, 0);
+                graphics.ReleaseHdc(hdc);
+            }
+            return bitmap;
         }
     }
 }

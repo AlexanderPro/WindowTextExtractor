@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace WindowTextExtractor
+namespace WindowTextExtractor.Native
 {
     [StructLayout(LayoutKind.Sequential)]
     struct Coord
@@ -41,5 +41,17 @@ namespace WindowTextExtractor
         public IntPtr dwData;
         public int cbData;
         public IntPtr lpData;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct Rect
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+
+        public int Width { get { return Right - Left; } }
+        public int Height { get { return Bottom - Top; } }
     }
 }

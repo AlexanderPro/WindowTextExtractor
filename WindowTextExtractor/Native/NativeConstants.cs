@@ -1,4 +1,4 @@
-﻿namespace WindowTextExtractor
+﻿namespace WindowTextExtractor.Native
 {
     static class NativeConstants
     {
