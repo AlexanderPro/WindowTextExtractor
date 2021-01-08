@@ -140,8 +140,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Target.png" />
+    <Content Include="Target32.ico" />
     <Content Include="WindowTextExtractor.ico" />
     <Content Include="WindowTextExtractor.png" />
+    <Content Include="WindowTextExtractor32.ico" />
     <EmbeddedResource Include="WindowTextExtractor64.exe" />
   </ItemGroup>
   <ItemGroup>

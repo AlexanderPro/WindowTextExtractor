@@ -39,6 +39,7 @@
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.menuItemFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSaveTextAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemSaveImageAs = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.menuItemExit = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemOptions = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,7 +53,6 @@
             this.tabContent = new System.Windows.Forms.TabControl();
             this.tabpText = new System.Windows.Forms.TabPage();
             this.tabpImage = new System.Windows.Forms.TabPage();
-            this.menuItemSaveImageAs = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbContent)).BeginInit();
@@ -139,19 +139,27 @@
             // 
             this.menuItemSaveTextAs.Enabled = false;
             this.menuItemSaveTextAs.Name = "menuItemSaveTextAs";
-            this.menuItemSaveTextAs.Size = new System.Drawing.Size(180, 22);
+            this.menuItemSaveTextAs.Size = new System.Drawing.Size(159, 22);
             this.menuItemSaveTextAs.Text = "Save Text As...";
             this.menuItemSaveTextAs.Click += new System.EventHandler(this.menuItemSaveTextAs_Click);
+            // 
+            // menuItemSaveImageAs
+            // 
+            this.menuItemSaveImageAs.Enabled = false;
+            this.menuItemSaveImageAs.Name = "menuItemSaveImageAs";
+            this.menuItemSaveImageAs.Size = new System.Drawing.Size(159, 22);
+            this.menuItemSaveImageAs.Text = "Save Image As...";
+            this.menuItemSaveImageAs.Click += new System.EventHandler(this.menuItemSaveImageAs_Click);
             // 
             // toolStripSeparator
             // 
             this.toolStripSeparator.Name = "toolStripSeparator";
-            this.toolStripSeparator.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator.Size = new System.Drawing.Size(156, 6);
             // 
             // menuItemExit
             // 
             this.menuItemExit.Name = "menuItemExit";
-            this.menuItemExit.Size = new System.Drawing.Size(180, 22);
+            this.menuItemExit.Size = new System.Drawing.Size(159, 22);
             this.menuItemExit.Text = "Exit";
             this.menuItemExit.Click += new System.EventHandler(this.menuItemExit_Click);
             // 
@@ -250,14 +258,6 @@
             this.tabpImage.TabIndex = 1;
             this.tabpImage.Text = "Image";
             this.tabpImage.UseVisualStyleBackColor = true;
-            // 
-            // menuItemSaveImageAs
-            // 
-            this.menuItemSaveImageAs.Enabled = false;
-            this.menuItemSaveImageAs.Name = "menuItemSaveImageAs";
-            this.menuItemSaveImageAs.Size = new System.Drawing.Size(180, 22);
-            this.menuItemSaveImageAs.Text = "Save Image As...";
-            this.menuItemSaveImageAs.Click += new System.EventHandler(this.menuItemSaveImageAs_Click);
             // 
             // MainForm
             // 

@@ -23,7 +23,8 @@ namespace WindowTextExtractor.Forms
         private readonly int _messageId;
         private bool _isButtonTargetMouseDown;
         private string _64BitFilePath;
-        private string _fileName;
+        private string _textFileName;
+        private string _imageFileName;
 
         public MainForm()
         {
@@ -32,7 +33,8 @@ namespace WindowTextExtractor.Forms
             _processId = Process.GetCurrentProcess().Id;
             _messageId = NativeMethods.RegisterWindowMessage("WINDOW_TEXT_EXTRACTOR_HOOK");
             _64BitFilePath = "";
-            _fileName = "";
+            _textFileName = "";
+            _imageFileName = "";
         }
 
         protected override void OnLoad(EventArgs e)
@@ -132,7 +134,7 @@ namespace WindowTextExtractor.Forms
                 OverwritePrompt = true,
                 ValidateNames = true,
                 Title = "Save As",
-                FileName = File.Exists(_fileName) ? Path.GetFileName(_fileName) : "*.txt",
+                FileName = File.Exists(_textFileName) ? Path.GetFileName(_textFileName) : "*.txt",
                 DefaultExt = "txt",
                 RestoreDirectory = false,
                 Filter = "Text Documents (*.txt)|*.txt|All Files (*.*)|*.*"
@@ -140,8 +142,8 @@ namespace WindowTextExtractor.Forms
 
             if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.Cancel)
             {
-                _fileName = dialog.FileName;
-                File.WriteAllText(_fileName, txtContent.Text, Encoding.UTF8);
+                _textFileName = dialog.FileName;
+                File.WriteAllText(dialog.FileName, txtContent.Text, Encoding.UTF8);
             }
         }
 
@@ -152,7 +154,7 @@ namespace WindowTextExtractor.Forms
                 OverwritePrompt = true,
                 ValidateNames = true,
                 Title = "Save As",
-                FileName = File.Exists(_fileName) ? Path.GetFileName(_fileName) : "*.bmp",
+                FileName = File.Exists(_imageFileName) ? Path.GetFileName(_imageFileName) : "*.bmp",
                 DefaultExt = "bmp",
                 RestoreDirectory = false,
                 Filter = "Bitmap Image (*.bmp)|*.bmp|Gif Image (*.gif)|*.gif|JPEG Image (*.jpeg)|*.jpeg|Png Image (*.png)|*.png|Tiff Image (*.tiff)|*.tiff|Wmf Image (*.wmf)|*.wmf"
@@ -160,7 +162,7 @@ namespace WindowTextExtractor.Forms
 
             if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.Cancel)
             {
-                _fileName = dialog.FileName;
+                _imageFileName = dialog.FileName;
                 var fileExtension = Path.GetExtension(dialog.FileName).ToLower();
                 var imageFormat = fileExtension == ".bmp" ? ImageFormat.Bmp :
                     fileExtension == ".gif" ? ImageFormat.Gif :
@@ -242,7 +244,7 @@ namespace WindowTextExtractor.Forms
                         {
                             if (_isButtonTargetMouseDown)
                             {
-                                NativeMethods.SetCursor(Properties.Resources.Target.Handle);
+                                NativeMethods.SetCursor(Properties.Resources.Target32.Handle);
                                 var cursorPosition = System.Windows.Forms.Cursor.Position;
                                 var element = AutomationElement.FromPoint(new System.Windows.Point(cursorPosition.X, cursorPosition.Y));
                                 if (element != null && element.Current.ProcessId != _processId)
