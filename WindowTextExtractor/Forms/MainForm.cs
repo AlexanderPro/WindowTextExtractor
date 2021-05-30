@@ -23,6 +23,7 @@ namespace WindowTextExtractor.Forms
         private readonly int _messageId;
         private bool _isButtonTargetMouseDown;
         private string _64BitFilePath;
+        private string _informationFileName;
         private string _textFileName;
         private string _imageFileName;
 
@@ -32,9 +33,10 @@ namespace WindowTextExtractor.Forms
             _isButtonTargetMouseDown = false;
             _processId = Process.GetCurrentProcess().Id;
             _messageId = NativeMethods.RegisterWindowMessage("WINDOW_TEXT_EXTRACTOR_HOOK");
-            _64BitFilePath = "";
-            _textFileName = "";
-            _imageFileName = "";
+            _64BitFilePath = string.Empty;
+            _informationFileName = string.Empty;
+            _textFileName = string.Empty;
+            _imageFileName = string.Empty;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -104,7 +106,9 @@ namespace WindowTextExtractor.Forms
             if (!_isButtonTargetMouseDown)
             {
                 _isButtonTargetMouseDown = true;
-                txtContent.Text = "";
+                gvInformation.Rows.Clear();
+                gvInformation.Tag = null;
+                txtContent.Text = string.Empty;
                 if (pbContent.Image != null)
                 {
                     pbContent.Image.Dispose();
@@ -125,6 +129,27 @@ namespace WindowTextExtractor.Forms
         private void txtContent_MultilineChanged(object sender, EventArgs e)
         {
             OnContentChanged();
+        }
+
+        private void menuItemSaveInformationAs_Click(object sender, EventArgs e)
+        {
+            var dialog = new SaveFileDialog
+            {
+                OverwritePrompt = true,
+                ValidateNames = true,
+                Title = "Save As",
+                FileName = File.Exists(_informationFileName) ? Path.GetFileName(_informationFileName) : "*.txt",
+                DefaultExt = "txt",
+                RestoreDirectory = false,
+                Filter = "Text Documents (*.txt)|*.txt|All Files (*.*)|*.*"
+            };
+
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.Cancel)
+            {
+                _informationFileName = dialog.FileName;
+                var content = gvInformation.Tag != null ? ((WindowInformation)gvInformation.Tag).ToString() : string.Empty;
+                File.WriteAllText(dialog.FileName, content, Encoding.UTF8);
+            }
         }
 
         private void menuItemSaveTextAs_Click(object sender, EventArgs e)
@@ -292,6 +317,8 @@ namespace WindowTextExtractor.Forms
                                             pbContent.Image = null;
                                         }
                                         pbContent.Image = WindowUtils.PrintWindow(windowHandle);
+                                        var windowInformation = WindowUtils.GetWindowInformation(windowHandle);
+                                        FillInformation(windowInformation);
                                         OnContentChanged();
                                     }
                                 }
@@ -311,8 +338,45 @@ namespace WindowTextExtractor.Forms
         {
             lblTotalChars.Text = "Total Chars: " + txtContent.Text.Length;
             lblTotalLines.Text = "Total Lines: " + txtContent.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None).Length;
+            lblImageSize.Text = "Image Size: " + (pbContent != null && pbContent.Image != null ? $"{pbContent.Image.Width}x{pbContent.Image.Height}" : string.Empty);
             menuItemSaveTextAs.Enabled = txtContent.Text.Length > 0;
             menuItemSaveImageAs.Enabled = pbContent.Image != null;
+            menuItemSaveInformationAs.Enabled = gvInformation.Tag != null;
+        }
+
+        private void FillInformation(WindowInformation windowInformation)
+        {
+            gvInformation.Rows.Clear();
+            gvInformation.Tag = null;
+
+            var indexHeader = gvInformation.Rows.Add();
+            var rowHeader = gvInformation.Rows[indexHeader];
+            rowHeader.Cells[0].Value = "Window Information";
+            rowHeader.Cells[0].Style.BackColor = Color.LightGray;
+            rowHeader.Cells[1].Style.BackColor = Color.LightGray;
+
+            foreach (var windowDetailKey in windowInformation.WindowDetails.Keys)
+            {
+                var index = gvInformation.Rows.Add();
+                var row = gvInformation.Rows[index];
+                row.Cells[0].Value = windowDetailKey;
+                row.Cells[1].Value = windowInformation.WindowDetails[windowDetailKey];
+            }
+
+            indexHeader = gvInformation.Rows.Add();
+            rowHeader = gvInformation.Rows[indexHeader];
+            rowHeader.Cells[0].Value = "Process Information";
+            rowHeader.Cells[0].Style.BackColor = Color.LightGray;
+            rowHeader.Cells[1].Style.BackColor = Color.LightGray;
+
+            foreach (var processDetailKey in windowInformation.ProcessDetails.Keys)
+            {
+                var index = gvInformation.Rows.Add();
+                var row = gvInformation.Rows[index];
+                row.Cells[0].Value = processDetailKey;
+                row.Cells[1].Value = windowInformation.ProcessDetails[processDetailKey];
+            }
+            gvInformation.Tag = windowInformation;
         }
     }
 }

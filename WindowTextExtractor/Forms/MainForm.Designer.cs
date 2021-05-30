@@ -33,9 +33,9 @@
             this.txtContent = new System.Windows.Forms.TextBox();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.lblTotalLines = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripSeparatorLeft = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripSeparatorOne = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblTotalChars = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripSeparatorRight = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripSeparatorTwo = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.menuItemFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSaveTextAs = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,12 +53,21 @@
             this.tabContent = new System.Windows.Forms.TabControl();
             this.tabpText = new System.Windows.Forms.TabPage();
             this.tabpImage = new System.Windows.Forms.TabPage();
+            this.tabpInformation = new System.Windows.Forms.TabPage();
+            this.gvInformation = new System.Windows.Forms.DataGridView();
+            this.clmnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.clmnValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.menuItemSaveInformationAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.lblImageSize = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripSeparatorThree = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbContent)).BeginInit();
             this.tabContent.SuspendLayout();
             this.tabpText.SuspendLayout();
             this.tabpImage.SuspendLayout();
+            this.tabpInformation.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gvInformation)).BeginInit();
             this.SuspendLayout();
             // 
             // txtContent
@@ -79,9 +88,11 @@
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblTotalLines,
-            this.toolStripSeparatorLeft,
+            this.toolStripSeparatorOne,
             this.lblTotalChars,
-            this.toolStripSeparatorRight});
+            this.toolStripSeparatorTwo,
+            this.lblImageSize,
+            this.toolStripSeparatorThree});
             this.statusStrip.Location = new System.Drawing.Point(0, 490);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(734, 22);
@@ -93,12 +104,12 @@
             this.lblTotalLines.Size = new System.Drawing.Size(65, 17);
             this.lblTotalLines.Text = "Total Lines:";
             // 
-            // toolStripSeparatorLeft
+            // toolStripSeparatorOne
             // 
-            this.toolStripSeparatorLeft.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
-            this.toolStripSeparatorLeft.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
-            this.toolStripSeparatorLeft.Name = "toolStripSeparatorLeft";
-            this.toolStripSeparatorLeft.Size = new System.Drawing.Size(4, 17);
+            this.toolStripSeparatorOne.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.toolStripSeparatorOne.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
+            this.toolStripSeparatorOne.Name = "toolStripSeparatorOne";
+            this.toolStripSeparatorOne.Size = new System.Drawing.Size(4, 17);
             // 
             // lblTotalChars
             // 
@@ -106,12 +117,12 @@
             this.lblTotalChars.Size = new System.Drawing.Size(68, 17);
             this.lblTotalChars.Text = "Total Chars:";
             // 
-            // toolStripSeparatorRight
+            // toolStripSeparatorTwo
             // 
-            this.toolStripSeparatorRight.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
-            this.toolStripSeparatorRight.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
-            this.toolStripSeparatorRight.Name = "toolStripSeparatorRight";
-            this.toolStripSeparatorRight.Size = new System.Drawing.Size(4, 17);
+            this.toolStripSeparatorTwo.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.toolStripSeparatorTwo.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
+            this.toolStripSeparatorTwo.Name = "toolStripSeparatorTwo";
+            this.toolStripSeparatorTwo.Size = new System.Drawing.Size(4, 17);
             // 
             // menuStrip
             // 
@@ -127,6 +138,7 @@
             // menuItemFile
             // 
             this.menuItemFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemSaveInformationAs,
             this.menuItemSaveTextAs,
             this.menuItemSaveImageAs,
             this.toolStripSeparator,
@@ -139,7 +151,7 @@
             // 
             this.menuItemSaveTextAs.Enabled = false;
             this.menuItemSaveTextAs.Name = "menuItemSaveTextAs";
-            this.menuItemSaveTextAs.Size = new System.Drawing.Size(159, 22);
+            this.menuItemSaveTextAs.Size = new System.Drawing.Size(189, 22);
             this.menuItemSaveTextAs.Text = "Save Text As...";
             this.menuItemSaveTextAs.Click += new System.EventHandler(this.menuItemSaveTextAs_Click);
             // 
@@ -147,19 +159,19 @@
             // 
             this.menuItemSaveImageAs.Enabled = false;
             this.menuItemSaveImageAs.Name = "menuItemSaveImageAs";
-            this.menuItemSaveImageAs.Size = new System.Drawing.Size(159, 22);
+            this.menuItemSaveImageAs.Size = new System.Drawing.Size(189, 22);
             this.menuItemSaveImageAs.Text = "Save Image As...";
             this.menuItemSaveImageAs.Click += new System.EventHandler(this.menuItemSaveImageAs_Click);
             // 
             // toolStripSeparator
             // 
             this.toolStripSeparator.Name = "toolStripSeparator";
-            this.toolStripSeparator.Size = new System.Drawing.Size(156, 6);
+            this.toolStripSeparator.Size = new System.Drawing.Size(186, 6);
             // 
             // menuItemExit
             // 
             this.menuItemExit.Name = "menuItemExit";
-            this.menuItemExit.Size = new System.Drawing.Size(159, 22);
+            this.menuItemExit.Size = new System.Drawing.Size(189, 22);
             this.menuItemExit.Text = "Exit";
             this.menuItemExit.Click += new System.EventHandler(this.menuItemExit_Click);
             // 
@@ -229,6 +241,7 @@
             this.tabContent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabContent.Controls.Add(this.tabpInformation);
             this.tabContent.Controls.Add(this.tabpText);
             this.tabContent.Controls.Add(this.tabpImage);
             this.tabContent.Location = new System.Drawing.Point(0, 104);
@@ -259,6 +272,79 @@
             this.tabpImage.Text = "Image";
             this.tabpImage.UseVisualStyleBackColor = true;
             // 
+            // tabpInformation
+            // 
+            this.tabpInformation.Controls.Add(this.gvInformation);
+            this.tabpInformation.Location = new System.Drawing.Point(4, 22);
+            this.tabpInformation.Name = "tabpInformation";
+            this.tabpInformation.Size = new System.Drawing.Size(726, 357);
+            this.tabpInformation.TabIndex = 2;
+            this.tabpInformation.Text = "Information";
+            this.tabpInformation.UseVisualStyleBackColor = true;
+            // 
+            // gvInformation
+            // 
+            this.gvInformation.AllowUserToAddRows = false;
+            this.gvInformation.AllowUserToDeleteRows = false;
+            this.gvInformation.AllowUserToResizeColumns = false;
+            this.gvInformation.AllowUserToResizeRows = false;
+            this.gvInformation.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.gvInformation.BackgroundColor = System.Drawing.SystemColors.ControlLightLight;
+            this.gvInformation.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.gvInformation.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            this.gvInformation.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gvInformation.ColumnHeadersVisible = false;
+            this.gvInformation.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.clmnName,
+            this.clmnValue});
+            this.gvInformation.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gvInformation.Location = new System.Drawing.Point(0, 0);
+            this.gvInformation.MultiSelect = false;
+            this.gvInformation.Name = "gvInformation";
+            this.gvInformation.ReadOnly = true;
+            this.gvInformation.RowHeadersVisible = false;
+            this.gvInformation.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.gvInformation.ShowCellErrors = false;
+            this.gvInformation.ShowCellToolTips = false;
+            this.gvInformation.ShowEditingIcon = false;
+            this.gvInformation.ShowRowErrors = false;
+            this.gvInformation.Size = new System.Drawing.Size(726, 357);
+            this.gvInformation.TabIndex = 0;
+            // 
+            // clmnName
+            // 
+            this.clmnName.FillWeight = 50F;
+            this.clmnName.HeaderText = "Name";
+            this.clmnName.Name = "clmnName";
+            this.clmnName.ReadOnly = true;
+            // 
+            // clmnValue
+            // 
+            this.clmnValue.HeaderText = "Value";
+            this.clmnValue.Name = "clmnValue";
+            this.clmnValue.ReadOnly = true;
+            // 
+            // menuItemSaveInformationAs
+            // 
+            this.menuItemSaveInformationAs.Enabled = false;
+            this.menuItemSaveInformationAs.Name = "menuItemSaveInformationAs";
+            this.menuItemSaveInformationAs.Size = new System.Drawing.Size(189, 22);
+            this.menuItemSaveInformationAs.Text = "Save Information As...";
+            this.menuItemSaveInformationAs.Click += new System.EventHandler(this.menuItemSaveInformationAs_Click);
+            // 
+            // lblImageSize
+            // 
+            this.lblImageSize.Name = "lblImageSize";
+            this.lblImageSize.Size = new System.Drawing.Size(66, 17);
+            this.lblImageSize.Text = "Image Size:";
+            // 
+            // toolStripSeparatorThree
+            // 
+            this.toolStripSeparatorThree.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.toolStripSeparatorThree.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
+            this.toolStripSeparatorThree.Name = "toolStripSeparatorThree";
+            this.toolStripSeparatorThree.Size = new System.Drawing.Size(4, 17);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -281,6 +367,8 @@
             this.tabpText.ResumeLayout(false);
             this.tabpText.PerformLayout();
             this.tabpImage.ResumeLayout(false);
+            this.tabpInformation.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.gvInformation)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -290,9 +378,9 @@
         private System.Windows.Forms.TextBox txtContent;
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel lblTotalLines;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripSeparatorLeft;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripSeparatorOne;
         private System.Windows.Forms.ToolStripStatusLabel lblTotalChars;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripSeparatorRight;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripSeparatorTwo;
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem menuItemFile;
         private System.Windows.Forms.ToolStripMenuItem menuItemExit;
@@ -310,6 +398,13 @@
         private System.Windows.Forms.TabPage tabpText;
         private System.Windows.Forms.TabPage tabpImage;
         private System.Windows.Forms.ToolStripMenuItem menuItemSaveImageAs;
+        private System.Windows.Forms.TabPage tabpInformation;
+        private System.Windows.Forms.DataGridView gvInformation;
+        private System.Windows.Forms.DataGridViewTextBoxColumn clmnName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn clmnValue;
+        private System.Windows.Forms.ToolStripMenuItem menuItemSaveInformationAs;
+        private System.Windows.Forms.ToolStripStatusLabel lblImageSize;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripSeparatorThree;
     }
 }
 

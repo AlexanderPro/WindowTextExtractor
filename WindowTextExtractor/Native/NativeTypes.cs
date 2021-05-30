@@ -54,4 +54,59 @@ namespace WindowTextExtractor.Native
         public int Width { get { return Right - Left; } }
         public int Height { get { return Bottom - Top; } }
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct WINDOW_INFO
+    {
+        public int cbSize;
+        public Rect rcWindow;
+        public Rect rcClient;
+        public uint dwStyle;
+        public uint dwExStyle;
+        public uint dwWindowStatus;
+        public int cxWindowBorders;
+        public int cyWindowBorders;
+        public ushort atomWindowType;
+        public ushort wCreatorVersion;
+    }
+
+    [Flags]
+    enum LayeredWindow : uint
+    {
+        LWA_COLORKEY = 0x00000001,
+        LWA_ALPHA = 0x00000002
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct PROCESS_BASIC_INFORMATION
+    {
+        public IntPtr Reserved1;
+        public IntPtr PebBaseAddress;
+        public IntPtr Reserved2_0;
+        public IntPtr Reserved2_1;
+        public IntPtr UniqueProcessId;
+        public IntPtr InheritedFromUniqueProcessId;
+    }
+
+    enum PriorityClass : uint
+    {
+        ABOVE_NORMAL_PRIORITY_CLASS = 0x8000,
+        BELOW_NORMAL_PRIORITY_CLASS = 0x4000,
+        HIGH_PRIORITY_CLASS = 0x80,
+        IDLE_PRIORITY_CLASS = 0x40,
+        NORMAL_PRIORITY_CLASS = 0x20,
+        PROCESS_MODE_BACKGROUND_BEGIN = 0x100000,
+        PROCESS_MODE_BACKGROUND_END = 0x200000,
+        REALTIME_PRIORITY_CLASS = 0x100
+    }
+
+    public enum Priority : int
+    {
+        RealTime = 24,
+        High = 13,
+        AboveNormal = 10,
+        Normal = 8,
+        BelowNormal = 6,
+        Idle = 4
+    }
 }
