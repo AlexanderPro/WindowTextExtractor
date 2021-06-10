@@ -58,6 +58,7 @@ namespace WindowTextExtractor.Utils
             var realWindowClass = RealGetWindowClass(hWnd);
             var hWndParent = NativeMethods.GetParent(hWnd);
             var size = GetWindowSize(hWnd);
+            var placement = GetWindowPlacement(hWnd);
             var threadId = NativeMethods.GetWindowThreadProcessId(hWnd, out var processId);
             var process = GetProcessByIdSafely(processId);
 
@@ -83,7 +84,8 @@ namespace WindowTextExtractor.Utils
             }
 
             windowDetailes.Add("Window Handle", $"0x{hWnd.ToInt64():X}");
-            windowDetailes.Add("Parent Window Handle", $"0x{hWndParent.ToInt64():X}");
+            windowDetailes.Add("Parent Window Handle", hWndParent == IntPtr.Zero ? "-" : $"0x{hWndParent.ToInt64():X}");
+            windowDetailes.Add("Window Placement", placement.showCmd.ToString());
             windowDetailes.Add("Window Size", $"{size.Width} x {size.Height}");
             
             try
@@ -175,13 +177,18 @@ namespace WindowTextExtractor.Utils
             {
             }
 
+            processDetailes.Add("Process Id", processId.ToString());
             try
             {
-                processDetailes.Add("Parent", Path.GetFileName(process.GetParentProcess().MainModule.FileName));
+                var parentProcess = process.GetParentProcess();
+                processDetailes.Add("Parent Process Id", parentProcess.Id.ToString());
+                processDetailes.Add("Parent", Path.GetFileName(parentProcess.MainModule.FileName));
             }
             catch
             {
             }
+            
+            processDetailes.Add("Thread Id", threadId.ToString());
 
             try
             {
@@ -191,8 +198,6 @@ namespace WindowTextExtractor.Utils
             {
             }
 
-            processDetailes.Add("Process Id", processId.ToString());
-            processDetailes.Add("Thread Id", threadId.ToString());
             
             try
             {
@@ -287,6 +292,14 @@ namespace WindowTextExtractor.Utils
             Rect size;
             NativeMethods.GetWindowRect(hWnd, out size);
             return size;
+        }
+
+        private static WINDOWPLACEMENT GetWindowPlacement(IntPtr hWnd)
+        {
+            var placement = new WINDOWPLACEMENT();
+            placement.length = Marshal.SizeOf(placement);
+            NativeMethods.GetWindowPlacement(hWnd, ref placement);
+            return placement;
         }
 
         private static Process GetProcessByIdSafely(int pId)

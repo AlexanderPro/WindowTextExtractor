@@ -109,4 +109,23 @@ namespace WindowTextExtractor.Native
         BelowNormal = 6,
         Idle = 4
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct WINDOWPLACEMENT
+    {
+        public int length;
+        public int flags;
+        public ShowWindowCommands showCmd;
+        public System.Drawing.Point ptMinPosition;
+        public System.Drawing.Point ptMaxPosition;
+        public System.Drawing.Rectangle rcNormalPosition;
+    }
+
+    enum ShowWindowCommands : int
+    {
+        Hide = 0,
+        Normal = 1,
+        Minimized = 2,
+        Maximized = 3,
+    }
 }
