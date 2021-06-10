@@ -1,7 +1,7 @@
 ![WindowTextExtractor](https://user-images.githubusercontent.com/8102586/68278238-f6d29b00-0081-11ea-8c64-e6999283b65f.png) WindowTextExtractor
 =============
 
-WindowTextExtractor allows you to get a text from any window of an operating system including microsoft office programs, console windows and any window with support of Microsoft UI Automation (UIA). It can recover password stored behind asterisks (*****) from most of the windows apps.
+WindowTextExtractor allows you to get a text from any window of an operating system including microsoft office programs, console windows, password textboxes, etc. It can recover passwords stored behind asterisks (*****) from most of the windows apps. It also shows a detailed window and its process information and allows you to take a window screenshot.
 
 Screenshot
 ------------------
@@ -19,10 +19,4 @@ How to Use
 --------------------
 
 * Launch WindowTextExtractor on your system.
-* Now simply drag the 'Find window' button to get a window text or password.
-
-
-Limitations
---------------------
-
-This tool can't work properly with non-windows based applications such as GTK, Flash, QT or applications not using standard edit box for the password. It does not work with HTML pages in the browsers such as Firefox, Chrome, etc.
+* Now simply drag the 'Find window' button to get a window information, text, password or image.
