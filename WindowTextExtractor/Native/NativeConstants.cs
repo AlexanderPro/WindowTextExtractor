@@ -26,5 +26,7 @@
         public const int GCL_WNDPROC = -24;
         public const int DWL_DLGPROC = 4;
         public const int DWL_USER = 8;
+
+        public const int DWMWA_EXTENDED_FRAME_BOUNDS = 9;
     }
 }

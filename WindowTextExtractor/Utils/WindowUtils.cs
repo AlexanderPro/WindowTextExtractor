@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.IO;
 using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Management;
-using System.Linq;
-using System.IO;
 using mshtml;
 using WindowTextExtractor.Native;
 using WindowTextExtractor.Extensions;
@@ -58,6 +58,7 @@ namespace WindowTextExtractor.Utils
             var realWindowClass = RealGetWindowClass(hWnd);
             var hWndParent = NativeMethods.GetParent(hWnd);
             var size = GetWindowSize(hWnd);
+            var clientSize = GetWindowClientSize(hWnd);            
             var placement = GetWindowPlacement(hWnd);
             var threadId = NativeMethods.GetWindowThreadProcessId(hWnd, out var processId);
             var process = GetProcessByIdSafely(processId);
@@ -86,8 +87,18 @@ namespace WindowTextExtractor.Utils
             windowDetailes.Add("Window Handle", $"0x{hWnd.ToInt64():X}");
             windowDetailes.Add("Parent Window Handle", hWndParent == IntPtr.Zero ? "-" : $"0x{hWndParent.ToInt64():X}");
             windowDetailes.Add("Window Placement", placement.showCmd.ToString());
-            windowDetailes.Add("Window Size", $"{size.Width} x {size.Height}");
-            
+            windowDetailes.Add("Window Size", $"{size.Width}x{size.Height}");
+            windowDetailes.Add("Window Client Size", $"{clientSize.Width}x{clientSize.Height}");
+
+            try
+            {
+                var bounds = GetFrameBounds(hWnd);
+                windowDetailes.Add("Window Extended Frame Bounds", $"{bounds.Top} {bounds.Right} {bounds.Bottom} {bounds.Left}");
+            }
+            catch
+            {
+            }
+
             try
             {
                 windowDetailes.Add("Instance", $"0x{process.Modules[0].BaseAddress.ToInt64():X}");
@@ -294,6 +305,13 @@ namespace WindowTextExtractor.Utils
             return size;
         }
 
+        private static Rect GetWindowClientSize(IntPtr hWnd)
+        {
+            Rect size;
+            NativeMethods.GetClientRect(hWnd, out size);
+            return size;
+        }
+
         private static WINDOWPLACEMENT GetWindowPlacement(IntPtr hWnd)
         {
             var placement = new WINDOWPLACEMENT();
@@ -301,6 +319,34 @@ namespace WindowTextExtractor.Utils
             NativeMethods.GetWindowPlacement(hWnd, ref placement);
             return placement;
         }
+
+        private static Rect GetSizeWithFrameBounds(IntPtr hWnd)
+        {
+            Rect size;
+            if (Environment.OSVersion.Version.Major < 6)
+            {
+                NativeMethods.GetWindowRect(hWnd, out size);
+            }
+            else if (NativeMethods.DwmGetWindowAttribute(hWnd, NativeConstants.DWMWA_EXTENDED_FRAME_BOUNDS, out size, Marshal.SizeOf(typeof(Rect))) != 0)
+            {
+                NativeMethods.GetWindowRect(hWnd, out size);
+            }
+            return size;
+        }
+
+        private static Rect GetFrameBounds(IntPtr hWnd)
+        {
+            var withMargin = GetSizeWithFrameBounds(hWnd);
+            var size = GetWindowSize(hWnd);
+            return new Rect
+            {
+                Left = withMargin.Left - size.Left,
+                Top = withMargin.Top - size.Top,
+                Right = size.Right - withMargin.Right,
+                Bottom = size.Bottom - withMargin.Bottom
+            };
+        }
+
 
         private static Process GetProcessByIdSafely(int pId)
         {
