@@ -146,7 +146,6 @@
     <Content Include="WindowTextExtractor.ico" />
     <Content Include="WindowTextExtractor.png" />
     <Content Include="WindowTextExtractor32.ico" />
-    <EmbeddedResource Include="WindowTextExtractor64.exe" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">

@@ -61,20 +61,12 @@ namespace WindowTextExtractor.Forms
 #if WIN32
             if (Environment.Is64BitOperatingSystem)
             {
-                var resourceName = "WindowTextExtractor.WindowTextExtractor64.exe";
                 var fileName = "WindowTextExtractor64.exe";
                 var directoryName = Path.GetDirectoryName(AssemblyUtils.AssemblyLocation);
                 _64BitFilePath = Path.Combine(directoryName, fileName);
-                try
+                if (!File.Exists(_64BitFilePath))
                 {
-                    if (!File.Exists(_64BitFilePath))
-                    {
-                        AssemblyUtils.ExtractFileFromAssembly(resourceName, _64BitFilePath);
-                    }
-                }
-                catch
-                {
-                    var message = string.Format("Failed to load {0} process!", fileName);
+                    var message = string.Format("{0} is not found.", fileName);
                     MessageBox.Show(message, AssemblyUtils.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Close();
                 }
@@ -86,19 +78,6 @@ namespace WindowTextExtractor.Forms
         {
             base.OnClosed(e);
             Application.RemoveMessageFilter(this);
-
-#if WIN32
-            if (Environment.Is64BitOperatingSystem && File.Exists(_64BitFilePath))
-            {
-                try
-                {
-                    File.Delete(_64BitFilePath);
-                }
-                catch
-                {
-                }
-            }
-#endif
         }
 
         private void btnTarget_MouseDown(object sender, MouseEventArgs e)

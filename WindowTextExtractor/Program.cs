@@ -29,6 +29,10 @@ namespace WindowTextExtractor
                 NativeMethods.QueryPasswordEdit64();
                 NativeMethods.UnsetHook64(hwndCallerPtr, hwndTargetPtr);
             }
+            else
+            {
+                MessageBox.Show("WindowTextExtractor64.exe is not for a manual run.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
 #endif
         }
     }

@@ -16,8 +16,7 @@
     <WindowTextExtractorSourceFileWin32 Include="$(WindowTextExtractorProjectPath)\bin\x86\Release\WindowTextExtractor.exe" />
     <WindowTextExtractorSourceFileWin64 Include="$(WindowTextExtractorProjectPath)\bin\x64\Release\WindowTextExtractor.exe" />
     <WindowTextExtractorDestFileWin32 Include="$(ApplicationPath)\WindowTextExtractor.exe" />
-    <WindowTextExtractorDestFileWin64 Include="$(WindowTextExtractorProjectPath)\WindowTextExtractor64.exe" />
-    <EmptyTextForFile Include="Empty File" />
+    <WindowTextExtractorDestFileWin64 Include="$(ApplicationPath)\WindowTextExtractor64.exe" />
   </ItemGroup>
 
   <Target Name="BuildSolution">
@@ -25,7 +24,6 @@
     <CallTarget Targets="Copy_Release_x32_WindowTextExtractorHook" />
     <CallTarget Targets="Build_Release_x64_WindowTextExtractorHook" />
     <CallTarget Targets="Copy_Release_x64_WindowTextExtractorHook" />
-    <CallTarget Targets="WriteEmptyTextToEmbeddedResourceInWindowTextExtractor" />
     <CallTarget Targets="Build_Release_x64_WindowTextExtractor" />
     <CallTarget Targets="Copy_Release_x64_WindowTextExtractor" />
     <CallTarget Targets="Build_Release_x32_WindowTextExtractor" />
@@ -82,11 +80,5 @@
     <MakeDir Directories="$(ApplicationPath)"/>
     <Copy SourceFiles="@(WindowTextExtractorSourceFileWin64)" DestinationFiles="@(WindowTextExtractorDestFileWin64)" />
     <Message Text="Copy Completed $(WindowTextExtractorProjectName) Realese x64" />
-  </Target>
-
-  <Target Name="WriteEmptyTextToEmbeddedResourceInWindowTextExtractor">
-    <Message Text="Write Empty Embedded Resource $(WindowTextExtractorProjectName)" />
-    <WriteLinesToFile File="@(WindowTextExtractorDestFileWin64)" Lines="@(EmptyTextForFile)" Overwrite="true" />
-    <Message Text="Write Empty Embedded Resource Completed $(WindowTextExtractorProjectName)" />
   </Target>
 </Project>
