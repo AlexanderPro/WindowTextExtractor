@@ -58,7 +58,8 @@ namespace WindowTextExtractor.Utils
             var realWindowClass = RealGetWindowClass(hWnd);
             var hWndParent = NativeMethods.GetParent(hWnd);
             var size = GetWindowSize(hWnd);
-            var clientSize = GetWindowClientSize(hWnd);            
+            var clientSize = GetWindowClientSize(hWnd);
+            var isVisible = NativeMethods.IsWindowVisible(hWnd);
             var placement = GetWindowPlacement(hWnd);
             var threadId = NativeMethods.GetWindowThreadProcessId(hWnd, out var processId);
             var process = GetProcessByIdSafely(processId);
@@ -86,7 +87,8 @@ namespace WindowTextExtractor.Utils
 
             windowDetailes.Add("Window Handle", $"0x{hWnd.ToInt64():X}");
             windowDetailes.Add("Parent Window Handle", hWndParent == IntPtr.Zero ? "-" : $"0x{hWndParent.ToInt64():X}");
-            windowDetailes.Add("Window Placement", placement.showCmd.ToString());
+            windowDetailes.Add("Is Window Visible", isVisible.ToString());
+            windowDetailes.Add("Window Placement (showCmd)", placement.showCmd.ToString());
             windowDetailes.Add("Window Size", $"{size.Width}x{size.Height}");
             windowDetailes.Add("Window Client Size", $"{clientSize.Width}x{clientSize.Height}");
 

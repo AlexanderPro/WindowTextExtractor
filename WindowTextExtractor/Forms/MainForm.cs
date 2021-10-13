@@ -26,6 +26,7 @@ namespace WindowTextExtractor.Forms
         private string _informationFileName;
         private string _textFileName;
         private string _imageFileName;
+        private IntPtr _windowHandle;
 
         public MainForm()
         {
@@ -37,6 +38,7 @@ namespace WindowTextExtractor.Forms
             _informationFileName = string.Empty;
             _textFileName = string.Empty;
             _imageFileName = string.Empty;
+            _windowHandle = IntPtr.Zero;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -206,6 +208,17 @@ namespace WindowTextExtractor.Forms
             dialog.ShowDialog(this);
         }
 
+        private void btnShowHide_Click(object sender, EventArgs e)
+        {
+            var button = (Button)sender;
+            var cmdShow = button.Text == "Show" ? ShowWindowCommands.SW_SHOW : ShowWindowCommands.SW_HIDE;
+            NativeMethods.ShowWindow(_windowHandle, cmdShow);
+            button.Text = NativeMethods.IsWindowVisible(_windowHandle) ? "Hide" : "Show";
+            var windowInformation = WindowUtils.GetWindowInformation(_windowHandle);
+            FillInformation(windowInformation);
+        }
+
+
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)
@@ -253,16 +266,16 @@ namespace WindowTextExtractor.Forms
                                 var element = AutomationElement.FromPoint(new System.Windows.Point(cursorPosition.X, cursorPosition.Y));
                                 if (element != null && element.Current.ProcessId != _processId)
                                 {
-                                    var windowHandle = new IntPtr(element.Current.NativeWindowHandle);
-                                    windowHandle = windowHandle == IntPtr.Zero ? NativeMethods.WindowFromPoint(new Point(cursorPosition.X, cursorPosition.Y)) : windowHandle;
+                                    _windowHandle = new IntPtr(element.Current.NativeWindowHandle);
+                                    _windowHandle = _windowHandle == IntPtr.Zero ? NativeMethods.WindowFromPoint(new Point(cursorPosition.X, cursorPosition.Y)) : _windowHandle;
                                     if (element.Current.IsPassword)
                                     {
                                         var process = Process.GetProcessById(element.Current.ProcessId);
                                         if (process.ProcessName.ToLower() == "iexplore")
                                         {
-                                            if (windowHandle != IntPtr.Zero)
+                                            if (_windowHandle != IntPtr.Zero)
                                             {
-                                                var passwords = WindowUtils.GetPasswordsFromHtmlPage(windowHandle);
+                                                var passwords = WindowUtils.GetPasswordsFromHtmlPage(_windowHandle);
                                                 if (passwords.Any())
                                                 {
                                                     txtContent.Text = passwords.Count > 1 ? string.Join(Environment.NewLine, passwords.Select((x, i) => "Password " + (i + 1) + ": " + x)) : passwords[0];
@@ -280,9 +293,9 @@ namespace WindowTextExtractor.Forms
                                         }
                                         else
                                         {
-                                            NativeMethods.SetHook(Handle, windowHandle, _messageId);
+                                            NativeMethods.SetHook(Handle, _windowHandle, _messageId);
                                             NativeMethods.QueryPasswordEdit();
-                                            NativeMethods.UnsetHook(Handle, windowHandle);
+                                            NativeMethods.UnsetHook(Handle, _windowHandle);
                                         }
                                     }
                                     else
@@ -295,11 +308,18 @@ namespace WindowTextExtractor.Forms
                                             pbContent.Image.Dispose();
                                             pbContent.Image = null;
                                         }
-                                        pbContent.Image = WindowUtils.PrintWindow(windowHandle);
-                                        var windowInformation = WindowUtils.GetWindowInformation(windowHandle);
+                                        pbContent.Image = WindowUtils.PrintWindow(_windowHandle);
+                                        var windowInformation = WindowUtils.GetWindowInformation(_windowHandle);
                                         FillInformation(windowInformation);
                                         OnContentChanged();
                                     }
+
+                                    btnShowHide.Text = NativeMethods.IsWindowVisible(_windowHandle) ? "Hide" : "Show";
+                                    btnShowHide.Visible = true;
+                                }
+                                else
+                                {
+                                    btnShowHide.Visible = false;
                                 }
                             }
                         }

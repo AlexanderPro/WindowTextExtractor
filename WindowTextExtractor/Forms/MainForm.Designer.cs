@@ -36,8 +36,11 @@
             this.toolStripSeparatorOne = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblTotalChars = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripSeparatorTwo = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblImageSize = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripSeparatorThree = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.menuItemFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemSaveInformationAs = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSaveTextAs = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSaveImageAs = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
@@ -51,23 +54,21 @@
             this.toolTipForButton = new System.Windows.Forms.ToolTip(this.components);
             this.pbContent = new System.Windows.Forms.PictureBox();
             this.tabContent = new System.Windows.Forms.TabControl();
-            this.tabpText = new System.Windows.Forms.TabPage();
-            this.tabpImage = new System.Windows.Forms.TabPage();
             this.tabpInformation = new System.Windows.Forms.TabPage();
             this.gvInformation = new System.Windows.Forms.DataGridView();
             this.clmnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.clmnValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.menuItemSaveInformationAs = new System.Windows.Forms.ToolStripMenuItem();
-            this.lblImageSize = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripSeparatorThree = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tabpText = new System.Windows.Forms.TabPage();
+            this.tabpImage = new System.Windows.Forms.TabPage();
+            this.btnShowHide = new System.Windows.Forms.Button();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbContent)).BeginInit();
             this.tabContent.SuspendLayout();
-            this.tabpText.SuspendLayout();
-            this.tabpImage.SuspendLayout();
             this.tabpInformation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gvInformation)).BeginInit();
+            this.tabpText.SuspendLayout();
+            this.tabpImage.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtContent
@@ -96,7 +97,7 @@
             this.statusStrip.Location = new System.Drawing.Point(0, 490);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(734, 22);
-            this.statusStrip.TabIndex = 3;
+            this.statusStrip.TabIndex = 4;
             // 
             // lblTotalLines
             // 
@@ -124,6 +125,19 @@
             this.toolStripSeparatorTwo.Name = "toolStripSeparatorTwo";
             this.toolStripSeparatorTwo.Size = new System.Drawing.Size(4, 17);
             // 
+            // lblImageSize
+            // 
+            this.lblImageSize.Name = "lblImageSize";
+            this.lblImageSize.Size = new System.Drawing.Size(66, 17);
+            this.lblImageSize.Text = "Image Size:";
+            // 
+            // toolStripSeparatorThree
+            // 
+            this.toolStripSeparatorThree.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.toolStripSeparatorThree.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
+            this.toolStripSeparatorThree.Name = "toolStripSeparatorThree";
+            this.toolStripSeparatorThree.Size = new System.Drawing.Size(4, 17);
+            // 
             // menuStrip
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -146,6 +160,14 @@
             this.menuItemFile.Name = "menuItemFile";
             this.menuItemFile.Size = new System.Drawing.Size(37, 20);
             this.menuItemFile.Text = "File";
+            // 
+            // menuItemSaveInformationAs
+            // 
+            this.menuItemSaveInformationAs.Enabled = false;
+            this.menuItemSaveInformationAs.Name = "menuItemSaveInformationAs";
+            this.menuItemSaveInformationAs.Size = new System.Drawing.Size(189, 22);
+            this.menuItemSaveInformationAs.Text = "Save Information As...";
+            this.menuItemSaveInformationAs.Click += new System.EventHandler(this.menuItemSaveInformationAs_Click);
             // 
             // menuItemSaveTextAs
             // 
@@ -248,29 +270,7 @@
             this.tabContent.Name = "tabContent";
             this.tabContent.SelectedIndex = 0;
             this.tabContent.Size = new System.Drawing.Size(734, 383);
-            this.tabContent.TabIndex = 2;
-            // 
-            // tabpText
-            // 
-            this.tabpText.Controls.Add(this.txtContent);
-            this.tabpText.Location = new System.Drawing.Point(4, 22);
-            this.tabpText.Name = "tabpText";
-            this.tabpText.Padding = new System.Windows.Forms.Padding(3);
-            this.tabpText.Size = new System.Drawing.Size(726, 357);
-            this.tabpText.TabIndex = 0;
-            this.tabpText.Text = "Text";
-            this.tabpText.UseVisualStyleBackColor = true;
-            // 
-            // tabpImage
-            // 
-            this.tabpImage.Controls.Add(this.pbContent);
-            this.tabpImage.Location = new System.Drawing.Point(4, 22);
-            this.tabpImage.Name = "tabpImage";
-            this.tabpImage.Padding = new System.Windows.Forms.Padding(3);
-            this.tabpImage.Size = new System.Drawing.Size(726, 357);
-            this.tabpImage.TabIndex = 1;
-            this.tabpImage.Text = "Image";
-            this.tabpImage.UseVisualStyleBackColor = true;
+            this.tabContent.TabIndex = 3;
             // 
             // tabpInformation
             // 
@@ -310,6 +310,7 @@
             this.gvInformation.ShowRowErrors = false;
             this.gvInformation.Size = new System.Drawing.Size(726, 357);
             this.gvInformation.TabIndex = 0;
+            this.gvInformation.TabStop = false;
             // 
             // clmnName
             // 
@@ -324,32 +325,44 @@
             this.clmnValue.Name = "clmnValue";
             this.clmnValue.ReadOnly = true;
             // 
-            // menuItemSaveInformationAs
+            // tabpText
             // 
-            this.menuItemSaveInformationAs.Enabled = false;
-            this.menuItemSaveInformationAs.Name = "menuItemSaveInformationAs";
-            this.menuItemSaveInformationAs.Size = new System.Drawing.Size(189, 22);
-            this.menuItemSaveInformationAs.Text = "Save Information As...";
-            this.menuItemSaveInformationAs.Click += new System.EventHandler(this.menuItemSaveInformationAs_Click);
+            this.tabpText.Controls.Add(this.txtContent);
+            this.tabpText.Location = new System.Drawing.Point(4, 22);
+            this.tabpText.Name = "tabpText";
+            this.tabpText.Padding = new System.Windows.Forms.Padding(3);
+            this.tabpText.Size = new System.Drawing.Size(726, 357);
+            this.tabpText.TabIndex = 0;
+            this.tabpText.Text = "Text";
+            this.tabpText.UseVisualStyleBackColor = true;
             // 
-            // lblImageSize
+            // tabpImage
             // 
-            this.lblImageSize.Name = "lblImageSize";
-            this.lblImageSize.Size = new System.Drawing.Size(66, 17);
-            this.lblImageSize.Text = "Image Size:";
+            this.tabpImage.Controls.Add(this.pbContent);
+            this.tabpImage.Location = new System.Drawing.Point(4, 22);
+            this.tabpImage.Name = "tabpImage";
+            this.tabpImage.Padding = new System.Windows.Forms.Padding(3);
+            this.tabpImage.Size = new System.Drawing.Size(726, 357);
+            this.tabpImage.TabIndex = 1;
+            this.tabpImage.Text = "Image";
+            this.tabpImage.UseVisualStyleBackColor = true;
             // 
-            // toolStripSeparatorThree
+            // btnShowHide
             // 
-            this.toolStripSeparatorThree.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
-            this.toolStripSeparatorThree.BorderStyle = System.Windows.Forms.Border3DStyle.Etched;
-            this.toolStripSeparatorThree.Name = "toolStripSeparatorThree";
-            this.toolStripSeparatorThree.Size = new System.Drawing.Size(4, 17);
+            this.btnShowHide.Location = new System.Drawing.Point(78, 38);
+            this.btnShowHide.Name = "btnShowHide";
+            this.btnShowHide.Size = new System.Drawing.Size(60, 60);
+            this.btnShowHide.TabIndex = 2;
+            this.btnShowHide.UseVisualStyleBackColor = true;
+            this.btnShowHide.Visible = false;
+            this.btnShowHide.Click += new System.EventHandler(this.btnShowHide_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(734, 512);
+            this.Controls.Add(this.btnShowHide);
             this.Controls.Add(this.tabContent);
             this.Controls.Add(this.btnTarget);
             this.Controls.Add(this.statusStrip);
@@ -364,11 +377,11 @@
             this.menuStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbContent)).EndInit();
             this.tabContent.ResumeLayout(false);
+            this.tabpInformation.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.gvInformation)).EndInit();
             this.tabpText.ResumeLayout(false);
             this.tabpText.PerformLayout();
             this.tabpImage.ResumeLayout(false);
-            this.tabpInformation.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.gvInformation)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -405,6 +418,7 @@
         private System.Windows.Forms.ToolStripMenuItem menuItemSaveInformationAs;
         private System.Windows.Forms.ToolStripStatusLabel lblImageSize;
         private System.Windows.Forms.ToolStripStatusLabel toolStripSeparatorThree;
+        private System.Windows.Forms.Button btnShowHide;
     }
 }
 
