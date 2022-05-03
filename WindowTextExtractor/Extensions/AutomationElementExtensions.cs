@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Windows.Automation;
 using WindowTextExtractor.Native;
+using WindowTextExtractor.Native.Structs;
 
 namespace WindowTextExtractor.Extensions
 {
@@ -32,21 +33,21 @@ namespace WindowTextExtractor.Extensions
         {
             try
             {
-                NativeMethods.FreeConsole();
-                var result = NativeMethods.AttachConsole(element.Current.ProcessId);
+                Kernel32.FreeConsole();
+                var result = Kernel32.AttachConsole(element.Current.ProcessId);
                 if (!result)
                 {
                     var error = Marshal.GetLastWin32Error();
                     throw new Win32Exception(error);
                 }
-                var handle = NativeMethods.GetStdHandle(NativeConstants.STD_OUTPUT_HANDLE);
+                var handle = Kernel32.GetStdHandle(Constants.STD_OUTPUT_HANDLE);
                 if (handle == IntPtr.Zero)
                 {
                     var error = Marshal.GetLastWin32Error();
                     throw new Win32Exception(error);
                 }
                 ConsoleScreenBufferInfo binfo;
-                result = NativeMethods.GetConsoleScreenBufferInfo(handle, out binfo);
+                result = Kernel32.GetConsoleScreenBufferInfo(handle, out binfo);
                 if (!result)
                 {
                     var error = Marshal.GetLastWin32Error();
@@ -58,7 +59,7 @@ namespace WindowTextExtractor.Extensions
                 for (var i = 0; i < binfo.dwSize.Y; i++)
                 {
                     uint numberOfCharsRead;
-                    if (NativeMethods.ReadConsoleOutputCharacter(handle, buffer, (uint)buffer.Length, new Coord(0, (short)i), out numberOfCharsRead))
+                    if (Kernel32.ReadConsoleOutputCharacter(handle, buffer, (uint)buffer.Length, new Coord(0, (short)i), out numberOfCharsRead))
                     {
                         textBuilder.AppendLine(new string(buffer));
                     }
@@ -69,7 +70,7 @@ namespace WindowTextExtractor.Extensions
             }
             catch
             {
-                NativeMethods.FreeConsole();
+                Kernel32.FreeConsole();
                 return null;
             }
         }

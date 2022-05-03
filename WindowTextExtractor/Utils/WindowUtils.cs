@@ -4,35 +4,36 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Management;
 using mshtml;
-using WindowTextExtractor.Native;
 using WindowTextExtractor.Extensions;
+using WindowTextExtractor.Native;
+using WindowTextExtractor.Native.Enums;
+using WindowTextExtractor.Native.Structs;
 
 namespace WindowTextExtractor.Utils
 {
     static class WindowUtils
     {
-        public static IList<string> GetPasswordsFromHtmlPage(IntPtr hWnd)
+        public static IList<string> GetPasswordsFromHtmlPage(IntPtr handle)
         {
             var result = new List<string>();
-            var proc = new NativeMethods.EnumProc(EnumWindows);
-            NativeMethods.EnumChildWindows(hWnd, proc, ref hWnd);
-            if (hWnd != IntPtr.Zero)
+            var proc = new User32.EnumProc(EnumWindows);
+            User32.EnumChildWindows(handle, proc, ref handle);
+            if (handle != IntPtr.Zero)
             {
-                var message = NativeMethods.RegisterWindowMessage("WM_HTML_GETOBJECT");
+                var message = User32.RegisterWindowMessage("WM_HTML_GETOBJECT");
                 if (message != 0)
                 {
                     var messageResult = 0;
-                    NativeMethods.SendMessageTimeout(hWnd, message, 0, 0, NativeConstants.SMTO_ABORTIFHUNG, 1000, out messageResult);
+                    User32.SendMessageTimeout(handle, message, 0, 0, Constants.SMTO_ABORTIFHUNG, 1000, out messageResult);
                     if (messageResult != 0)
                     {
                         IHTMLDocument2 document = null;
                         var iidIHtmlDocument = new Guid("626FC520-A41E-11CF-A731-00A0C9082637");
-                        NativeMethods.ObjectFromLresult(messageResult, ref iidIHtmlDocument, 0, ref document);
+                        Oleacc.ObjectFromLresult(messageResult, ref iidIHtmlDocument, 0, ref document);
                         if (document != null)
                         {
                             foreach (var element in document.all)
@@ -50,27 +51,27 @@ namespace WindowTextExtractor.Utils
             return result;
         }
 
-        public static WindowInformation GetWindowInformation(IntPtr hWnd)
+        public static WindowInformation GetWindowInformation(IntPtr handle)
         {
-            var text = GetWindowText(hWnd);
-            var wmText = GetWmGettext(hWnd);
-            var className = GetClassName(hWnd);
-            var realWindowClass = RealGetWindowClass(hWnd);
-            var hWndParent = NativeMethods.GetParent(hWnd);
-            var size = GetWindowSize(hWnd);
-            var clientSize = GetWindowClientSize(hWnd);
-            var isVisible = NativeMethods.IsWindowVisible(hWnd);
-            var placement = GetWindowPlacement(hWnd);
-            var threadId = NativeMethods.GetWindowThreadProcessId(hWnd, out var processId);
+            var text = GetWindowText(handle);
+            var wmText = GetWmGettext(handle);
+            var className = GetClassName(handle);
+            var realWindowClass = RealGetWindowClass(handle);
+            var handleParent = User32.GetParent(handle);
+            var size = GetWindowSize(handle);
+            var clientSize = GetWindowClientSize(handle);
+            var isVisible = User32.IsWindowVisible(handle);
+            var placement = GetWindowPlacement(handle);
+            var threadId = User32.GetWindowThreadProcessId(handle, out var processId);
             var process = GetProcessByIdSafely(processId);
 
-            var gwlStyle = NativeMethods.GetWindowLong(hWnd, NativeConstants.GWL_STYLE);
-            var gwlExstyle = NativeMethods.GetWindowLong(hWnd, NativeConstants.GWL_EXSTYLE);
-            var gwlUserData = NativeMethods.GetWindowLong(hWnd, NativeConstants.GWL_USERDATA);
-            var gclStyle = NativeMethods.GetClassLong(hWnd, NativeConstants.GCL_STYLE);
-            var gclWndproc = NativeMethods.GetClassLong(hWnd, NativeConstants.GCL_WNDPROC);
-            var dwlDlgproc = NativeMethods.GetClassLong(hWnd, NativeConstants.DWL_DLGPROC);
-            var dwlUser = NativeMethods.GetClassLong(hWnd, NativeConstants.DWL_USER);
+            var gwlStyle = User32.GetWindowLong(handle, Constants.GWL_STYLE);
+            var gwlExstyle = User32.GetWindowLong(handle, Constants.GWL_EXSTYLE);
+            var gwlUserData = User32.GetWindowLong(handle, Constants.GWL_USERDATA);
+            var gclStyle = User32.GetClassLong(handle, Constants.GCL_STYLE);
+            var gclWndproc = User32.GetClassLong(handle, Constants.GCL_WNDPROC);
+            var dwlDlgproc = User32.GetClassLong(handle, Constants.DWL_DLGPROC);
+            var dwlUser = User32.GetClassLong(handle, Constants.DWL_USER);
 
             var windowDetailes = new Dictionary<string, string>();
             windowDetailes.Add("GetWindowText", text);
@@ -79,14 +80,14 @@ namespace WindowTextExtractor.Utils
             windowDetailes.Add("RealGetClassName", realWindowClass);
             try
             {
-                windowDetailes.Add("Font Name", GetFontName(hWnd));
+                windowDetailes.Add("Font Name", GetFontName(handle));
             }
             catch
             {
             }
 
-            windowDetailes.Add("Window Handle", $"0x{hWnd.ToInt64():X}");
-            windowDetailes.Add("Parent Window Handle", hWndParent == IntPtr.Zero ? "-" : $"0x{hWndParent.ToInt64():X}");
+            windowDetailes.Add("Window Handle", $"0x{handle.ToInt64():X}");
+            windowDetailes.Add("Parent Window Handle", handleParent == IntPtr.Zero ? "-" : $"0x{handleParent.ToInt64():X}");
             windowDetailes.Add("Is Window Visible", isVisible.ToString());
             windowDetailes.Add("Window Placement (showCmd)", placement.showCmd.ToString());
             windowDetailes.Add("Window Size", $"{size.Width}x{size.Height}");
@@ -94,7 +95,7 @@ namespace WindowTextExtractor.Utils
 
             try
             {
-                var bounds = GetFrameBounds(hWnd);
+                var bounds = GetFrameBounds(handle);
                 windowDetailes.Add("Window Extended Frame Bounds", $"{bounds.Top} {bounds.Right} {bounds.Bottom} {bounds.Left}");
             }
             catch
@@ -119,7 +120,7 @@ namespace WindowTextExtractor.Utils
             {
                 var windowInfo = new WINDOW_INFO();
                 windowInfo.cbSize = Marshal.SizeOf(windowInfo);
-                if (NativeMethods.GetWindowInfo(hWnd, ref windowInfo))
+                if (User32.GetWindowInfo(handle, ref windowInfo))
                 {
                     windowDetailes.Add("WindowInfo.ExStyle", $"0x{windowInfo.dwExStyle:X}");
                 }
@@ -133,7 +134,7 @@ namespace WindowTextExtractor.Utils
                 uint key;
                 Byte alpha;
                 uint flags;
-                var result = NativeMethods.GetLayeredWindowAttributes(hWnd, out key, out alpha, out flags);
+                var result = User32.GetLayeredWindowAttributes(handle, out key, out alpha, out flags);
                 var layeredWindow = (LayeredWindow)flags;
                 windowDetailes.Add("LWA_ALPHA", layeredWindow.HasFlag(LayeredWindow.LWA_ALPHA) ? "+" : "-");
                 windowDetailes.Add("LWA_COLORKEY", layeredWindow.HasFlag(LayeredWindow.LWA_COLORKEY) ? "+" : "-");
@@ -156,7 +157,7 @@ namespace WindowTextExtractor.Utils
                 {
                     var fileNameBuilder = new StringBuilder(1024);
                     var bufferLength = (uint)fileNameBuilder.Capacity + 1;
-                    var fullPath = NativeMethods.QueryFullProcessImageName(process.Handle, 0, fileNameBuilder, ref bufferLength) ? fileNameBuilder.ToString() : "";
+                    var fullPath = Kernel32.QueryFullProcessImageName(process.Handle, 0, fileNameBuilder, ref bufferLength) ? fileNameBuilder.ToString() : "";
                     processDetailes.Add("Full Path", fullPath);
                 }
             }
@@ -234,64 +235,79 @@ namespace WindowTextExtractor.Utils
             catch
             {
             }
-
+            
             return new WindowInformation(windowDetailes, processDetailes);
         }
 
-        public static Bitmap PrintWindow(IntPtr hWnd)
+        public static Bitmap CaptureWindow(IntPtr handle)
         {
-            Rect rect;
-            NativeMethods.GetWindowRect(hWnd, out rect);
-            var bitmap = new Bitmap(rect.Width, rect.Height, PixelFormat.Format32bppArgb);
-            using (var graphics = Graphics.FromImage(bitmap))
+            User32.GetWindowRect(handle, out Rect rectangle);
+            var posX = rectangle.Left;
+            var posY = rectangle.Top;
+            var width = rectangle.Width;
+            var height = rectangle.Height;
+
+            var hDesk = User32.GetDesktopWindow();
+            var hSrce = User32.GetWindowDC(hDesk);
+            var hDest = Gdi32.CreateCompatibleDC(hSrce);
+            var hBmp = Gdi32.CreateCompatibleBitmap(hSrce, width, height);
+            var hOldBmp = Gdi32.SelectObject(hDest, hBmp);
+
+            var b = Gdi32.BitBlt(hDest, 0, 0, width, height, hSrce, posX, posY, CopyPixelOperations.SourceCopy | CopyPixelOperations.CaptureBlt);
+
+            try
             {
-                var hdc = graphics.GetHdc();
-                NativeMethods.PrintWindow(hWnd, hdc, 0);
-                graphics.ReleaseHdc(hdc);
+                return b ? Image.FromHbitmap(hBmp) : null;
             }
-            return bitmap;
+            finally
+            {
+                Gdi32.SelectObject(hDest, hOldBmp);
+                Gdi32.DeleteObject(hBmp);
+                Gdi32.DeleteDC(hDest);
+                User32.ReleaseDC(hDesk, hSrce);
+            }
         }
 
-        private static string GetWindowText(IntPtr hWnd)
+        private static string GetWindowText(IntPtr handle)
         {
             var builder = new StringBuilder(1024);
-            NativeMethods.GetWindowText(hWnd, builder, builder.Capacity);
+            User32.GetWindowText(handle, builder, builder.Capacity);
             var windowText = builder.ToString();
             return windowText;
         }
 
-        private static string GetWmGettext(IntPtr hWnd)
+        private static string GetWmGettext(IntPtr handle)
         {
-            var titleSize = NativeMethods.SendMessage(hWnd, NativeConstants.WM_GETTEXTLENGTH, 0, 0);
+            var titleSize = User32.SendMessage(handle, Constants.WM_GETTEXTLENGTH, 0, 0);
             if (titleSize.ToInt32() == 0)
             {
                 return string.Empty;
             }
 
             var title = new StringBuilder(titleSize.ToInt32() + 1);
-            NativeMethods.SendMessage(hWnd, NativeConstants.WM_GETTEXT, title.Capacity, title);
+            User32.SendMessage(handle, Constants.WM_GETTEXT, title.Capacity, title);
             return title.ToString();
         }
 
-        private static string GetClassName(IntPtr hWnd)
+        private static string GetClassName(IntPtr handle)
         {
             var builder = new StringBuilder(1024);
-            NativeMethods.GetClassName(hWnd, builder, builder.Capacity);
+            User32.GetClassName(handle, builder, builder.Capacity);
             var className = builder.ToString();
             return className;
         }
 
-        private static string RealGetWindowClass(IntPtr hWnd)
+        private static string RealGetWindowClass(IntPtr handle)
         {
             var builder = new StringBuilder(1024);
-            NativeMethods.RealGetWindowClass(hWnd, builder, builder.Capacity);
+            User32.RealGetWindowClass(handle, builder, builder.Capacity);
             var className = builder.ToString();
             return className;
         }
 
-        private static string GetFontName(IntPtr hWnd)
+        private static string GetFontName(IntPtr handle)
         {
-            var hFont = NativeMethods.SendMessage(hWnd, NativeConstants.WM_GETFONT, 0, 0);
+            var hFont = User32.SendMessage(handle, Constants.WM_GETFONT, 0, 0);
             if (hFont == IntPtr.Zero)
             {
                 return "Default system font";
@@ -300,46 +316,46 @@ namespace WindowTextExtractor.Utils
             return font.Name;
         }
 
-        private static Rect GetWindowSize(IntPtr hWnd)
+        private static Rect GetWindowSize(IntPtr handle)
         {
             Rect size;
-            NativeMethods.GetWindowRect(hWnd, out size);
+            User32.GetWindowRect(handle, out size);
             return size;
         }
 
-        private static Rect GetWindowClientSize(IntPtr hWnd)
+        private static Rect GetWindowClientSize(IntPtr handle)
         {
             Rect size;
-            NativeMethods.GetClientRect(hWnd, out size);
+            User32.GetClientRect(handle, out size);
             return size;
         }
 
-        private static WINDOWPLACEMENT GetWindowPlacement(IntPtr hWnd)
+        private static WINDOWPLACEMENT GetWindowPlacement(IntPtr handle)
         {
             var placement = new WINDOWPLACEMENT();
             placement.length = Marshal.SizeOf(placement);
-            NativeMethods.GetWindowPlacement(hWnd, ref placement);
+            User32.GetWindowPlacement(handle, ref placement);
             return placement;
         }
 
-        private static Rect GetSizeWithFrameBounds(IntPtr hWnd)
+        private static Rect GetSizeWithFrameBounds(IntPtr handle)
         {
             Rect size;
             if (Environment.OSVersion.Version.Major < 6)
             {
-                NativeMethods.GetWindowRect(hWnd, out size);
+                User32.GetWindowRect(handle, out size);
             }
-            else if (NativeMethods.DwmGetWindowAttribute(hWnd, NativeConstants.DWMWA_EXTENDED_FRAME_BOUNDS, out size, Marshal.SizeOf(typeof(Rect))) != 0)
+            else if (Dwmapi.DwmGetWindowAttribute(handle, Constants.DWMWA_EXTENDED_FRAME_BOUNDS, out size, Marshal.SizeOf(typeof(Rect))) != 0)
             {
-                NativeMethods.GetWindowRect(hWnd, out size);
+                User32.GetWindowRect(handle, out size);
             }
             return size;
         }
 
-        private static Rect GetFrameBounds(IntPtr hWnd)
+        private static Rect GetFrameBounds(IntPtr handle)
         {
-            var withMargin = GetSizeWithFrameBounds(hWnd);
-            var size = GetWindowSize(hWnd);
+            var withMargin = GetSizeWithFrameBounds(handle);
+            var size = GetWindowSize(handle);
             return new Rect
             {
                 Left = withMargin.Left - size.Left,
@@ -394,14 +410,14 @@ namespace WindowTextExtractor.Utils
             }
         }
 
-        private static int EnumWindows(IntPtr hWnd, ref IntPtr lParam)
+        private static int EnumWindows(IntPtr handle, ref IntPtr lParam)
         {
             var result = 1;
             var className = new StringBuilder(1024);
-            NativeMethods.GetClassName(hWnd, className, className.Capacity);
+            User32.GetClassName(handle, className, className.Capacity);
             if (string.Compare(className.ToString(), "Internet Explorer_Server") == 0)
             {
-                lParam = hWnd;
+                lParam = handle;
                 result = 0;
             }
             return result;

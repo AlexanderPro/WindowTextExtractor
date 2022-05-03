@@ -66,7 +66,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>WindowTextExtractor.ico</ApplicationIcon>
+    <ApplicationIcon>Images\WindowTextExtractor.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -103,9 +103,27 @@
     <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Native\NativeConstants.cs" />
-    <Compile Include="Native\NativeMethods.cs" />
-    <Compile Include="Native\NativeTypes.cs" />
+    <Compile Include="Native\Dwmapi.cs" />
+    <Compile Include="Native\Enums\CopyPixelOperations.cs" />
+    <Compile Include="Native\Enums\LayeredWindow.cs" />
+    <Compile Include="Native\Enums\Priority.cs" />
+    <Compile Include="Native\Enums\PriorityClass.cs" />
+    <Compile Include="Native\Enums\ShowWindowCommands.cs" />
+    <Compile Include="Native\Gdi32.cs" />
+    <Compile Include="Native\Kernel32.cs" />
+    <Compile Include="Native\Constants.cs" />
+    <Compile Include="Native\Hook.cs" />
+    <Compile Include="Native\Ntdll.cs" />
+    <Compile Include="Native\Oleacc.cs" />
+    <Compile Include="Native\Structs\ConsoleScreenBufferInfo.cs" />
+    <Compile Include="Native\Structs\Coord.cs" />
+    <Compile Include="Native\Structs\CopyDataStruct.cs" />
+    <Compile Include="Native\Structs\PROCESS_BASIC_INFORMATION.cs" />
+    <Compile Include="Native\Structs\Rect.cs" />
+    <Compile Include="Native\Structs\SmallRect.cs" />
+    <Compile Include="Native\Structs\WINDOWPLACEMENT.cs" />
+    <Compile Include="Native\Structs\WINDOW_INFO.cs" />
+    <Compile Include="Native\User32.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -138,14 +156,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Target.ico" />
+    <None Include="Images\Target.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Target.png" />
-    <Content Include="Target32.ico" />
-    <Content Include="WindowTextExtractor.ico" />
-    <Content Include="WindowTextExtractor.png" />
-    <Content Include="WindowTextExtractor32.ico" />
+    <Content Include="Images\1x1.png" />
+    <Content Include="Images\Target.png" />
+    <Content Include="Images\Target32.ico" />
+    <Content Include="Images\WindowTextExtractor.ico" />
+    <Content Include="Images\WindowTextExtractor.png" />
+    <Content Include="Images\WindowTextExtractor32.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">

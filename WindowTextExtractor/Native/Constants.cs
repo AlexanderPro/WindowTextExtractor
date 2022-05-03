@@ -1,6 +1,6 @@
 ﻿namespace WindowTextExtractor.Native
 {
-    static class NativeConstants
+    static class Constants
     {
         public const int WM_LBUTTONUP = 0x0202;
         public const int WM_MOUSEMOVE = 0x0200;

@@ -25,9 +25,9 @@ namespace WindowTextExtractor
             {
                 var hwndCallerPtr = new IntPtr(hwndCaller);
                 var hwndTargetPtr = new IntPtr(hwndTarget);
-                NativeMethods.SetHook64(hwndCallerPtr, hwndTargetPtr, messageId);
-                NativeMethods.QueryPasswordEdit64();
-                NativeMethods.UnsetHook64(hwndCallerPtr, hwndTargetPtr);
+                Hook.SetHook64(hwndCallerPtr, hwndTargetPtr, messageId);
+                Hook.QueryPasswordEdit64();
+                Hook.UnsetHook64(hwndCallerPtr, hwndTargetPtr);
             }
             else
             {

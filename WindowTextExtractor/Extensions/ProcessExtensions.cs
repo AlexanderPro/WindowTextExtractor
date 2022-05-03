@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using WindowTextExtractor.Native;
+using WindowTextExtractor.Native.Enums;
+using WindowTextExtractor.Native.Structs;
 
 namespace WindowTextExtractor.Extensions
 {
@@ -12,7 +14,7 @@ namespace WindowTextExtractor.Extensions
             if ((Environment.OSVersion.Version.Major > 5) || ((Environment.OSVersion.Version.Major == 5) && (Environment.OSVersion.Version.Minor >= 1)))
             {
                 bool retVal;
-                return NativeMethods.IsWow64Process(process.Handle, out retVal) && retVal;
+                return Kernel32.IsWow64Process(process.Handle, out retVal) && retVal;
             }
 
             return false;
@@ -22,7 +24,7 @@ namespace WindowTextExtractor.Extensions
         {
             var pbi = new PROCESS_BASIC_INFORMATION();
             int returnLength;
-            var status = NativeMethods.NtQueryInformationProcess(process.Handle, 0, ref pbi, Marshal.SizeOf(pbi), out returnLength);
+            var status = Ntdll.NtQueryInformationProcess(process.Handle, 0, ref pbi, Marshal.SizeOf(pbi), out returnLength);
             if (status != 0)
             {
                 return null;
@@ -40,7 +42,7 @@ namespace WindowTextExtractor.Extensions
 
         public static Priority GetProcessPriority(this Process process)
         {
-            var priorityClass = NativeMethods.GetPriorityClass(process.Handle);
+            var priorityClass = Kernel32.GetPriorityClass(process.Handle);
             switch (priorityClass)
             {
                 case PriorityClass.REALTIME_PRIORITY_CLASS: return Priority.RealTime;

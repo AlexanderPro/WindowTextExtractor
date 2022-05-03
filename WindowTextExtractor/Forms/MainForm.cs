@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Windows.Automation;
 using System.Runtime.InteropServices;
 using System.IO;
+using System.Threading;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Text;
@@ -11,6 +12,8 @@ using System.Linq;
 using WindowTextExtractor.Extensions;
 using WindowTextExtractor.Utils;
 using WindowTextExtractor.Native;
+using WindowTextExtractor.Native.Enums;
+using WindowTextExtractor.Native.Structs;
 
 namespace WindowTextExtractor.Forms
 {
@@ -18,6 +21,7 @@ namespace WindowTextExtractor.Forms
     {
         private const string DEFAULT_FONT_NAME = "Courier New";
         private const int DEFAULT_FONT_SIZE = 10;
+        private const int DEFAULT_FPS = 24;
 
         private readonly int _processId;
         private readonly int _messageId;
@@ -27,18 +31,33 @@ namespace WindowTextExtractor.Forms
         private string _textFileName;
         private string _imageFileName;
         private IntPtr _windowHandle;
+        private int _fps;
+        private object _lockObject;
+        private bool _refreshImage;
+        private Thread _refreshImageThread;
+        private bool _imageTab;
 
         public MainForm()
         {
             InitializeComponent();
+
+            AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
+            Application.ThreadException += OnThreadException;
+
+            _lockObject = new object();
             _isButtonTargetMouseDown = false;
             _processId = Process.GetCurrentProcess().Id;
-            _messageId = NativeMethods.RegisterWindowMessage("WINDOW_TEXT_EXTRACTOR_HOOK");
+            _messageId = User32.RegisterWindowMessage("WINDOW_TEXT_EXTRACTOR_HOOK");
             _64BitFilePath = string.Empty;
             _informationFileName = string.Empty;
             _textFileName = string.Empty;
             _imageFileName = string.Empty;
             _windowHandle = IntPtr.Zero;
+            _refreshImage = true;
+            _fps = DEFAULT_FPS;
+            _imageTab = false;
+            numericFps.Value = DEFAULT_FPS;
+            cmbRefresh.SelectedIndex = 0;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -71,15 +90,24 @@ namespace WindowTextExtractor.Forms
                     var message = string.Format("{0} is not found.", fileName);
                     MessageBox.Show(message, AssemblyUtils.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Close();
+                    return;
                 }
             }
 #endif
+
+            _refreshImageThread = new Thread(() =>
+            {
+                Thread.CurrentThread.IsBackground = true;
+                UpdateImage();
+            });
+            _refreshImageThread.Start();
         }
 
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
             Application.RemoveMessageFilter(this);
+            _refreshImageThread?.Abort();
         }
 
         private void btnTarget_MouseDown(object sender, MouseEventArgs e)
@@ -90,11 +118,7 @@ namespace WindowTextExtractor.Forms
                 gvInformation.Rows.Clear();
                 gvInformation.Tag = null;
                 txtContent.Text = string.Empty;
-                if (pbContent.Image != null)
-                {
-                    pbContent.Image.Dispose();
-                    pbContent.Image = null;
-                }
+                pbContent.Image?.Dispose();
                 if (!TopMost)
                 {
                     SendToBack();
@@ -210,20 +234,51 @@ namespace WindowTextExtractor.Forms
 
         private void btnShowHide_Click(object sender, EventArgs e)
         {
-            var button = (Button)sender;
-            var cmdShow = button.Text == "Show" ? ShowWindowCommands.SW_SHOW : ShowWindowCommands.SW_HIDE;
-            NativeMethods.ShowWindow(_windowHandle, cmdShow);
-            button.Text = NativeMethods.IsWindowVisible(_windowHandle) ? "Hide" : "Show";
-            var windowInformation = WindowUtils.GetWindowInformation(_windowHandle);
-            FillInformation(windowInformation);
+            lock(_lockObject)
+            {
+                var button = (Button)sender;
+                var cmdShow = button.Text == "Show" ? ShowWindowCommands.SW_SHOW : ShowWindowCommands.SW_HIDE;
+                User32.ShowWindow(_windowHandle, cmdShow);
+                button.Text = User32.IsWindowVisible(_windowHandle) ? "Hide" : "Show";
+                var windowInformation = WindowUtils.GetWindowInformation(_windowHandle);
+                FillInformation(windowInformation);
+            }
+        }       
+
+        private void numericFps_ValueChanged(object sender, EventArgs e)
+        {
+            lock (_lockObject)
+            {
+                _fps = (int)numericFps.Value;
+            }
         }
 
+        private void cmbRefresh_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            lock (_lockObject)
+            {
+                _refreshImage = ((ComboBox)sender).SelectedIndex == 0;
+            }
+        }
+
+        private void tabContent_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            lock (_lockObject)
+            {
+                var tab = (TabControl)sender;
+                _imageTab = tab.SelectedTab.Text == "Image";
+                lblRefresh.Visible = _imageTab;
+                cmbRefresh.Visible = _imageTab;
+                lblFps.Visible = _imageTab;
+                numericFps.Visible = _imageTab;
+            }
+        }
 
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)
             {
-                case NativeConstants.WM_COPYDATA:
+                case Constants.WM_COPYDATA:
                     {
                         var cds = (CopyDataStruct)Marshal.PtrToStructure(m.LParam, typeof(CopyDataStruct));
                         var password = Marshal.PtrToStringAuto(cds.lpData);
@@ -241,12 +296,12 @@ namespace WindowTextExtractor.Forms
         {
             switch (m.Msg)
             {
-                case NativeConstants.WM_LBUTTONUP:
+                case Constants.WM_LBUTTONUP:
                     {
                         if (_isButtonTargetMouseDown)
                         {
                             _isButtonTargetMouseDown = false;
-                            NativeMethods.SetCursor(Cursors.Default.Handle);
+                            User32.SetCursor(Cursors.Default.Handle);
                             if (!TopMost)
                             {
                                 BringToFront();
@@ -255,27 +310,27 @@ namespace WindowTextExtractor.Forms
                     }
                     break;
 
-                case NativeConstants.WM_MOUSEMOVE:
+                case Constants.WM_MOUSEMOVE:
                     {
                         try
                         {
                             if (_isButtonTargetMouseDown)
                             {
-                                NativeMethods.SetCursor(Properties.Resources.Target32.Handle);
+                                User32.SetCursor(Properties.Resources.Target32.Handle);
                                 var cursorPosition = System.Windows.Forms.Cursor.Position;
                                 var element = AutomationElement.FromPoint(new System.Windows.Point(cursorPosition.X, cursorPosition.Y));
                                 if (element != null && element.Current.ProcessId != _processId)
                                 {
-                                    _windowHandle = new IntPtr(element.Current.NativeWindowHandle);
-                                    _windowHandle = _windowHandle == IntPtr.Zero ? NativeMethods.WindowFromPoint(new Point(cursorPosition.X, cursorPosition.Y)) : _windowHandle;
+                                    var windowHandle = new IntPtr(element.Current.NativeWindowHandle);
+                                    windowHandle = windowHandle == IntPtr.Zero ? User32.WindowFromPoint(new Point(cursorPosition.X, cursorPosition.Y)) : windowHandle;
                                     if (element.Current.IsPassword)
                                     {
                                         var process = Process.GetProcessById(element.Current.ProcessId);
                                         if (process.ProcessName.ToLower() == "iexplore")
                                         {
-                                            if (_windowHandle != IntPtr.Zero)
+                                            if (windowHandle != IntPtr.Zero)
                                             {
-                                                var passwords = WindowUtils.GetPasswordsFromHtmlPage(_windowHandle);
+                                                var passwords = WindowUtils.GetPasswordsFromHtmlPage(windowHandle);
                                                 if (passwords.Any())
                                                 {
                                                     txtContent.Text = passwords.Count > 1 ? string.Join(Environment.NewLine, passwords.Select((x, i) => "Password " + (i + 1) + ": " + x)) : passwords[0];
@@ -293,9 +348,9 @@ namespace WindowTextExtractor.Forms
                                         }
                                         else
                                         {
-                                            NativeMethods.SetHook(Handle, _windowHandle, _messageId);
-                                            NativeMethods.QueryPasswordEdit();
-                                            NativeMethods.UnsetHook(Handle, _windowHandle);
+                                            Hook.SetHook(Handle, windowHandle, _messageId);
+                                            Hook.QueryPasswordEdit();
+                                            Hook.UnsetHook(Handle, windowHandle);
                                         }
                                     }
                                     else
@@ -303,18 +358,18 @@ namespace WindowTextExtractor.Forms
                                         var text = element.GetTextFromConsole() ?? element.GetTextFromWindow();
                                         txtContent.Text = text == null ? "" : text.TrimEnd().TrimEnd(Environment.NewLine);
                                         txtContent.ScrollTextToEnd();
-                                        if (pbContent.Image != null)
+                                        lock (_lockObject)
                                         {
-                                            pbContent.Image.Dispose();
-                                            pbContent.Image = null;
+                                            _windowHandle = windowHandle;
+                                            var image = WindowUtils.CaptureWindow(windowHandle);
+                                            FillImage(image);
+                                            var windowInformation = WindowUtils.GetWindowInformation(windowHandle);
+                                            FillInformation(windowInformation);
                                         }
-                                        pbContent.Image = WindowUtils.PrintWindow(_windowHandle);
-                                        var windowInformation = WindowUtils.GetWindowInformation(_windowHandle);
-                                        FillInformation(windowInformation);
                                         OnContentChanged();
                                     }
 
-                                    btnShowHide.Text = NativeMethods.IsWindowVisible(_windowHandle) ? "Hide" : "Show";
+                                    btnShowHide.Text = User32.IsWindowVisible(windowHandle) ? "Hide" : "Show";
                                     btnShowHide.Visible = true;
                                 }
                                 else
@@ -331,6 +386,53 @@ namespace WindowTextExtractor.Forms
             }
 
             return false;
+        }
+
+        private void UpdateImage()
+        {
+            try
+            {                
+                while(true)
+                {
+                    var fps = 0;
+                    var windowHandle = IntPtr.Zero;
+                    var refreshImage = true;
+                    var imageTab = true;
+
+                    lock(_lockObject)
+                    {
+                        fps = _fps;
+                        windowHandle = _windowHandle;
+                        refreshImage = _refreshImage;
+                        imageTab = _imageTab;
+                    }
+
+                    if (imageTab && refreshImage)
+                    {
+                        if (windowHandle != null && windowHandle != IntPtr.Zero && User32.IsWindow(windowHandle))
+                        {
+                            var image = WindowUtils.CaptureWindow(windowHandle);
+                            BeginInvoke((MethodInvoker)delegate
+                            {
+                                FillImage(image);
+                            });
+                        }
+                        else
+                        {
+                            BeginInvoke((MethodInvoker)delegate
+                            {
+                                FillImage(Properties.Resources.OnePixel);
+                            });
+                        }
+                    }
+
+                    var timeout = 1000 / fps;
+                    Thread.Sleep(timeout);
+                }
+            }
+            catch
+            {
+            }
         }
 
         private void OnContentChanged()
@@ -376,6 +478,24 @@ namespace WindowTextExtractor.Forms
                 row.Cells[1].Value = windowInformation.ProcessDetails[processDetailKey];
             }
             gvInformation.Tag = windowInformation;
+        }
+
+        private void FillImage(Image image)
+        {
+            pbContent.Image?.Dispose();
+            pbContent.Image = image;
+        }
+
+        private void OnCurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var ex = e.ExceptionObject as Exception;
+            ex = ex ?? new Exception("OnCurrentDomainUnhandledException");
+            OnThreadException(sender, new ThreadExceptionEventArgs(ex));
+        }
+
+        private void OnThreadException(object sender, ThreadExceptionEventArgs e)
+        {
+            MessageBox.Show(e.Exception.ToString(), AssemblyUtils.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }

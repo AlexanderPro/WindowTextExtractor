@@ -6,50 +6,35 @@ namespace WindowTextExtractor.Utils
 {
     static class AssemblyUtils
     {
-        public static string AssemblyTitle
-        {
-            get
-            {
-                var attribute = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false).FirstOrDefault() as AssemblyTitleAttribute;
-                return attribute != null ? attribute.Title : "";
-            }
-        }
+        public static string AssemblyLocation => Assembly.GetExecutingAssembly().Location;
 
-        public static string AssemblyProductName
-        {
-            get
-            {
-                var attribute = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false).FirstOrDefault() as AssemblyProductAttribute;
-                return attribute != null ? attribute.Product : "";
-            }
-        }
+        public static string AssemblyDirectory => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-        public static string AssemblyCopyright
-        {
-            get
-            {
-                var attribute = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false).FirstOrDefault() as AssemblyCopyrightAttribute;
-                return attribute != null ? attribute.Copyright : "";
-            }
-        }
+        public static string AssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
-        public static string AssemblyCompany
-        {
-            get
-            {
-                var attribute = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false).FirstOrDefault() as AssemblyCompanyAttribute;
-                return attribute != null ? attribute.Company : "";
-            }
-        }
+        public static string AssemblyTitle => Assembly
+            .GetExecutingAssembly()
+            .GetCustomAttributes(typeof(AssemblyTitleAttribute), false)
+            .OfType<AssemblyTitleAttribute>()
+            .FirstOrDefault()?.Title ?? string.Empty;
 
-        public static string AssemblyVersion
-        {
-            get
-            {
-                var version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                return version;
-            }
-        }
+        public static string AssemblyProductName => Assembly
+            .GetExecutingAssembly()
+            .GetCustomAttributes(typeof(AssemblyProductAttribute), false)
+            .OfType<AssemblyProductAttribute>()
+            .FirstOrDefault()?.Product ?? string.Empty;
+
+        public static string AssemblyCopyright => Assembly
+            .GetExecutingAssembly()
+            .GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false)
+            .OfType<AssemblyCopyrightAttribute>()
+            .FirstOrDefault()?.Copyright ?? string.Empty;
+
+        public static string AssemblyCompany => Assembly
+            .GetExecutingAssembly()
+            .GetCustomAttributes(typeof(AssemblyCompanyAttribute), false)
+            .OfType<AssemblyCompanyAttribute>()
+            .FirstOrDefault()?.Company ?? string.Empty;
 
         public static string AssemblyProductVersion
         {
@@ -57,24 +42,6 @@ namespace WindowTextExtractor.Utils
             {
                 var version = Assembly.GetExecutingAssembly().GetName().Version;
                 return string.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Build);
-            }
-        }
-
-        public static string AssemblyLocation
-        {
-            get
-            {
-                var location = Assembly.GetExecutingAssembly().Location;
-                return location;
-            }
-        }
-
-        public static string AssemblyDirectoryName
-        {
-            get
-            {
-                var location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                return location;
             }
         }
 
