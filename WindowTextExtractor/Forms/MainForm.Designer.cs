@@ -65,6 +65,13 @@
             this.btnShowHide = new System.Windows.Forms.Button();
             this.lblRefresh = new System.Windows.Forms.Label();
             this.cmbRefresh = new System.Windows.Forms.ComboBox();
+            this.btnRecord = new System.Windows.Forms.Button();
+            this.lblRecord = new System.Windows.Forms.Label();
+            this.btnBrowseFile = new System.Windows.Forms.Button();
+            this.lblScale = new System.Windows.Forms.Label();
+            this.numericScale = new System.Windows.Forms.NumericUpDown();
+            this.statusStrip.SuspendLayout();
+            this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbContent)).BeginInit();
             this.tabContent.SuspendLayout();
             this.tabpInformation.SuspendLayout();
@@ -72,6 +79,7 @@
             this.tabpText.SuspendLayout();
             this.tabpImage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericFps)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericScale)).BeginInit();
             this.SuspendLayout();
             // 
             // txtContent
@@ -90,10 +98,17 @@
             // 
             // statusStrip
             // 
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.lblTotalLines,
+            this.toolStripSeparatorOne,
+            this.lblTotalChars,
+            this.toolStripSeparatorTwo,
+            this.lblImageSize,
+            this.toolStripSeparatorThree});
             this.statusStrip.Location = new System.Drawing.Point(0, 490);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(734, 22);
-            this.statusStrip.TabIndex = 8;
+            this.statusStrip.TabIndex = 13;
             // 
             // lblTotalLines
             // 
@@ -262,11 +277,11 @@
             this.tabContent.Controls.Add(this.tabpInformation);
             this.tabContent.Controls.Add(this.tabpText);
             this.tabContent.Controls.Add(this.tabpImage);
-            this.tabContent.Location = new System.Drawing.Point(0, 104);
+            this.tabContent.Location = new System.Drawing.Point(0, 127);
             this.tabContent.Name = "tabContent";
             this.tabContent.SelectedIndex = 0;
-            this.tabContent.Size = new System.Drawing.Size(734, 383);
-            this.tabContent.TabIndex = 3;
+            this.tabContent.Size = new System.Drawing.Size(734, 364);
+            this.tabContent.TabIndex = 4;
             this.tabContent.SelectedIndexChanged += new System.EventHandler(this.tabContent_SelectedIndexChanged);
             // 
             // tabpInformation
@@ -274,7 +289,7 @@
             this.tabpInformation.Controls.Add(this.gvInformation);
             this.tabpInformation.Location = new System.Drawing.Point(4, 22);
             this.tabpInformation.Name = "tabpInformation";
-            this.tabpInformation.Size = new System.Drawing.Size(726, 357);
+            this.tabpInformation.Size = new System.Drawing.Size(726, 338);
             this.tabpInformation.TabIndex = 2;
             this.tabpInformation.Text = "Information";
             this.tabpInformation.UseVisualStyleBackColor = true;
@@ -305,7 +320,7 @@
             this.gvInformation.ShowCellToolTips = false;
             this.gvInformation.ShowEditingIcon = false;
             this.gvInformation.ShowRowErrors = false;
-            this.gvInformation.Size = new System.Drawing.Size(726, 357);
+            this.gvInformation.Size = new System.Drawing.Size(726, 338);
             this.gvInformation.TabIndex = 0;
             this.gvInformation.TabStop = false;
             // 
@@ -328,7 +343,7 @@
             this.tabpText.Location = new System.Drawing.Point(4, 22);
             this.tabpText.Name = "tabpText";
             this.tabpText.Padding = new System.Windows.Forms.Padding(3);
-            this.tabpText.Size = new System.Drawing.Size(726, 357);
+            this.tabpText.Size = new System.Drawing.Size(726, 340);
             this.tabpText.TabIndex = 0;
             this.tabpText.Text = "Text";
             this.tabpText.UseVisualStyleBackColor = true;
@@ -339,7 +354,7 @@
             this.tabpImage.Location = new System.Drawing.Point(4, 22);
             this.tabpImage.Name = "tabpImage";
             this.tabpImage.Padding = new System.Windows.Forms.Padding(3);
-            this.tabpImage.Size = new System.Drawing.Size(726, 357);
+            this.tabpImage.Size = new System.Drawing.Size(726, 340);
             this.tabpImage.TabIndex = 1;
             this.tabpImage.Text = "Image";
             this.tabpImage.UseVisualStyleBackColor = true;
@@ -347,9 +362,9 @@
             // numericFps
             // 
             this.numericFps.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericFps.Location = new System.Drawing.Point(634, 65);
+            this.numericFps.Location = new System.Drawing.Point(529, 101);
             this.numericFps.Maximum = new decimal(new int[] {
-            120,
+            1000,
             0,
             0,
             0});
@@ -360,7 +375,7 @@
             0});
             this.numericFps.Name = "numericFps";
             this.numericFps.Size = new System.Drawing.Size(88, 20);
-            this.numericFps.TabIndex = 7;
+            this.numericFps.TabIndex = 10;
             this.numericFps.Value = new decimal(new int[] {
             1,
             0,
@@ -373,10 +388,10 @@
             // 
             this.lblFps.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblFps.AutoSize = true;
-            this.lblFps.Location = new System.Drawing.Point(598, 67);
+            this.lblFps.Location = new System.Drawing.Point(526, 85);
             this.lblFps.Name = "lblFps";
             this.lblFps.Size = new System.Drawing.Size(30, 13);
-            this.lblFps.TabIndex = 6;
+            this.lblFps.TabIndex = 9;
             this.lblFps.Text = "FPS:";
             this.lblFps.Visible = false;
             // 
@@ -394,10 +409,10 @@
             // 
             this.lblRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblRefresh.AutoSize = true;
-            this.lblRefresh.Location = new System.Drawing.Point(581, 41);
+            this.lblRefresh.Location = new System.Drawing.Point(526, 38);
             this.lblRefresh.Name = "lblRefresh";
             this.lblRefresh.Size = new System.Drawing.Size(47, 13);
-            this.lblRefresh.TabIndex = 4;
+            this.lblRefresh.TabIndex = 5;
             this.lblRefresh.Text = "Refresh:";
             this.lblRefresh.Visible = false;
             // 
@@ -409,18 +424,94 @@
             this.cmbRefresh.Items.AddRange(new object[] {
             "Yes",
             "No"});
-            this.cmbRefresh.Location = new System.Drawing.Point(634, 38);
+            this.cmbRefresh.Location = new System.Drawing.Point(529, 54);
             this.cmbRefresh.Name = "cmbRefresh";
             this.cmbRefresh.Size = new System.Drawing.Size(88, 21);
-            this.cmbRefresh.TabIndex = 5;
+            this.cmbRefresh.TabIndex = 6;
             this.cmbRefresh.Visible = false;
             this.cmbRefresh.SelectedIndexChanged += new System.EventHandler(this.cmbRefresh_SelectedIndexChanged);
+            // 
+            // btnRecord
+            // 
+            this.btnRecord.Location = new System.Drawing.Point(144, 38);
+            this.btnRecord.Name = "btnRecord";
+            this.btnRecord.Size = new System.Drawing.Size(60, 60);
+            this.btnRecord.TabIndex = 3;
+            this.btnRecord.Text = "Record";
+            this.btnRecord.UseVisualStyleBackColor = true;
+            this.btnRecord.Visible = false;
+            this.btnRecord.Click += new System.EventHandler(this.btnRecord_Click);
+            // 
+            // lblRecord
+            // 
+            this.lblRecord.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblRecord.AutoSize = true;
+            this.lblRecord.Location = new System.Drawing.Point(631, 38);
+            this.lblRecord.Name = "lblRecord";
+            this.lblRecord.Size = new System.Drawing.Size(91, 13);
+            this.lblRecord.TabIndex = 7;
+            this.lblRecord.Text = "Record stream to:";
+            this.lblRecord.Visible = false;
+            // 
+            // btnBrowseFile
+            // 
+            this.btnBrowseFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBrowseFile.Location = new System.Drawing.Point(634, 52);
+            this.btnBrowseFile.Name = "btnBrowseFile";
+            this.btnBrowseFile.Size = new System.Drawing.Size(88, 23);
+            this.btnBrowseFile.TabIndex = 8;
+            this.btnBrowseFile.Text = "Browse file ...";
+            this.btnBrowseFile.UseVisualStyleBackColor = true;
+            this.btnBrowseFile.Visible = false;
+            this.btnBrowseFile.Click += new System.EventHandler(this.btnBrowseFile_Click);
+            // 
+            // lblScale
+            // 
+            this.lblScale.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblScale.AutoSize = true;
+            this.lblScale.Location = new System.Drawing.Point(631, 85);
+            this.lblScale.Name = "lblScale";
+            this.lblScale.Size = new System.Drawing.Size(37, 13);
+            this.lblScale.TabIndex = 11;
+            this.lblScale.Text = "Scale:";
+            this.lblScale.Visible = false;
+            // 
+            // numericScale
+            // 
+            this.numericScale.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.numericScale.DecimalPlaces = 2;
+            this.numericScale.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.numericScale.Location = new System.Drawing.Point(634, 101);
+            this.numericScale.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.numericScale.Name = "numericScale";
+            this.numericScale.Size = new System.Drawing.Size(88, 20);
+            this.numericScale.TabIndex = 12;
+            this.numericScale.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericScale.Visible = false;
+            this.numericScale.ValueChanged += new System.EventHandler(this.numericScale_ValueChanged);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(734, 512);
+            this.Controls.Add(this.lblScale);
+            this.Controls.Add(this.numericScale);
+            this.Controls.Add(this.btnBrowseFile);
+            this.Controls.Add(this.lblRecord);
+            this.Controls.Add(this.btnRecord);
             this.Controls.Add(this.cmbRefresh);
             this.Controls.Add(this.lblRefresh);
             this.Controls.Add(this.lblFps);
@@ -434,6 +525,10 @@
             this.MainMenuStrip = this.menuStrip;
             this.Name = "MainForm";
             this.Text = "WindowTextExtractor";
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
+            this.menuStrip.ResumeLayout(false);
+            this.menuStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbContent)).EndInit();
             this.tabContent.ResumeLayout(false);
             this.tabpInformation.ResumeLayout(false);
@@ -442,6 +537,7 @@
             this.tabpText.PerformLayout();
             this.tabpImage.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericFps)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericScale)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -483,6 +579,11 @@
         private System.Windows.Forms.Label lblFps;
         private System.Windows.Forms.Label lblRefresh;
         private System.Windows.Forms.ComboBox cmbRefresh;
+        private System.Windows.Forms.Button btnRecord;
+        private System.Windows.Forms.Label lblRecord;
+        private System.Windows.Forms.Button btnBrowseFile;
+        private System.Windows.Forms.Label lblScale;
+        private System.Windows.Forms.NumericUpDown numericScale;
     }
 }
 

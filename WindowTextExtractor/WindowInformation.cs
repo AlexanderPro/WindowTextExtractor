@@ -11,6 +11,10 @@ namespace WindowTextExtractor
 
         public IDictionary<string, string> ProcessDetails { get; private set; }
 
+        public WindowInformation() : this(new Dictionary<string, string>(), new Dictionary<string, string>())
+        {
+        }
+
         public WindowInformation(IDictionary<string, string> windowDetails, IDictionary<string, string> processDetails)
         {
             WindowDetails = windowDetails;
@@ -21,15 +25,26 @@ namespace WindowTextExtractor
         {
             const int paddingSize = 25;
             var builder = new StringBuilder(1024);
-            builder.AppendFormat($"Window Information {Environment.NewLine}");
+            
+            if (WindowDetails.Keys.Any())
+            {
+                builder.AppendFormat($"Window Information {Environment.NewLine}");
+            }
             
             foreach (var windowDetailKey in WindowDetails.Keys)
             {
                 builder.AppendFormat($"{windowDetailKey.PadRight(paddingSize)}: {WindowDetails[windowDetailKey]}{Environment.NewLine}");
             }
 
-            builder.AppendFormat($"{Environment.NewLine}");
-            builder.AppendFormat($"Process Information {Environment.NewLine}");
+            if (WindowDetails.Keys.Any())
+            {
+                builder.AppendFormat($"{Environment.NewLine}");
+            }
+
+            if (ProcessDetails.Keys.Any())
+            {
+                builder.AppendFormat($"Process Information {Environment.NewLine}");
+            }
 
             foreach (var processDetailKey in ProcessDetails.Keys)
             {

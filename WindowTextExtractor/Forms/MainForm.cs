@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Windows.Automation;
@@ -14,14 +15,17 @@ using WindowTextExtractor.Utils;
 using WindowTextExtractor.Native;
 using WindowTextExtractor.Native.Enums;
 using WindowTextExtractor.Native.Structs;
+using AForge.Video.FFMPEG;
 
 namespace WindowTextExtractor.Forms
 {
     public partial class MainForm : Form, IMessageFilter
     {
+        private const string DEFAULT_VIDEO_FILE_NAME = "window.avi";
         private const string DEFAULT_FONT_NAME = "Courier New";
         private const int DEFAULT_FONT_SIZE = 10;
         private const int DEFAULT_FPS = 24;
+        private const decimal DEFAULT_SCALE = 1;
 
         private readonly int _processId;
         private readonly int _messageId;
@@ -30,12 +34,23 @@ namespace WindowTextExtractor.Forms
         private string _informationFileName;
         private string _textFileName;
         private string _imageFileName;
+        private string _videoFileName;
         private IntPtr _windowHandle;
         private int _fps;
+        private decimal _scale;
         private object _lockObject;
         private bool _refreshImage;
-        private Thread _refreshImageThread;
         private bool _imageTab;
+        private bool _isRecording;
+        private DateTime? _startRecordingTime;
+        private VideoFileWriter _videoWriter;
+        private Bitmap _image;
+
+        private AccurateTimer _captureWindowTimer;
+        private AccurateTimer _updatePictureBoxTimer;
+        private AccurateTimer _updateButtonTimer;
+        private AccurateTimer _writeVideoFrameTimer;
+
 
         public MainForm()
         {
@@ -52,12 +67,19 @@ namespace WindowTextExtractor.Forms
             _informationFileName = string.Empty;
             _textFileName = string.Empty;
             _imageFileName = string.Empty;
+            _videoFileName = Path.Combine(AssemblyUtils.AssemblyDirectory, DEFAULT_VIDEO_FILE_NAME);
             _windowHandle = IntPtr.Zero;
             _refreshImage = true;
-            _fps = DEFAULT_FPS;
             _imageTab = false;
+            _isRecording = false;
+            _startRecordingTime = null;
+            _fps = DEFAULT_FPS;
+            _scale = DEFAULT_SCALE;
             numericFps.Value = DEFAULT_FPS;
+            numericScale.Value = DEFAULT_SCALE;
             cmbRefresh.SelectedIndex = 0;
+            _image = null;
+            _videoWriter = new VideoFileWriter();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -95,35 +117,53 @@ namespace WindowTextExtractor.Forms
             }
 #endif
 
-            _refreshImageThread = new Thread(() =>
+            InitTimers(_fps);
+            _updateButtonTimer = new AccurateTimer(UpdateButtonCallback, 500);
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+
+            var isRecording = false;
+            lock (_lockObject)
             {
-                Thread.CurrentThread.IsBackground = true;
-                UpdateImage();
-            });
-            _refreshImageThread.Start();
+                isRecording = _isRecording;
+            }
+
+            if (isRecording)
+            {
+                MessageBox.Show("You should stop recording.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                e.Cancel = true;
+            }
         }
 
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
             Application.RemoveMessageFilter(this);
-            _refreshImageThread?.Abort();
+            _captureWindowTimer?.Stop();
+            _updatePictureBoxTimer?.Stop();
+            _updateButtonTimer?.Stop();
+            _writeVideoFrameTimer?.Stop();
         }
 
-        private void btnTarget_MouseDown(object sender, MouseEventArgs e)
+        protected override void WndProc(ref Message m)
         {
-            if (!_isButtonTargetMouseDown)
+            switch (m.Msg)
             {
-                _isButtonTargetMouseDown = true;
-                gvInformation.Rows.Clear();
-                gvInformation.Tag = null;
-                txtContent.Text = string.Empty;
-                pbContent.Image?.Dispose();
-                if (!TopMost)
-                {
-                    SendToBack();
-                }
+                case Constants.WM_COPYDATA:
+                    {
+                        var cds = (CopyDataStruct)Marshal.PtrToStructure(m.LParam, typeof(CopyDataStruct));
+                        var password = Marshal.PtrToStringAuto(cds.lpData);
+                        txtContent.Text = password;
+                        txtContent.ScrollTextToEnd();
+                        OnContentChanged();
+                    }
+                    break;
             }
+
+            base.WndProc(ref m);
         }
 
         private void txtContent_TextChanged(object sender, EventArgs e)
@@ -149,6 +189,11 @@ namespace WindowTextExtractor.Forms
                 Filter = "Text Documents (*.txt)|*.txt|All Files (*.*)|*.*"
             };
 
+            if (!File.Exists(_informationFileName))
+            {
+                dialog.InitialDirectory = AssemblyUtils.AssemblyDirectory;
+            }
+
             if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.Cancel)
             {
                 _informationFileName = dialog.FileName;
@@ -170,6 +215,11 @@ namespace WindowTextExtractor.Forms
                 Filter = "Text Documents (*.txt)|*.txt|All Files (*.*)|*.*"
             };
 
+            if (!File.Exists(_textFileName))
+            {
+                dialog.InitialDirectory = AssemblyUtils.AssemblyDirectory;
+            }
+
             if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.Cancel)
             {
                 _textFileName = dialog.FileName;
@@ -189,6 +239,11 @@ namespace WindowTextExtractor.Forms
                 RestoreDirectory = false,
                 Filter = "Bitmap Image (*.bmp)|*.bmp|Gif Image (*.gif)|*.gif|JPEG Image (*.jpeg)|*.jpeg|Png Image (*.png)|*.png|Tiff Image (*.tiff)|*.tiff|Wmf Image (*.wmf)|*.wmf"
             };
+
+            if (!File.Exists(_imageFileName))
+            {
+                dialog.InitialDirectory = AssemblyUtils.AssemblyDirectory;
+            }
 
             if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.Cancel)
             {
@@ -232,24 +287,98 @@ namespace WindowTextExtractor.Forms
             dialog.ShowDialog(this);
         }
 
+        private void btnTarget_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (!_isButtonTargetMouseDown)
+            {
+                _isButtonTargetMouseDown = true;
+                gvInformation.Rows.Clear();
+                gvInformation.Tag = null;
+                txtContent.Text = string.Empty;
+                if (!TopMost)
+                {
+                    SendToBack();
+                }
+            }
+        }
+
         private void btnShowHide_Click(object sender, EventArgs e)
         {
+            var windowHandle = IntPtr.Zero;
             lock(_lockObject)
             {
-                var button = (Button)sender;
-                var cmdShow = button.Text == "Show" ? ShowWindowCommands.SW_SHOW : ShowWindowCommands.SW_HIDE;
-                User32.ShowWindow(_windowHandle, cmdShow);
-                button.Text = User32.IsWindowVisible(_windowHandle) ? "Hide" : "Show";
-                var windowInformation = WindowUtils.GetWindowInformation(_windowHandle);
-                FillInformation(windowInformation);
+                windowHandle = _windowHandle;
             }
-        }       
+            var button = (Button)sender;
+            var cmdShow = button.Text == "Show" ? ShowWindowCommands.SW_SHOW : ShowWindowCommands.SW_HIDE;
+            User32.ShowWindow(windowHandle, cmdShow);
+            button.Text = User32.IsWindowVisible(windowHandle) ? "Hide" : "Show";
+            var windowInformation = WindowUtils.GetWindowInformation(windowHandle);
+            FillInformation(windowInformation);
+        }
+
+        private void btnRecord_Click(object sender, EventArgs e)
+        {
+            var isRecording = false;
+            lock (_lockObject)
+            {
+                _isRecording = !_isRecording;
+                _startRecordingTime = _isRecording ? DateTime.Now : (DateTime?)null;
+                if (_isRecording)
+                {
+                    _videoWriter.Open(_videoFileName, pbContent.Image.Width, pbContent.Image.Height, _fps, VideoCodec.Raw);
+                }
+                else
+                {
+                    _videoWriter.Close();
+                }
+                isRecording = _isRecording;
+            }
+
+            var button = (Button)sender;
+            button.Text = isRecording ? "Stop" : "Record";
+            btnTarget.Enabled = !isRecording;
+            btnShowHide.Enabled = !isRecording;
+            cmbRefresh.Enabled = !isRecording;
+            btnBrowseFile.Enabled = !isRecording;
+            numericFps.Enabled = !isRecording;
+            numericScale.Enabled = !isRecording;
+        }
+
+        private void btnBrowseFile_Click(object sender, EventArgs e)
+        {
+            var dialog = new SaveFileDialog
+            {
+                OverwritePrompt = true,
+                ValidateNames = true,
+                Title = "Save As",
+                InitialDirectory = Path.GetDirectoryName(_videoFileName),
+                FileName = string.IsNullOrEmpty(_videoFileName) ? "*.avi" : Path.GetFileName(_videoFileName),
+                DefaultExt = "avi",
+                RestoreDirectory = false,
+                Filter = "Video Files (*.avi)|*.avi|All Files (*.*)|*.*"
+            };
+
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.Cancel)
+            {
+                lock (_lockObject)
+                {
+                    _videoFileName = dialog.FileName;
+                }
+            }
+        }
 
         private void numericFps_ValueChanged(object sender, EventArgs e)
         {
+            _fps = (int)((NumericUpDown)sender).Value;
+            InitTimers(_fps);
+        }
+
+        private void numericScale_ValueChanged(object sender, EventArgs e)
+        {
             lock (_lockObject)
             {
-                _fps = (int)numericFps.Value;
+                _scale = ((NumericUpDown)sender).Value;
             }
         }
 
@@ -267,29 +396,8 @@ namespace WindowTextExtractor.Forms
             {
                 var tab = (TabControl)sender;
                 _imageTab = tab.SelectedTab.Text == "Image";
-                lblRefresh.Visible = _imageTab;
-                cmbRefresh.Visible = _imageTab;
-                lblFps.Visible = _imageTab;
-                numericFps.Visible = _imageTab;
+                EnableImageTabControls();
             }
-        }
-
-        protected override void WndProc(ref Message m)
-        {
-            switch (m.Msg)
-            {
-                case Constants.WM_COPYDATA:
-                    {
-                        var cds = (CopyDataStruct)Marshal.PtrToStructure(m.LParam, typeof(CopyDataStruct));
-                        var password = Marshal.PtrToStringAuto(cds.lpData);
-                        txtContent.Text = password;
-                        txtContent.ScrollTextToEnd();
-                        OnContentChanged();
-                    }
-                    break;
-            }
-
-            base.WndProc(ref m);
         }
 
         public bool PreFilterMessage(ref Message m)
@@ -317,7 +425,7 @@ namespace WindowTextExtractor.Forms
                             if (_isButtonTargetMouseDown)
                             {
                                 User32.SetCursor(Properties.Resources.Target32.Handle);
-                                var cursorPosition = System.Windows.Forms.Cursor.Position;
+                                var cursorPosition = Cursor.Position;
                                 var element = AutomationElement.FromPoint(new System.Windows.Point(cursorPosition.X, cursorPosition.Y));
                                 if (element != null && element.Current.ProcessId != _processId)
                                 {
@@ -338,7 +446,8 @@ namespace WindowTextExtractor.Forms
                                                     OnContentChanged();
                                                 }
                                             }
-                                        } else if (Environment.Is64BitOperatingSystem && !process.HasExited && !process.IsWow64Process())
+                                        }
+                                        else if (Environment.Is64BitOperatingSystem && !process.HasExited && !process.IsWow64Process())
                                         {
                                             Process.Start(new ProcessStartInfo
                                             {
@@ -358,14 +467,19 @@ namespace WindowTextExtractor.Forms
                                         var text = element.GetTextFromConsole() ?? element.GetTextFromWindow();
                                         txtContent.Text = text == null ? "" : text.TrimEnd().TrimEnd(Environment.NewLine);
                                         txtContent.ScrollTextToEnd();
+                                        var scale = 1m;
                                         lock (_lockObject)
                                         {
                                             _windowHandle = windowHandle;
-                                            var image = WindowUtils.CaptureWindow(windowHandle);
-                                            FillImage(image);
-                                            var windowInformation = WindowUtils.GetWindowInformation(windowHandle);
-                                            FillInformation(windowInformation);
+                                            scale = _scale;
                                         }
+                                        using (var image = WindowUtils.CaptureWindow(windowHandle))
+                                        {
+                                            var newImage = ImageUtils.Reduce(image, (int)(image.Width * scale), (int)(image.Height * scale));
+                                            FillImage(newImage);
+                                        }
+                                        var windowInformation = WindowUtils.GetWindowInformation(windowHandle);
+                                        FillInformation(windowInformation);
                                         OnContentChanged();
                                     }
 
@@ -374,12 +488,21 @@ namespace WindowTextExtractor.Forms
                                 }
                                 else
                                 {
+                                    lock (_lockObject)
+                                    {
+                                        _windowHandle = IntPtr.Zero;
+                                    }
+                                    FillImage(Properties.Resources.OnePixel);
+                                    FillInformation(new WindowInformation());
+                                    OnContentChanged();
                                     btnShowHide.Visible = false;
                                 }
+                                EnableImageTabControls();
                             }
                         }
-                        catch
+                        catch (Exception e)
                         {
+                            MessageBox.Show(e.ToString());
                         }
                     }
                     break;
@@ -388,51 +511,126 @@ namespace WindowTextExtractor.Forms
             return false;
         }
 
-        private void UpdateImage()
+        private void CaptureWindowCallback()
         {
-            try
-            {                
-                while(true)
+            var scale = 1m;
+            var windowHandle = IntPtr.Zero;
+            var imageTab = false;
+            var isRecording = false;
+
+            lock (_lockObject)
+            {
+                scale = _scale;
+                windowHandle = _windowHandle;
+                imageTab = _imageTab;
+                isRecording = _isRecording;
+            }
+
+            var newImage = (Bitmap)null;
+
+            if (windowHandle != null && User32.IsWindow(windowHandle))
+            {
+                if (imageTab || isRecording)
                 {
-                    var fps = 0;
-                    var windowHandle = IntPtr.Zero;
-                    var refreshImage = true;
-                    var imageTab = true;
-
-                    lock(_lockObject)
+                    using (var sourceImage = WindowUtils.CaptureWindow(windowHandle))
                     {
-                        fps = _fps;
-                        windowHandle = _windowHandle;
-                        refreshImage = _refreshImage;
-                        imageTab = _imageTab;
+                        newImage = ImageUtils.Reduce(sourceImage, (int)(sourceImage.Width * scale), (int)(sourceImage.Height * scale));
                     }
-
-                    if (imageTab && refreshImage)
-                    {
-                        if (windowHandle != null && windowHandle != IntPtr.Zero && User32.IsWindow(windowHandle))
-                        {
-                            var image = WindowUtils.CaptureWindow(windowHandle);
-                            BeginInvoke((MethodInvoker)delegate
-                            {
-                                FillImage(image);
-                            });
-                        }
-                        else
-                        {
-                            BeginInvoke((MethodInvoker)delegate
-                            {
-                                FillImage(Properties.Resources.OnePixel);
-                            });
-                        }
-                    }
-
-                    var timeout = 1000 / fps;
-                    Thread.Sleep(timeout);
                 }
             }
-            catch
+            else
             {
+                newImage = (Bitmap)Properties.Resources.OnePixel.Clone();
             }
+
+            var oldImage = (Bitmap)null;
+
+            lock (_lockObject)
+            {
+                if (newImage != null)
+                {
+                    oldImage = _image;
+                    _image = newImage;
+                }
+            }
+
+            oldImage?.Dispose();
+        }
+
+        private void UpdatePictureBoxCallback()
+        {
+            var image = (Bitmap)null;
+
+            lock (_lockObject)
+            {
+                if (_imageTab && _refreshImage)
+                {
+                    image = (Bitmap)_image.Clone();
+                }
+            }
+
+            if (image != null)
+            {
+                BeginInvoke((MethodInvoker)delegate
+                {
+                    FillImage(image);
+                    OnContentChanged();
+                });
+            }
+        }
+
+        private void UpdateButtonCallback()
+        {
+            var startRecordingTime = (DateTime?)null;
+
+            lock (_lockObject)
+            {
+                startRecordingTime = _startRecordingTime;
+            }
+
+            if (startRecordingTime.HasValue)
+            {
+                var text = $"Stop{Environment.NewLine}{Environment.NewLine}{DateTime.Now.Subtract(startRecordingTime.Value):hh\\:mm\\:ss}";
+                BeginInvoke((MethodInvoker)delegate
+                {
+                    btnRecord.Text = text;
+                });
+            }
+        }
+
+        private void WriteVideoFrameCallback()
+        {
+            lock (_lockObject)
+            {
+                if (_isRecording)
+                {
+                    _videoWriter.WriteVideoFrame(_image);
+                }
+            }
+        }
+
+        private void InitTimers(int fps)
+        {
+            var timerInterval = (int)Math.Round(1000m / fps, 0, MidpointRounding.AwayFromZero);
+            _captureWindowTimer?.Stop();
+            _updatePictureBoxTimer?.Stop();
+            _writeVideoFrameTimer?.Stop();
+            _captureWindowTimer = new AccurateTimer(CaptureWindowCallback, timerInterval);
+            _updatePictureBoxTimer = new AccurateTimer(UpdatePictureBoxCallback, timerInterval);
+            _writeVideoFrameTimer = new AccurateTimer(WriteVideoFrameCallback, timerInterval);
+        }
+
+        private void EnableImageTabControls()
+        {
+            btnRecord.Visible = _imageTab && btnShowHide.Visible;
+            lblRefresh.Visible = _imageTab && btnShowHide.Visible;
+            cmbRefresh.Visible = _imageTab && btnShowHide.Visible;
+            lblFps.Visible = _imageTab && btnShowHide.Visible;
+            numericFps.Visible = _imageTab && btnShowHide.Visible;
+            lblScale.Visible = _imageTab && btnShowHide.Visible;
+            numericScale.Visible = _imageTab && btnShowHide.Visible;
+            lblRecord.Visible = _imageTab && btnShowHide.Visible;
+            btnBrowseFile.Visible = _imageTab && btnShowHide.Visible;
         }
 
         private void OnContentChanged()
@@ -450,11 +648,14 @@ namespace WindowTextExtractor.Forms
             gvInformation.Rows.Clear();
             gvInformation.Tag = null;
 
-            var indexHeader = gvInformation.Rows.Add();
-            var rowHeader = gvInformation.Rows[indexHeader];
-            rowHeader.Cells[0].Value = "Window Information";
-            rowHeader.Cells[0].Style.BackColor = Color.LightGray;
-            rowHeader.Cells[1].Style.BackColor = Color.LightGray;
+            if (windowInformation.WindowDetails.Keys.Any())
+            {
+                var indexHeader = gvInformation.Rows.Add();
+                var rowHeader = gvInformation.Rows[indexHeader];
+                rowHeader.Cells[0].Value = "Window Information";
+                rowHeader.Cells[0].Style.BackColor = Color.LightGray;
+                rowHeader.Cells[1].Style.BackColor = Color.LightGray;
+            }
 
             foreach (var windowDetailKey in windowInformation.WindowDetails.Keys)
             {
@@ -464,11 +665,14 @@ namespace WindowTextExtractor.Forms
                 row.Cells[1].Value = windowInformation.WindowDetails[windowDetailKey];
             }
 
-            indexHeader = gvInformation.Rows.Add();
-            rowHeader = gvInformation.Rows[indexHeader];
-            rowHeader.Cells[0].Value = "Process Information";
-            rowHeader.Cells[0].Style.BackColor = Color.LightGray;
-            rowHeader.Cells[1].Style.BackColor = Color.LightGray;
+            if (windowInformation.ProcessDetails.Keys.Any())
+            {
+                var indexHeader = gvInformation.Rows.Add();
+                var rowHeader = gvInformation.Rows[indexHeader];
+                rowHeader.Cells[0].Value = "Process Information";
+                rowHeader.Cells[0].Style.BackColor = Color.LightGray;
+                rowHeader.Cells[1].Style.BackColor = Color.LightGray;
+            }
 
             foreach (var processDetailKey in windowInformation.ProcessDetails.Keys)
             {

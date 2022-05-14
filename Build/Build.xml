@@ -17,6 +17,10 @@
     <WindowTextExtractorSourceFileWin64 Include="$(WindowTextExtractorProjectPath)\bin\x64\Release\WindowTextExtractor.exe" />
     <WindowTextExtractorDestFileWin32 Include="$(ApplicationPath)\WindowTextExtractor.exe" />
     <WindowTextExtractorDestFileWin64 Include="$(ApplicationPath)\WindowTextExtractor64.exe" />
+    <WindowTextExtractorSourceConfgiFile Include="$(WindowTextExtractorProjectPath)\bin\x86\Release\WindowTextExtractor.exe.config" />
+    <WindowTextExtractorDestConfgiFile Include="$(ApplicationPath)\WindowTextExtractor.exe.config" />
+    <WindowTextExtractorSourceLibFiles Include="$(WindowTextExtractorProjectPath)\bin\x86\Release\Libs\*.dll" />
+    <WindowTextExtractorDestLibFiles Include="$(ApplicationPath)\" />
   </ItemGroup>
 
   <Target Name="BuildSolution">
@@ -28,6 +32,8 @@
     <CallTarget Targets="Copy_Release_x64_WindowTextExtractor" />
     <CallTarget Targets="Build_Release_x32_WindowTextExtractor" />
     <CallTarget Targets="Copy_Release_x32_WindowTextExtractor" />
+    <CallTarget Targets="Copy_Release_ConfigFile" />
+    <CallTarget Targets="Copy_Release_LibFiles" />
   </Target>
 
   <Target Name="Build_Release_x32_WindowTextExtractorHook">
@@ -80,5 +86,19 @@
     <MakeDir Directories="$(ApplicationPath)"/>
     <Copy SourceFiles="@(WindowTextExtractorSourceFileWin64)" DestinationFiles="@(WindowTextExtractorDestFileWin64)" />
     <Message Text="Copy Completed $(WindowTextExtractorProjectName) Realese x64" />
+  </Target>
+
+  <Target Name="Copy_Release_ConfigFile">
+    <Message Text="Copy Config File" />
+    <MakeDir Directories="$(ApplicationPath)"/>
+    <Copy SourceFiles="@(WindowTextExtractorSourceConfgiFile)" DestinationFiles="@(WindowTextExtractorDestConfgiFile)" />
+    <Message Text="Copy Completed Config File" />
+  </Target>
+
+  <Target Name="Copy_Release_LibFiles">
+    <Message Text="Copy Lib Files" />
+    <MakeDir Directories="$(ApplicationPath)"/>
+    <Copy SourceFiles="@(WindowTextExtractorSourceLibFiles)" DestinationFolder="@(WindowTextExtractorDestLibFiles)" />
+    <Message Text="Copy Completed Lib Files" />
   </Target>
 </Project>

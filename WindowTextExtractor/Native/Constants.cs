@@ -28,5 +28,7 @@
         public const int DWL_USER = 8;
 
         public const int DWMWA_EXTENDED_FRAME_BOUNDS = 9;
+
+        public const int EVENT_TYPE = 1;
     }
 }
