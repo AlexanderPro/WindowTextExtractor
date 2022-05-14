@@ -326,7 +326,7 @@ namespace WindowTextExtractor.Forms
                 _startRecordingTime = _isRecording ? DateTime.Now : (DateTime?)null;
                 if (_isRecording)
                 {
-                    _videoWriter.Open(_videoFileName, pbContent.Image.Width, pbContent.Image.Height, _fps, VideoCodec.Raw);
+                    _videoWriter.Open(_videoFileName, _image.Width, _image.Height, _fps, VideoCodec.Raw);
                 }
                 else
                 {
