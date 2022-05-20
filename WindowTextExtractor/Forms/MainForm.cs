@@ -473,10 +473,18 @@ namespace WindowTextExtractor.Forms
                                             _windowHandle = windowHandle;
                                             scale = _scale;
                                         }
-                                        using (var image = WindowUtils.CaptureWindow(windowHandle))
+                                        if (scale == 1m)
                                         {
-                                            var newImage = ImageUtils.Reduce(image, (int)(image.Width * scale), (int)(image.Height * scale));
+                                            var newImage = WindowUtils.CaptureWindow(windowHandle);
                                             FillImage(newImage);
+                                        }
+                                        else
+                                        {
+                                            using (var image = WindowUtils.CaptureWindow(windowHandle))
+                                            {
+                                                var newImage = ImageUtils.ResizeImage(image, (int)(image.Width * scale), (int)(image.Height * scale));
+                                                FillImage(newImage);
+                                            }
                                         }
                                         var windowInformation = WindowUtils.GetWindowInformation(windowHandle);
                                         FillInformation(windowInformation);
@@ -532,9 +540,16 @@ namespace WindowTextExtractor.Forms
             {
                 if (imageTab || isRecording)
                 {
-                    using (var sourceImage = WindowUtils.CaptureWindow(windowHandle))
+                    if (scale == 1m)
                     {
-                        newImage = ImageUtils.Reduce(sourceImage, (int)(sourceImage.Width * scale), (int)(sourceImage.Height * scale));
+                        newImage = WindowUtils.CaptureWindow(windowHandle);
+                    }
+                    else
+                    {
+                        using (var sourceImage = WindowUtils.CaptureWindow(windowHandle))
+                        {
+                            newImage = ImageUtils.ResizeImage(sourceImage, (int)(sourceImage.Width * scale), (int)(sourceImage.Height * scale));
+                        }
                     }
                 }
             }
@@ -600,12 +615,24 @@ namespace WindowTextExtractor.Forms
 
         private void WriteVideoFrameCallback()
         {
-            lock (_lockObject)
+            try
             {
-                if (_isRecording)
+                lock (_lockObject)
                 {
-                    _videoWriter.WriteVideoFrame(_image);
+                    if (_isRecording)
+                    {
+                        _videoWriter.WriteVideoFrame(_image);
+                    }
                 }
+            }
+            catch (ArgumentException e) when (e.Message.Contains("size must be of the same as video size"))
+            {
+                BeginInvoke((MethodInvoker)delegate
+                {
+                    MessageBox.Show("Don't resize the window while recording.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                });
+
+                throw;
             }
         }
 
