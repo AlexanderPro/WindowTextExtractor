@@ -1,7 +1,13 @@
 ![WindowTextExtractor](https://user-images.githubusercontent.com/8102586/68278238-f6d29b00-0081-11ea-8c64-e6999283b65f.png) WindowTextExtractor
 =============
 
-WindowTextExtractor allows you to get a text from any window of an operating system including microsoft office programs, console windows, password textboxes, etc. It can recover passwords stored behind asterisks (*****) from most of the windows apps. It also shows a detailed window and its process information and allows you to take a window screenshot.
+An absolutely free and simple in use system tool to:
+* Extract text from modal windows, buttons, textboxes, lists, etc
+* Show passwords stored behind asterisks (*****) from most of the windows apps
+* Show detailed window and process information 
+* Show or hide almost any desktop window
+* Take a window screenshot
+* Record window stream in avi file
 
 Screenshot
 ------------------
