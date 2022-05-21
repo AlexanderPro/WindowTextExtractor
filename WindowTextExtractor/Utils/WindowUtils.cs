@@ -239,7 +239,7 @@ namespace WindowTextExtractor.Utils
             return new WindowInformation(windowDetailes, processDetailes);
         }
 
-        public static Bitmap CaptureWindow(IntPtr handle)
+        public static Bitmap CaptureWindow(IntPtr handle, bool captureCursor = false)
         {
             User32.GetWindowRect(handle, out Rect rectangle);
             var posX = rectangle.Left;
@@ -257,7 +257,29 @@ namespace WindowTextExtractor.Utils
 
             try
             {
-                return b ? Image.FromHbitmap(hBmp) : null;
+                if (b)
+                {
+                    var image = Image.FromHbitmap(hBmp);
+                    if (captureCursor)
+                    {
+                        CURSORINFO cursorInfo;
+                        cursorInfo.cbSize = Marshal.SizeOf(typeof(CURSORINFO));
+                        if (User32.GetCursorInfo(out cursorInfo) && cursorInfo.flags == Constants.CURSOR_SHOWING && User32.GetIconInfo(cursorInfo.hCursor, out var iconInfo))
+                        {
+                            using (var graphics = Graphics.FromImage(image))
+                            {
+                                var x = cursorInfo.ptScreenPos.x - rectangle.Left - iconInfo.xHotspot;
+                                var y = cursorInfo.ptScreenPos.y - rectangle.Top - iconInfo.yHotspot;
+                                User32.DrawIconEx(graphics.GetHdc(), x, y, cursorInfo.hCursor, 0, 0, 0, IntPtr.Zero, Constants.DI_NORMAL | Constants.DI_COMPAT);
+                            }
+                        }
+                    }
+                    return image;
+                }
+                else
+                {
+                    return null;
+                }
             }
             finally
             {

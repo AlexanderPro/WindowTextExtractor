@@ -70,6 +70,8 @@
             this.btnBrowseFile = new System.Windows.Forms.Button();
             this.lblScale = new System.Windows.Forms.Label();
             this.numericScale = new System.Windows.Forms.NumericUpDown();
+            this.cmbCaptureCursor = new System.Windows.Forms.ComboBox();
+            this.lblCaptureCursor = new System.Windows.Forms.Label();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbContent)).BeginInit();
@@ -108,7 +110,7 @@
             this.statusStrip.Location = new System.Drawing.Point(0, 490);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(734, 22);
-            this.statusStrip.TabIndex = 13;
+            this.statusStrip.TabIndex = 15;
             // 
             // lblTotalLines
             // 
@@ -281,7 +283,7 @@
             this.tabContent.Name = "tabContent";
             this.tabContent.SelectedIndex = 0;
             this.tabContent.Size = new System.Drawing.Size(734, 364);
-            this.tabContent.TabIndex = 4;
+            this.tabContent.TabIndex = 14;
             this.tabContent.SelectedIndexChanged += new System.EventHandler(this.tabContent_SelectedIndexChanged);
             // 
             // tabpInformation
@@ -343,7 +345,7 @@
             this.tabpText.Location = new System.Drawing.Point(4, 22);
             this.tabpText.Name = "tabpText";
             this.tabpText.Padding = new System.Windows.Forms.Padding(3);
-            this.tabpText.Size = new System.Drawing.Size(726, 340);
+            this.tabpText.Size = new System.Drawing.Size(726, 338);
             this.tabpText.TabIndex = 0;
             this.tabpText.Text = "Text";
             this.tabpText.UseVisualStyleBackColor = true;
@@ -354,7 +356,7 @@
             this.tabpImage.Location = new System.Drawing.Point(4, 22);
             this.tabpImage.Name = "tabpImage";
             this.tabpImage.Padding = new System.Windows.Forms.Padding(3);
-            this.tabpImage.Size = new System.Drawing.Size(726, 340);
+            this.tabpImage.Size = new System.Drawing.Size(726, 338);
             this.tabpImage.TabIndex = 1;
             this.tabpImage.Text = "Image";
             this.tabpImage.UseVisualStyleBackColor = true;
@@ -375,7 +377,7 @@
             0});
             this.numericFps.Name = "numericFps";
             this.numericFps.Size = new System.Drawing.Size(88, 20);
-            this.numericFps.TabIndex = 10;
+            this.numericFps.TabIndex = 11;
             this.numericFps.Value = new decimal(new int[] {
             1,
             0,
@@ -391,7 +393,7 @@
             this.lblFps.Location = new System.Drawing.Point(526, 85);
             this.lblFps.Name = "lblFps";
             this.lblFps.Size = new System.Drawing.Size(30, 13);
-            this.lblFps.TabIndex = 9;
+            this.lblFps.TabIndex = 10;
             this.lblFps.Text = "FPS:";
             this.lblFps.Visible = false;
             // 
@@ -409,10 +411,10 @@
             // 
             this.lblRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblRefresh.AutoSize = true;
-            this.lblRefresh.Location = new System.Drawing.Point(526, 38);
+            this.lblRefresh.Location = new System.Drawing.Point(423, 38);
             this.lblRefresh.Name = "lblRefresh";
             this.lblRefresh.Size = new System.Drawing.Size(47, 13);
-            this.lblRefresh.TabIndex = 5;
+            this.lblRefresh.TabIndex = 4;
             this.lblRefresh.Text = "Refresh:";
             this.lblRefresh.Visible = false;
             // 
@@ -424,10 +426,10 @@
             this.cmbRefresh.Items.AddRange(new object[] {
             "Yes",
             "No"});
-            this.cmbRefresh.Location = new System.Drawing.Point(529, 54);
+            this.cmbRefresh.Location = new System.Drawing.Point(426, 54);
             this.cmbRefresh.Name = "cmbRefresh";
             this.cmbRefresh.Size = new System.Drawing.Size(88, 21);
-            this.cmbRefresh.TabIndex = 6;
+            this.cmbRefresh.TabIndex = 5;
             this.cmbRefresh.Visible = false;
             this.cmbRefresh.SelectedIndexChanged += new System.EventHandler(this.cmbRefresh_SelectedIndexChanged);
             // 
@@ -449,7 +451,7 @@
             this.lblRecord.Location = new System.Drawing.Point(631, 38);
             this.lblRecord.Name = "lblRecord";
             this.lblRecord.Size = new System.Drawing.Size(91, 13);
-            this.lblRecord.TabIndex = 7;
+            this.lblRecord.TabIndex = 8;
             this.lblRecord.Text = "Record stream to:";
             this.lblRecord.Visible = false;
             // 
@@ -459,7 +461,7 @@
             this.btnBrowseFile.Location = new System.Drawing.Point(634, 52);
             this.btnBrowseFile.Name = "btnBrowseFile";
             this.btnBrowseFile.Size = new System.Drawing.Size(88, 23);
-            this.btnBrowseFile.TabIndex = 8;
+            this.btnBrowseFile.TabIndex = 9;
             this.btnBrowseFile.Text = "Browse file ...";
             this.btnBrowseFile.UseVisualStyleBackColor = true;
             this.btnBrowseFile.Visible = false;
@@ -472,7 +474,7 @@
             this.lblScale.Location = new System.Drawing.Point(631, 85);
             this.lblScale.Name = "lblScale";
             this.lblScale.Size = new System.Drawing.Size(37, 13);
-            this.lblScale.TabIndex = 11;
+            this.lblScale.TabIndex = 12;
             this.lblScale.Text = "Scale:";
             this.lblScale.Visible = false;
             // 
@@ -493,7 +495,7 @@
             131072});
             this.numericScale.Name = "numericScale";
             this.numericScale.Size = new System.Drawing.Size(88, 20);
-            this.numericScale.TabIndex = 12;
+            this.numericScale.TabIndex = 13;
             this.numericScale.Value = new decimal(new int[] {
             1,
             0,
@@ -502,11 +504,39 @@
             this.numericScale.Visible = false;
             this.numericScale.ValueChanged += new System.EventHandler(this.numericScale_ValueChanged);
             // 
+            // cmbCaptureCursor
+            // 
+            this.cmbCaptureCursor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbCaptureCursor.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbCaptureCursor.FormattingEnabled = true;
+            this.cmbCaptureCursor.Items.AddRange(new object[] {
+            "Yes",
+            "No"});
+            this.cmbCaptureCursor.Location = new System.Drawing.Point(529, 54);
+            this.cmbCaptureCursor.Name = "cmbCaptureCursor";
+            this.cmbCaptureCursor.Size = new System.Drawing.Size(88, 21);
+            this.cmbCaptureCursor.TabIndex = 7;
+            this.cmbCaptureCursor.Visible = false;
+            this.cmbCaptureCursor.SelectedIndexChanged += new System.EventHandler(this.cmbCaptureCursor_SelectedIndexChanged);
+            // 
+            // lblCaptureCursor
+            // 
+            this.lblCaptureCursor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblCaptureCursor.AutoSize = true;
+            this.lblCaptureCursor.Location = new System.Drawing.Point(526, 38);
+            this.lblCaptureCursor.Name = "lblCaptureCursor";
+            this.lblCaptureCursor.Size = new System.Drawing.Size(79, 13);
+            this.lblCaptureCursor.TabIndex = 6;
+            this.lblCaptureCursor.Text = "Capture cursor:";
+            this.lblCaptureCursor.Visible = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(734, 512);
+            this.Controls.Add(this.cmbCaptureCursor);
+            this.Controls.Add(this.lblCaptureCursor);
             this.Controls.Add(this.lblScale);
             this.Controls.Add(this.numericScale);
             this.Controls.Add(this.btnBrowseFile);
@@ -584,6 +614,8 @@
         private System.Windows.Forms.Button btnBrowseFile;
         private System.Windows.Forms.Label lblScale;
         private System.Windows.Forms.NumericUpDown numericScale;
+        private System.Windows.Forms.ComboBox cmbCaptureCursor;
+        private System.Windows.Forms.Label lblCaptureCursor;
     }
 }
 

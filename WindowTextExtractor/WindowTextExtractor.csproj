@@ -109,6 +109,8 @@
     <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Native\Structs\CURSORINFO.cs" />
+    <Compile Include="Native\Structs\ICONINFO.cs" />
     <Compile Include="Native\Winmm.cs" />
     <Compile Include="Utils\ImageUtils.cs" />
     <Compile Include="Native\Dwmapi.cs" />

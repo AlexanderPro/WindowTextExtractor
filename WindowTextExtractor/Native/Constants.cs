@@ -30,5 +30,11 @@
         public const int DWMWA_EXTENDED_FRAME_BOUNDS = 9;
 
         public const int EVENT_TYPE = 1;
+
+        public const int CURSOR_SHOWING = 0x00000001;
+
+        public const int DI_COMPAT = 0x0004;
+
+        public const int DI_NORMAL = 0x0003;
     }
 }

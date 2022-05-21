@@ -42,6 +42,7 @@ namespace WindowTextExtractor.Forms
         private bool _refreshImage;
         private bool _imageTab;
         private bool _isRecording;
+        private bool _captureCursor;
         private DateTime? _startRecordingTime;
         private VideoFileWriter _videoWriter;
         private Bitmap _image;
@@ -70,6 +71,7 @@ namespace WindowTextExtractor.Forms
             _videoFileName = Path.Combine(AssemblyUtils.AssemblyDirectory, DEFAULT_VIDEO_FILE_NAME);
             _windowHandle = IntPtr.Zero;
             _refreshImage = true;
+            _captureCursor = true;
             _imageTab = false;
             _isRecording = false;
             _startRecordingTime = null;
@@ -78,6 +80,7 @@ namespace WindowTextExtractor.Forms
             numericFps.Value = DEFAULT_FPS;
             numericScale.Value = DEFAULT_SCALE;
             cmbRefresh.SelectedIndex = 0;
+            cmbCaptureCursor.SelectedIndex = 0;
             _image = null;
             _videoWriter = new VideoFileWriter();
         }
@@ -340,6 +343,7 @@ namespace WindowTextExtractor.Forms
             btnTarget.Enabled = !isRecording;
             btnShowHide.Enabled = !isRecording;
             cmbRefresh.Enabled = !isRecording;
+            cmbCaptureCursor.Enabled = !isRecording;
             btnBrowseFile.Enabled = !isRecording;
             numericFps.Enabled = !isRecording;
             numericScale.Enabled = !isRecording;
@@ -387,6 +391,14 @@ namespace WindowTextExtractor.Forms
             lock (_lockObject)
             {
                 _refreshImage = ((ComboBox)sender).SelectedIndex == 0;
+            }
+        }
+
+        private void cmbCaptureCursor_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            lock (_lockObject)
+            {
+                _captureCursor = ((ComboBox)sender).SelectedIndex == 0;
             }
         }
 
@@ -468,19 +480,21 @@ namespace WindowTextExtractor.Forms
                                         txtContent.Text = text == null ? "" : text.TrimEnd().TrimEnd(Environment.NewLine);
                                         txtContent.ScrollTextToEnd();
                                         var scale = 1m;
+                                        var captureCursor = false;
                                         lock (_lockObject)
                                         {
                                             _windowHandle = windowHandle;
                                             scale = _scale;
+                                            captureCursor = _captureCursor;
                                         }
                                         if (scale == 1m)
                                         {
-                                            var newImage = WindowUtils.CaptureWindow(windowHandle);
+                                            var newImage = WindowUtils.CaptureWindow(windowHandle, captureCursor);
                                             FillImage(newImage);
                                         }
                                         else
                                         {
-                                            using (var image = WindowUtils.CaptureWindow(windowHandle))
+                                            using (var image = WindowUtils.CaptureWindow(windowHandle, captureCursor))
                                             {
                                                 var newImage = ImageUtils.ResizeImage(image, (int)(image.Width * scale), (int)(image.Height * scale));
                                                 FillImage(newImage);
@@ -525,6 +539,8 @@ namespace WindowTextExtractor.Forms
             var windowHandle = IntPtr.Zero;
             var imageTab = false;
             var isRecording = false;
+            var captureCursor = false;
+
 
             lock (_lockObject)
             {
@@ -532,6 +548,7 @@ namespace WindowTextExtractor.Forms
                 windowHandle = _windowHandle;
                 imageTab = _imageTab;
                 isRecording = _isRecording;
+                captureCursor = _captureCursor;
             }
 
             var newImage = (Bitmap)null;
@@ -542,11 +559,11 @@ namespace WindowTextExtractor.Forms
                 {
                     if (scale == 1m)
                     {
-                        newImage = WindowUtils.CaptureWindow(windowHandle);
+                        newImage = WindowUtils.CaptureWindow(windowHandle, captureCursor);
                     }
                     else
                     {
-                        using (var sourceImage = WindowUtils.CaptureWindow(windowHandle))
+                        using (var sourceImage = WindowUtils.CaptureWindow(windowHandle, captureCursor))
                         {
                             newImage = ImageUtils.ResizeImage(sourceImage, (int)(sourceImage.Width * scale), (int)(sourceImage.Height * scale));
                         }
@@ -652,6 +669,8 @@ namespace WindowTextExtractor.Forms
             btnRecord.Visible = _imageTab && btnShowHide.Visible;
             lblRefresh.Visible = _imageTab && btnShowHide.Visible;
             cmbRefresh.Visible = _imageTab && btnShowHide.Visible;
+            lblCaptureCursor.Visible = _imageTab && btnShowHide.Visible;
+            cmbCaptureCursor.Visible = _imageTab && btnShowHide.Visible;
             lblFps.Visible = _imageTab && btnShowHide.Visible;
             numericFps.Visible = _imageTab && btnShowHide.Visible;
             lblScale.Visible = _imageTab && btnShowHide.Visible;
