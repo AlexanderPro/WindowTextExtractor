@@ -24,7 +24,7 @@ namespace WindowTextExtractor.Forms
         private const string DEFAULT_VIDEO_FILE_NAME = "window.avi";
         private const string DEFAULT_FONT_NAME = "Courier New";
         private const int DEFAULT_FONT_SIZE = 10;
-        private const int DEFAULT_FPS = 24;
+        private const int DEFAULT_FPS = 12;
         private const decimal DEFAULT_SCALE = 1;
 
         private readonly int _processId;
