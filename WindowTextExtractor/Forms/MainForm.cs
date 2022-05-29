@@ -560,7 +560,8 @@ namespace WindowTextExtractor.Forms
                                     else
                                     {
                                         var text = element.GetTextFromConsole() ?? element.GetTextFromWindow();
-                                        txtContent.Text = text == null ? "" : text.TrimEnd().TrimEnd(Environment.NewLine);
+                                        text = text == null ? "" : text.TrimEnd().TrimEnd(Environment.NewLine);
+                                        txtContent.Text = text;
                                         txtContent.ScrollTextToEnd();
                                         AddTextToList(text);
 
