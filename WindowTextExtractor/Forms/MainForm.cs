@@ -10,6 +10,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Text;
 using System.Linq;
+using System.Xml.Linq;
 using WindowTextExtractor.Extensions;
 using WindowTextExtractor.Utils;
 using WindowTextExtractor.Native;
@@ -21,7 +22,7 @@ namespace WindowTextExtractor.Forms
 {
     public partial class MainForm : Form, IMessageFilter
     {
-        private const string DEFAULT_VIDEO_FILE_NAME = "window.avi";
+        private const string DEFAULT_VIDEO_FILE_NAME = "Window.avi";
         private const string DEFAULT_FONT_NAME = "Courier New";
         private const int DEFAULT_FONT_SIZE = 10;
         private const int DEFAULT_FPS = 12;
@@ -33,9 +34,11 @@ namespace WindowTextExtractor.Forms
         private string _64BitFilePath;
         private string _informationFileName;
         private string _textFileName;
+        private string _textListFileName;
         private string _imageFileName;
         private string _videoFileName;
         private IntPtr _windowHandle;
+        private string _listText;
         private int _fps;
         private decimal _scale;
         private object _lockObject;
@@ -67,9 +70,11 @@ namespace WindowTextExtractor.Forms
             _64BitFilePath = string.Empty;
             _informationFileName = string.Empty;
             _textFileName = string.Empty;
+            _textListFileName = string.Empty;
             _imageFileName = string.Empty;
             _videoFileName = Path.Combine(AssemblyUtils.AssemblyDirectory, DEFAULT_VIDEO_FILE_NAME);
             _windowHandle = IntPtr.Zero;
+            _listText = string.Empty;
             _refreshImage = true;
             _captureCursor = true;
             _imageTab = false;
@@ -161,6 +166,7 @@ namespace WindowTextExtractor.Forms
                         var password = Marshal.PtrToStringAuto(cds.lpData);
                         txtContent.Text = password;
                         txtContent.ScrollTextToEnd();
+                        AddTextToList(password);
                         OnContentChanged();
                     }
                     break;
@@ -177,6 +183,20 @@ namespace WindowTextExtractor.Forms
         private void txtContent_MultilineChanged(object sender, EventArgs e)
         {
             OnContentChanged();
+        }
+
+        private void gvTextList_SelectionChanged(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow row in gvTextList.Rows)
+            {
+                var firstCell = row.Cells[0];
+                if (firstCell.Selected)
+                {
+                    txtContent.Text = ((string)firstCell.Value) ?? string.Empty;
+                    OnContentChanged();
+                    break;
+                }
+            }
         }
 
         private void menuItemSaveInformationAs_Click(object sender, EventArgs e)
@@ -227,6 +247,33 @@ namespace WindowTextExtractor.Forms
             {
                 _textFileName = dialog.FileName;
                 File.WriteAllText(dialog.FileName, txtContent.Text, Encoding.UTF8);
+            }
+        }
+
+        private void menuItemSaveTextListAs_Click(object sender, EventArgs e)
+        {
+            var dialog = new SaveFileDialog
+            {
+                OverwritePrompt = true,
+                ValidateNames = true,
+                Title = "Save As",
+                FileName = File.Exists(_textListFileName) ? Path.GetFileName(_textListFileName) : "*.xml",
+                DefaultExt = "xml",
+                RestoreDirectory = false,
+                Filter = "XML Documents (*.xml)|*.xml|All Files (*.*)|*.*"
+            };
+
+            if (!File.Exists(_textListFileName))
+            {
+                dialog.InitialDirectory = AssemblyUtils.AssemblyDirectory;
+            }
+
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.Cancel)
+            {
+                _textListFileName = dialog.FileName;
+                var document = new XDocument();
+                document.Add(new XElement("items", gvTextList.Rows.OfType<DataGridViewRow>().Select(x => new XElement("item", ((string)x.Cells[0].Value) ?? string.Empty))));
+                FileUtils.Save(_textListFileName, document);
             }
         }
 
@@ -284,6 +331,27 @@ namespace WindowTextExtractor.Forms
             menuItemAlwaysOnTop.Checked = TopMost;
         }
 
+        private void menuItemChecked_Click(object sender, EventArgs e)
+        {
+            var menuItem = (ToolStripMenuItem)sender;
+            menuItem.Checked = !menuItem.Checked;
+        }
+
+        private void menuItemShowTextList_Click(object sender, EventArgs e)
+        {
+            menuItemShowTextList.Checked = !menuItemShowTextList.Checked;
+            if (menuItemShowTextList.Checked)
+            {
+                splitTextContainer.Panel2Collapsed = false;
+                splitTextContainer.Panel2.Show();
+            }
+            else
+            {
+                splitTextContainer.Panel2Collapsed = true;
+                splitTextContainer.Panel2.Hide();
+            }
+        }
+
         private void menuItemAbout_Click(object sender, EventArgs e)
         {
             var dialog = new AboutForm();
@@ -297,6 +365,7 @@ namespace WindowTextExtractor.Forms
                 _isButtonTargetMouseDown = true;
                 gvInformation.Rows.Clear();
                 gvInformation.Tag = null;
+                gvTextList.Rows.Clear();
                 txtContent.Text = string.Empty;
                 if (!TopMost)
                 {
@@ -443,6 +512,18 @@ namespace WindowTextExtractor.Forms
                                 {
                                     var windowHandle = new IntPtr(element.Current.NativeWindowHandle);
                                     windowHandle = windowHandle == IntPtr.Zero ? User32.WindowFromPoint(new Point(cursorPosition.X, cursorPosition.Y)) : windowHandle;
+                                    
+                                    var previouseHandle = IntPtr.Zero;
+                                    lock (_lockObject)
+                                    {
+                                        previouseHandle = _windowHandle;
+                                    }
+
+                                    if (!menuItemAlwaysRefreshTabs.Checked && previouseHandle == windowHandle)
+                                    {
+                                        return false;
+                                    }
+
                                     if (element.Current.IsPassword)
                                     {
                                         var process = Process.GetProcessById(element.Current.ProcessId);
@@ -453,8 +534,10 @@ namespace WindowTextExtractor.Forms
                                                 var passwords = WindowUtils.GetPasswordsFromHtmlPage(windowHandle);
                                                 if (passwords.Any())
                                                 {
-                                                    txtContent.Text = passwords.Count > 1 ? string.Join(Environment.NewLine, passwords.Select((x, i) => "Password " + (i + 1) + ": " + x)) : passwords[0];
+                                                    var text = passwords.Count > 1 ? string.Join(Environment.NewLine, passwords.Select((x, i) => "Password " + (i + 1) + ": " + x)) : passwords[0];
+                                                    txtContent.Text = text;
                                                     txtContent.ScrollTextToEnd();
+                                                    AddTextToList(text);
                                                     OnContentChanged();
                                                 }
                                             }
@@ -479,6 +562,8 @@ namespace WindowTextExtractor.Forms
                                         var text = element.GetTextFromConsole() ?? element.GetTextFromWindow();
                                         txtContent.Text = text == null ? "" : text.TrimEnd().TrimEnd(Environment.NewLine);
                                         txtContent.ScrollTextToEnd();
+                                        AddTextToList(text);
+
                                         var scale = 1m;
                                         var captureCursor = false;
                                         lock (_lockObject)
@@ -685,6 +770,7 @@ namespace WindowTextExtractor.Forms
             lblTotalLines.Text = "Total Lines: " + txtContent.Text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None).Length;
             lblImageSize.Text = "Image Size: " + (pbContent != null && pbContent.Image != null ? $"{pbContent.Image.Width}x{pbContent.Image.Height}" : string.Empty);
             menuItemSaveTextAs.Enabled = txtContent.Text.Length > 0;
+            menuItemSaveTextListAs.Enabled = gvTextList.Rows.Count > 0;
             menuItemSaveImageAs.Enabled = pbContent.Image != null;
             menuItemSaveInformationAs.Enabled = gvInformation.Tag != null;
         }
@@ -734,6 +820,27 @@ namespace WindowTextExtractor.Forms
         {
             pbContent.Image?.Dispose();
             pbContent.Image = image;
+        }
+
+        private void AddTextToList(string text)
+        {
+            if (!menuItemShowEmptyItems.Checked && string.IsNullOrEmpty(text))
+            {
+                return;
+            }
+
+            if (menuItemNotRepeated.Checked && _listText == text)
+            {
+                return;
+            }
+
+            _listText = text;
+
+            var index = gvTextList.Rows.Add();
+            var row = gvTextList.Rows[index];
+            row.Cells[0].Value = text;
+            row.Selected = true;
+            gvTextList.FirstDisplayedScrollingRowIndex = index;
         }
 
         private void OnCurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)

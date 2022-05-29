@@ -42,12 +42,18 @@
             this.menuItemFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSaveInformationAs = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSaveTextAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemSaveTextListAs = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSaveImageAs = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.menuItemExit = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemOptions = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemAlwaysOnTop = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemFont = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemTextList = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemShowTextList = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemShowEmptyItems = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemNotRepeated = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemAlwaysOnTop = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemAlwaysRefreshTabs = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.btnTarget = new System.Windows.Forms.Button();
@@ -59,6 +65,8 @@
             this.clmnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.clmnValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabpText = new System.Windows.Forms.TabPage();
+            this.splitTextContainer = new System.Windows.Forms.SplitContainer();
+            this.gvTextList = new System.Windows.Forms.DataGridView();
             this.tabpImage = new System.Windows.Forms.TabPage();
             this.numericFps = new System.Windows.Forms.NumericUpDown();
             this.lblFps = new System.Windows.Forms.Label();
@@ -72,6 +80,7 @@
             this.numericScale = new System.Windows.Forms.NumericUpDown();
             this.cmbCaptureCursor = new System.Windows.Forms.ComboBox();
             this.lblCaptureCursor = new System.Windows.Forms.Label();
+            this.dataGridColumnText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbContent)).BeginInit();
@@ -79,6 +88,11 @@
             this.tabpInformation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gvInformation)).BeginInit();
             this.tabpText.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitTextContainer)).BeginInit();
+            this.splitTextContainer.Panel1.SuspendLayout();
+            this.splitTextContainer.Panel2.SuspendLayout();
+            this.splitTextContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gvTextList)).BeginInit();
             this.tabpImage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericFps)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericScale)).BeginInit();
@@ -86,14 +100,12 @@
             // 
             // txtContent
             // 
-            this.txtContent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtContent.Location = new System.Drawing.Point(3, 3);
+            this.txtContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtContent.Location = new System.Drawing.Point(0, 0);
             this.txtContent.Multiline = true;
             this.txtContent.Name = "txtContent";
             this.txtContent.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtContent.Size = new System.Drawing.Size(720, 353);
+            this.txtContent.Size = new System.Drawing.Size(512, 332);
             this.txtContent.TabIndex = 0;
             this.txtContent.MultilineChanged += new System.EventHandler(this.txtContent_MultilineChanged);
             this.txtContent.TextChanged += new System.EventHandler(this.txtContent_TextChanged);
@@ -167,6 +179,7 @@
             this.menuItemFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemSaveInformationAs,
             this.menuItemSaveTextAs,
+            this.menuItemSaveTextListAs,
             this.menuItemSaveImageAs,
             this.toolStripSeparator,
             this.menuItemExit});
@@ -189,6 +202,14 @@
             this.menuItemSaveTextAs.Size = new System.Drawing.Size(189, 22);
             this.menuItemSaveTextAs.Text = "Save Text As...";
             this.menuItemSaveTextAs.Click += new System.EventHandler(this.menuItemSaveTextAs_Click);
+            // 
+            // menuItemSaveTextListAs
+            // 
+            this.menuItemSaveTextListAs.Enabled = false;
+            this.menuItemSaveTextListAs.Name = "menuItemSaveTextListAs";
+            this.menuItemSaveTextListAs.Size = new System.Drawing.Size(189, 22);
+            this.menuItemSaveTextListAs.Text = "Save Text List As...";
+            this.menuItemSaveTextListAs.Click += new System.EventHandler(this.menuItemSaveTextListAs_Click);
             // 
             // menuItemSaveImageAs
             // 
@@ -213,25 +234,71 @@
             // menuItemOptions
             // 
             this.menuItemOptions.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemFont,
+            this.menuItemTextList,
             this.menuItemAlwaysOnTop,
-            this.menuItemFont});
+            this.menuItemAlwaysRefreshTabs});
             this.menuItemOptions.Name = "menuItemOptions";
             this.menuItemOptions.Size = new System.Drawing.Size(61, 20);
             this.menuItemOptions.Text = "Options";
             // 
-            // menuItemAlwaysOnTop
-            // 
-            this.menuItemAlwaysOnTop.Name = "menuItemAlwaysOnTop";
-            this.menuItemAlwaysOnTop.Size = new System.Drawing.Size(152, 22);
-            this.menuItemAlwaysOnTop.Text = "Always On Top";
-            this.menuItemAlwaysOnTop.Click += new System.EventHandler(this.menuItemAlwaysOnTop_Click);
-            // 
             // menuItemFont
             // 
             this.menuItemFont.Name = "menuItemFont";
-            this.menuItemFont.Size = new System.Drawing.Size(152, 22);
+            this.menuItemFont.Size = new System.Drawing.Size(300, 22);
             this.menuItemFont.Text = "Font...";
             this.menuItemFont.Click += new System.EventHandler(this.menuItemFont_Click);
+            // 
+            // menuItemTextList
+            // 
+            this.menuItemTextList.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemShowTextList,
+            this.menuItemShowEmptyItems,
+            this.menuItemNotRepeated});
+            this.menuItemTextList.Name = "menuItemTextList";
+            this.menuItemTextList.Size = new System.Drawing.Size(300, 22);
+            this.menuItemTextList.Text = "Text List";
+            // 
+            // menuItemShowTextList
+            // 
+            this.menuItemShowTextList.Checked = true;
+            this.menuItemShowTextList.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.menuItemShowTextList.Name = "menuItemShowTextList";
+            this.menuItemShowTextList.Size = new System.Drawing.Size(205, 22);
+            this.menuItemShowTextList.Text = "Show Text List";
+            this.menuItemShowTextList.Click += new System.EventHandler(this.menuItemShowTextList_Click);
+            // 
+            // menuItemShowEmptyItems
+            // 
+            this.menuItemShowEmptyItems.Name = "menuItemShowEmptyItems";
+            this.menuItemShowEmptyItems.Size = new System.Drawing.Size(205, 22);
+            this.menuItemShowEmptyItems.Text = "Show Empty Items";
+            this.menuItemShowEmptyItems.Click += new System.EventHandler(this.menuItemChecked_Click);
+            // 
+            // menuItemNotRepeated
+            // 
+            this.menuItemNotRepeated.Checked = true;
+            this.menuItemNotRepeated.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.menuItemNotRepeated.Name = "menuItemNotRepeated";
+            this.menuItemNotRepeated.Size = new System.Drawing.Size(205, 22);
+            this.menuItemNotRepeated.Text = "Not Repeated New Items";
+            this.menuItemNotRepeated.Click += new System.EventHandler(this.menuItemChecked_Click);
+            // 
+            // menuItemAlwaysOnTop
+            // 
+            this.menuItemAlwaysOnTop.Name = "menuItemAlwaysOnTop";
+            this.menuItemAlwaysOnTop.Size = new System.Drawing.Size(300, 22);
+            this.menuItemAlwaysOnTop.Text = "Always On Top";
+            this.menuItemAlwaysOnTop.Click += new System.EventHandler(this.menuItemAlwaysOnTop_Click);
+            // 
+            // menuItemAlwaysRefreshTabs
+            // 
+            this.menuItemAlwaysRefreshTabs.Checked = true;
+            this.menuItemAlwaysRefreshTabs.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.menuItemAlwaysRefreshTabs.Name = "menuItemAlwaysRefreshTabs";
+            this.menuItemAlwaysRefreshTabs.Size = new System.Drawing.Size(300, 22);
+            this.menuItemAlwaysRefreshTabs.Text = "Always Refresh Tabs On Pointer Movement";
+            this.menuItemAlwaysRefreshTabs.Click += new System.EventHandler(this.menuItemChecked_Click);
             // 
             // menuItemHelp
             // 
@@ -341,7 +408,7 @@
             // 
             // tabpText
             // 
-            this.tabpText.Controls.Add(this.txtContent);
+            this.tabpText.Controls.Add(this.splitTextContainer);
             this.tabpText.Location = new System.Drawing.Point(4, 22);
             this.tabpText.Name = "tabpText";
             this.tabpText.Padding = new System.Windows.Forms.Padding(3);
@@ -349,6 +416,53 @@
             this.tabpText.TabIndex = 0;
             this.tabpText.Text = "Text";
             this.tabpText.UseVisualStyleBackColor = true;
+            // 
+            // splitTextContainer
+            // 
+            this.splitTextContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitTextContainer.Location = new System.Drawing.Point(3, 3);
+            this.splitTextContainer.Name = "splitTextContainer";
+            // 
+            // splitTextContainer.Panel1
+            // 
+            this.splitTextContainer.Panel1.Controls.Add(this.txtContent);
+            // 
+            // splitTextContainer.Panel2
+            // 
+            this.splitTextContainer.Panel2.Controls.Add(this.gvTextList);
+            this.splitTextContainer.Size = new System.Drawing.Size(720, 332);
+            this.splitTextContainer.SplitterDistance = 512;
+            this.splitTextContainer.TabIndex = 1;
+            // 
+            // gvTextList
+            // 
+            this.gvTextList.AllowUserToAddRows = false;
+            this.gvTextList.AllowUserToDeleteRows = false;
+            this.gvTextList.AllowUserToResizeColumns = false;
+            this.gvTextList.AllowUserToResizeRows = false;
+            this.gvTextList.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.gvTextList.BackgroundColor = System.Drawing.SystemColors.ControlLightLight;
+            this.gvTextList.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.gvTextList.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            this.gvTextList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gvTextList.ColumnHeadersVisible = false;
+            this.gvTextList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridColumnText});
+            this.gvTextList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gvTextList.Location = new System.Drawing.Point(0, 0);
+            this.gvTextList.MultiSelect = false;
+            this.gvTextList.Name = "gvTextList";
+            this.gvTextList.ReadOnly = true;
+            this.gvTextList.RowHeadersVisible = false;
+            this.gvTextList.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.gvTextList.ShowCellErrors = false;
+            this.gvTextList.ShowCellToolTips = false;
+            this.gvTextList.ShowEditingIcon = false;
+            this.gvTextList.ShowRowErrors = false;
+            this.gvTextList.Size = new System.Drawing.Size(204, 332);
+            this.gvTextList.TabIndex = 1;
+            this.gvTextList.TabStop = false;
+            this.gvTextList.SelectionChanged += new System.EventHandler(this.gvTextList_SelectionChanged);
             // 
             // tabpImage
             // 
@@ -530,6 +644,15 @@
             this.lblCaptureCursor.Text = "Capture cursor:";
             this.lblCaptureCursor.Visible = false;
             // 
+            // dataGridColumnText
+            // 
+            this.dataGridColumnText.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dataGridColumnText.FillWeight = 50F;
+            this.dataGridColumnText.HeaderText = "Text";
+            this.dataGridColumnText.Name = "dataGridColumnText";
+            this.dataGridColumnText.ReadOnly = true;
+            this.dataGridColumnText.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -564,7 +687,12 @@
             this.tabpInformation.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gvInformation)).EndInit();
             this.tabpText.ResumeLayout(false);
-            this.tabpText.PerformLayout();
+            this.splitTextContainer.Panel1.ResumeLayout(false);
+            this.splitTextContainer.Panel1.PerformLayout();
+            this.splitTextContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitTextContainer)).EndInit();
+            this.splitTextContainer.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.gvTextList)).EndInit();
             this.tabpImage.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericFps)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericScale)).EndInit();
@@ -616,6 +744,15 @@
         private System.Windows.Forms.NumericUpDown numericScale;
         private System.Windows.Forms.ComboBox cmbCaptureCursor;
         private System.Windows.Forms.Label lblCaptureCursor;
+        private System.Windows.Forms.ToolStripMenuItem menuItemAlwaysRefreshTabs;
+        private System.Windows.Forms.ToolStripMenuItem menuItemSaveTextListAs;
+        private System.Windows.Forms.SplitContainer splitTextContainer;
+        private System.Windows.Forms.DataGridView gvTextList;
+        private System.Windows.Forms.ToolStripMenuItem menuItemTextList;
+        private System.Windows.Forms.ToolStripMenuItem menuItemShowTextList;
+        private System.Windows.Forms.ToolStripMenuItem menuItemShowEmptyItems;
+        private System.Windows.Forms.ToolStripMenuItem menuItemNotRepeated;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridColumnText;
     }
 }
 
