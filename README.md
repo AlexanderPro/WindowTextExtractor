@@ -5,6 +5,7 @@ An absolutely free and simple in use system tool to:
 * Extract text from modal windows, buttons, textboxes, lists, etc
 * Show passwords stored behind asterisks (*****) from most of the windows apps
 * Show detailed window and process information 
+* Show process environment variables
 * Show or hide almost any desktop window
 * Take a window screenshot
 * Record window stream in avi file
