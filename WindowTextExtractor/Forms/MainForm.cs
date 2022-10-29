@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Windows.Automation;
@@ -37,7 +38,9 @@ namespace WindowTextExtractor.Forms
         private string _textListFileName;
         private string _imageFileName;
         private string _videoFileName;
+        private string _environmentFileName;
         private IntPtr _windowHandle;
+        private int _windowProcessId;
         private string _listText;
         private int _fps;
         private decimal _scale;
@@ -73,7 +76,9 @@ namespace WindowTextExtractor.Forms
             _textListFileName = string.Empty;
             _imageFileName = string.Empty;
             _videoFileName = Path.Combine(AssemblyUtils.AssemblyDirectory, DEFAULT_VIDEO_FILE_NAME);
+            _environmentFileName = string.Empty;
             _windowHandle = IntPtr.Zero;
+            _windowProcessId = 0;
             _listText = string.Empty;
             _refreshImage = true;
             _captureCursor = true;
@@ -217,7 +222,7 @@ namespace WindowTextExtractor.Forms
                 dialog.InitialDirectory = AssemblyUtils.AssemblyDirectory;
             }
 
-            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.Cancel)
+            if (dialog.ShowDialog() != DialogResult.Cancel)
             {
                 _informationFileName = dialog.FileName;
                 var content = gvInformation.Tag != null ? ((WindowInformation)gvInformation.Tag).ToString() : string.Empty;
@@ -243,7 +248,7 @@ namespace WindowTextExtractor.Forms
                 dialog.InitialDirectory = AssemblyUtils.AssemblyDirectory;
             }
 
-            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.Cancel)
+            if (dialog.ShowDialog() != DialogResult.Cancel)
             {
                 _textFileName = dialog.FileName;
                 File.WriteAllText(dialog.FileName, txtContent.Text, Encoding.UTF8);
@@ -268,7 +273,7 @@ namespace WindowTextExtractor.Forms
                 dialog.InitialDirectory = AssemblyUtils.AssemblyDirectory;
             }
 
-            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.Cancel)
+            if (dialog.ShowDialog() != DialogResult.Cancel)
             {
                 _textListFileName = dialog.FileName;
                 var document = new XDocument();
@@ -295,7 +300,7 @@ namespace WindowTextExtractor.Forms
                 dialog.InitialDirectory = AssemblyUtils.AssemblyDirectory;
             }
 
-            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.Cancel)
+            if (dialog.ShowDialog() != DialogResult.Cancel)
             {
                 _imageFileName = dialog.FileName;
                 var fileExtension = Path.GetExtension(dialog.FileName).ToLower();
@@ -305,6 +310,42 @@ namespace WindowTextExtractor.Forms
                     fileExtension == ".png" ? ImageFormat.Png :
                     fileExtension == ".tiff" ? ImageFormat.Tiff : ImageFormat.Wmf;
                 pbContent.Image.Save(dialog.FileName, imageFormat);
+            }
+        }
+
+        private void menuItemSaveEnvironmentAs_Click(object sender, EventArgs e)
+        {
+            var dialog = new SaveFileDialog
+            {
+                OverwritePrompt = true,
+                ValidateNames = true,
+                Title = "Save As",
+                FileName = File.Exists(_environmentFileName) ? Path.GetFileName(_environmentFileName) : "*.txt",
+                DefaultExt = "txt",
+                RestoreDirectory = false,
+                Filter = "Text Documents (*.txt)|*.txt|All Files (*.*)|*.*"
+            };
+
+            if (!File.Exists(_environmentFileName))
+            {
+                dialog.InitialDirectory = AssemblyUtils.AssemblyDirectory;
+            }
+
+            if (dialog.ShowDialog() != DialogResult.Cancel)
+            {
+                _environmentFileName = dialog.FileName;
+                var content = string.Empty;
+                if (gvEnvironment.Tag is IDictionary<string, string> variables)
+                {
+                    const int paddingSize = 25;
+                    var builder = new StringBuilder(1024);
+                    foreach (var variableKey in variables.Keys)
+                    {
+                        builder.AppendFormat($"{variableKey.PadRight(paddingSize)}: {variables[variableKey]}{Environment.NewLine}");
+                    }
+                    content = builder.ToString();
+                }
+                File.WriteAllText(dialog.FileName, content, Encoding.UTF8);
             }
         }
 
@@ -319,7 +360,7 @@ namespace WindowTextExtractor.Forms
             dialog.ShowHelp = false;
             dialog.ShowColor = false;
             dialog.Font = txtContent.Font;
-            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.Cancel)
+            if (dialog.ShowDialog() != DialogResult.Cancel)
             {
                 txtContent.Font = dialog.Font;
             }
@@ -365,6 +406,8 @@ namespace WindowTextExtractor.Forms
                 _isButtonTargetMouseDown = true;
                 gvInformation.Rows.Clear();
                 gvInformation.Tag = null;
+                gvEnvironment.Rows.Clear();
+                gvEnvironment.Tag = null;
                 gvTextList.Rows.Clear();
                 txtContent.Text = string.Empty;
                 if (!TopMost)
@@ -432,7 +475,7 @@ namespace WindowTextExtractor.Forms
                 Filter = "Video Files (*.avi)|*.avi|All Files (*.*)|*.*"
             };
 
-            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.Cancel)
+            if (dialog.ShowDialog() != DialogResult.Cancel)
             {
                 lock (_lockObject)
                 {
@@ -513,20 +556,22 @@ namespace WindowTextExtractor.Forms
                                     var windowHandle = new IntPtr(element.Current.NativeWindowHandle);
                                     windowHandle = windowHandle == IntPtr.Zero ? User32.WindowFromPoint(new Point(cursorPosition.X, cursorPosition.Y)) : windowHandle;
                                     
-                                    var previouseHandle = IntPtr.Zero;
+                                    var previousHandle = IntPtr.Zero;
+                                    var previousProcessId = 0;
                                     lock (_lockObject)
                                     {
-                                        previouseHandle = _windowHandle;
+                                        previousHandle = _windowHandle;
+                                        previousProcessId = _windowProcessId;
                                     }
 
-                                    if (!menuItemAlwaysRefreshTabs.Checked && previouseHandle == windowHandle)
+                                    if (!menuItemAlwaysRefreshTabs.Checked && previousHandle == windowHandle)
                                     {
                                         return false;
                                     }
 
+                                    var process = Process.GetProcessById(element.Current.ProcessId);
                                     if (element.Current.IsPassword)
                                     {
-                                        var process = Process.GetProcessById(element.Current.ProcessId);
                                         if (process.ProcessName.ToLower() == "iexplore")
                                         {
                                             if (windowHandle != IntPtr.Zero)
@@ -570,6 +615,7 @@ namespace WindowTextExtractor.Forms
                                         lock (_lockObject)
                                         {
                                             _windowHandle = windowHandle;
+                                            _windowProcessId = element.Current.ProcessId;
                                             scale = _scale;
                                             captureCursor = _captureCursor;
                                         }
@@ -588,6 +634,10 @@ namespace WindowTextExtractor.Forms
                                         }
                                         var windowInformation = WindowUtils.GetWindowInformation(windowHandle);
                                         FillInformation(windowInformation);
+                                        if (previousProcessId != element.Current.ProcessId && process.TryReadEnvironmentVariables(out var variables))
+                                        {
+                                            FillEnvironment(variables);
+                                        }
                                         OnContentChanged();
                                     }
 
@@ -599,9 +649,11 @@ namespace WindowTextExtractor.Forms
                                     lock (_lockObject)
                                     {
                                         _windowHandle = IntPtr.Zero;
+                                        _windowProcessId = 0;
                                     }
                                     FillImage(Properties.Resources.OnePixel);
                                     FillInformation(new WindowInformation());
+                                    FillEnvironment(new Dictionary<string, string>());
                                     OnContentChanged();
                                     btnShowHide.Visible = false;
                                 }
@@ -772,8 +824,9 @@ namespace WindowTextExtractor.Forms
             lblImageSize.Text = "Image Size: " + (pbContent != null && pbContent.Image != null ? $"{pbContent.Image.Width}x{pbContent.Image.Height}" : string.Empty);
             menuItemSaveTextAs.Enabled = txtContent.Text.Length > 0;
             menuItemSaveTextListAs.Enabled = gvTextList.Rows.Count > 0;
-            menuItemSaveImageAs.Enabled = pbContent.Image != null;
-            menuItemSaveInformationAs.Enabled = gvInformation.Tag != null;
+            menuItemSaveImageAs.Enabled = pbContent != null && pbContent.Image != null && (pbContent.Image.Width > 1 || pbContent.Image.Height > 1);
+            menuItemSaveInformationAs.Enabled = gvInformation.Tag != null && gvInformation.Tag is WindowInformation information && information.WindowDetails.Any() && information.ProcessDetails.Any();
+            menuItemSaveEnvironmentAs.Enabled = gvEnvironment.Tag != null && gvEnvironment.Tag is IDictionary<string, string> variables && variables.Any();
         }
 
         private void FillInformation(WindowInformation windowInformation)
@@ -814,7 +867,34 @@ namespace WindowTextExtractor.Forms
                 row.Cells[0].Value = processDetailKey;
                 row.Cells[1].Value = windowInformation.ProcessDetails[processDetailKey];
             }
+
             gvInformation.Tag = windowInformation;
+        }
+
+        private void FillEnvironment(IDictionary<string, string> variables)
+        {
+            gvEnvironment.Rows.Clear();
+            gvEnvironment.Tag = null;
+
+            if (variables.Keys.Any())
+            {
+                var indexHeader = gvEnvironment.Rows.Add();
+                var rowHeader = gvEnvironment.Rows[indexHeader];
+                rowHeader.Cells[0].Value = "Variable";
+                rowHeader.Cells[0].Style.BackColor = Color.LightGray;
+                rowHeader.Cells[1].Value = "Value";
+                rowHeader.Cells[1].Style.BackColor = Color.LightGray;
+            }
+
+            foreach (var variableKey in variables.Keys)
+            {
+                var index = gvEnvironment.Rows.Add();
+                var row = gvEnvironment.Rows[index];
+                row.Cells[0].Value = variableKey;
+                row.Cells[1].Value = variables[variableKey];
+            }
+
+            gvEnvironment.Tag = variables;
         }
 
         private void FillImage(Image image)

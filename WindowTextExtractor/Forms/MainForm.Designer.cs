@@ -67,6 +67,7 @@
             this.tabpText = new System.Windows.Forms.TabPage();
             this.splitTextContainer = new System.Windows.Forms.SplitContainer();
             this.gvTextList = new System.Windows.Forms.DataGridView();
+            this.dataGridColumnText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabpImage = new System.Windows.Forms.TabPage();
             this.numericFps = new System.Windows.Forms.NumericUpDown();
             this.lblFps = new System.Windows.Forms.Label();
@@ -80,7 +81,11 @@
             this.numericScale = new System.Windows.Forms.NumericUpDown();
             this.cmbCaptureCursor = new System.Windows.Forms.ComboBox();
             this.lblCaptureCursor = new System.Windows.Forms.Label();
-            this.dataGridColumnText = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tabpEnvironment = new System.Windows.Forms.TabPage();
+            this.gvEnvironment = new System.Windows.Forms.DataGridView();
+            this.menuItemSaveEnvironmentAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.clmnEnvironmentName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.clmnEnvironmentValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbContent)).BeginInit();
@@ -96,6 +101,8 @@
             this.tabpImage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericFps)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericScale)).BeginInit();
+            this.tabpEnvironment.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gvEnvironment)).BeginInit();
             this.SuspendLayout();
             // 
             // txtContent
@@ -181,6 +188,7 @@
             this.menuItemSaveTextAs,
             this.menuItemSaveTextListAs,
             this.menuItemSaveImageAs,
+            this.menuItemSaveEnvironmentAs,
             this.toolStripSeparator,
             this.menuItemExit});
             this.menuItemFile.Name = "menuItemFile";
@@ -191,7 +199,7 @@
             // 
             this.menuItemSaveInformationAs.Enabled = false;
             this.menuItemSaveInformationAs.Name = "menuItemSaveInformationAs";
-            this.menuItemSaveInformationAs.Size = new System.Drawing.Size(189, 22);
+            this.menuItemSaveInformationAs.Size = new System.Drawing.Size(194, 22);
             this.menuItemSaveInformationAs.Text = "Save Information As...";
             this.menuItemSaveInformationAs.Click += new System.EventHandler(this.menuItemSaveInformationAs_Click);
             // 
@@ -199,7 +207,7 @@
             // 
             this.menuItemSaveTextAs.Enabled = false;
             this.menuItemSaveTextAs.Name = "menuItemSaveTextAs";
-            this.menuItemSaveTextAs.Size = new System.Drawing.Size(189, 22);
+            this.menuItemSaveTextAs.Size = new System.Drawing.Size(194, 22);
             this.menuItemSaveTextAs.Text = "Save Text As...";
             this.menuItemSaveTextAs.Click += new System.EventHandler(this.menuItemSaveTextAs_Click);
             // 
@@ -207,7 +215,7 @@
             // 
             this.menuItemSaveTextListAs.Enabled = false;
             this.menuItemSaveTextListAs.Name = "menuItemSaveTextListAs";
-            this.menuItemSaveTextListAs.Size = new System.Drawing.Size(189, 22);
+            this.menuItemSaveTextListAs.Size = new System.Drawing.Size(194, 22);
             this.menuItemSaveTextListAs.Text = "Save Text List As...";
             this.menuItemSaveTextListAs.Click += new System.EventHandler(this.menuItemSaveTextListAs_Click);
             // 
@@ -215,19 +223,19 @@
             // 
             this.menuItemSaveImageAs.Enabled = false;
             this.menuItemSaveImageAs.Name = "menuItemSaveImageAs";
-            this.menuItemSaveImageAs.Size = new System.Drawing.Size(189, 22);
+            this.menuItemSaveImageAs.Size = new System.Drawing.Size(194, 22);
             this.menuItemSaveImageAs.Text = "Save Image As...";
             this.menuItemSaveImageAs.Click += new System.EventHandler(this.menuItemSaveImageAs_Click);
             // 
             // toolStripSeparator
             // 
             this.toolStripSeparator.Name = "toolStripSeparator";
-            this.toolStripSeparator.Size = new System.Drawing.Size(186, 6);
+            this.toolStripSeparator.Size = new System.Drawing.Size(191, 6);
             // 
             // menuItemExit
             // 
             this.menuItemExit.Name = "menuItemExit";
-            this.menuItemExit.Size = new System.Drawing.Size(189, 22);
+            this.menuItemExit.Size = new System.Drawing.Size(194, 22);
             this.menuItemExit.Text = "Exit";
             this.menuItemExit.Click += new System.EventHandler(this.menuItemExit_Click);
             // 
@@ -346,6 +354,7 @@
             this.tabContent.Controls.Add(this.tabpInformation);
             this.tabContent.Controls.Add(this.tabpText);
             this.tabContent.Controls.Add(this.tabpImage);
+            this.tabContent.Controls.Add(this.tabpEnvironment);
             this.tabContent.Location = new System.Drawing.Point(0, 127);
             this.tabContent.Name = "tabContent";
             this.tabContent.SelectedIndex = 0;
@@ -463,6 +472,15 @@
             this.gvTextList.TabIndex = 1;
             this.gvTextList.TabStop = false;
             this.gvTextList.SelectionChanged += new System.EventHandler(this.gvTextList_SelectionChanged);
+            // 
+            // dataGridColumnText
+            // 
+            this.dataGridColumnText.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dataGridColumnText.FillWeight = 50F;
+            this.dataGridColumnText.HeaderText = "Text";
+            this.dataGridColumnText.Name = "dataGridColumnText";
+            this.dataGridColumnText.ReadOnly = true;
+            this.dataGridColumnText.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // tabpImage
             // 
@@ -644,14 +662,66 @@
             this.lblCaptureCursor.Text = "Capture cursor:";
             this.lblCaptureCursor.Visible = false;
             // 
-            // dataGridColumnText
+            // tabpEnvironment
             // 
-            this.dataGridColumnText.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dataGridColumnText.FillWeight = 50F;
-            this.dataGridColumnText.HeaderText = "Text";
-            this.dataGridColumnText.Name = "dataGridColumnText";
-            this.dataGridColumnText.ReadOnly = true;
-            this.dataGridColumnText.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.tabpEnvironment.Controls.Add(this.gvEnvironment);
+            this.tabpEnvironment.Location = new System.Drawing.Point(4, 22);
+            this.tabpEnvironment.Name = "tabpEnvironment";
+            this.tabpEnvironment.Size = new System.Drawing.Size(726, 338);
+            this.tabpEnvironment.TabIndex = 3;
+            this.tabpEnvironment.Text = "Environment";
+            this.tabpEnvironment.UseVisualStyleBackColor = true;
+            // 
+            // gvEnvironment
+            // 
+            this.gvEnvironment.AllowUserToAddRows = false;
+            this.gvEnvironment.AllowUserToDeleteRows = false;
+            this.gvEnvironment.AllowUserToResizeColumns = false;
+            this.gvEnvironment.AllowUserToResizeRows = false;
+            this.gvEnvironment.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.gvEnvironment.BackgroundColor = System.Drawing.SystemColors.ControlLightLight;
+            this.gvEnvironment.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.gvEnvironment.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            this.gvEnvironment.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gvEnvironment.ColumnHeadersVisible = false;
+            this.gvEnvironment.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.clmnEnvironmentName,
+            this.clmnEnvironmentValue});
+            this.gvEnvironment.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gvEnvironment.Location = new System.Drawing.Point(0, 0);
+            this.gvEnvironment.MultiSelect = false;
+            this.gvEnvironment.Name = "gvEnvironment";
+            this.gvEnvironment.ReadOnly = true;
+            this.gvEnvironment.RowHeadersVisible = false;
+            this.gvEnvironment.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.gvEnvironment.ShowCellErrors = false;
+            this.gvEnvironment.ShowCellToolTips = false;
+            this.gvEnvironment.ShowEditingIcon = false;
+            this.gvEnvironment.ShowRowErrors = false;
+            this.gvEnvironment.Size = new System.Drawing.Size(726, 338);
+            this.gvEnvironment.TabIndex = 1;
+            this.gvEnvironment.TabStop = false;
+            // 
+            // menuItemSaveEnvironmentAs
+            // 
+            this.menuItemSaveEnvironmentAs.Enabled = false;
+            this.menuItemSaveEnvironmentAs.Name = "menuItemSaveEnvironmentAs";
+            this.menuItemSaveEnvironmentAs.Size = new System.Drawing.Size(194, 22);
+            this.menuItemSaveEnvironmentAs.Text = "Save Environment As...";
+            this.menuItemSaveEnvironmentAs.Click += new System.EventHandler(this.menuItemSaveEnvironmentAs_Click);
+            // 
+            // clmnEnvironmentName
+            // 
+            this.clmnEnvironmentName.FillWeight = 50F;
+            this.clmnEnvironmentName.HeaderText = "Name";
+            this.clmnEnvironmentName.Name = "clmnEnvironmentName";
+            this.clmnEnvironmentName.ReadOnly = true;
+            // 
+            // clmnEnvironmentValue
+            // 
+            this.clmnEnvironmentValue.HeaderText = "Value";
+            this.clmnEnvironmentValue.Name = "clmnEnvironmentValue";
+            this.clmnEnvironmentValue.ReadOnly = true;
             // 
             // MainForm
             // 
@@ -696,6 +766,8 @@
             this.tabpImage.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numericFps)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericScale)).EndInit();
+            this.tabpEnvironment.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.gvEnvironment)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -753,6 +825,11 @@
         private System.Windows.Forms.ToolStripMenuItem menuItemShowEmptyItems;
         private System.Windows.Forms.ToolStripMenuItem menuItemNotRepeated;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridColumnText;
+        private System.Windows.Forms.TabPage tabpEnvironment;
+        private System.Windows.Forms.DataGridView gvEnvironment;
+        private System.Windows.Forms.ToolStripMenuItem menuItemSaveEnvironmentAs;
+        private System.Windows.Forms.DataGridViewTextBoxColumn clmnEnvironmentName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn clmnEnvironmentValue;
     }
 }
 
