@@ -14,6 +14,7 @@ using System.Linq;
 using System.Xml.Linq;
 using WindowTextExtractor.Extensions;
 using WindowTextExtractor.Utils;
+using WindowTextExtractor.Diagnostics;
 using WindowTextExtractor.Native;
 using WindowTextExtractor.Native.Enums;
 using WindowTextExtractor.Native.Structs;
@@ -180,15 +181,9 @@ namespace WindowTextExtractor.Forms
             base.WndProc(ref m);
         }
 
-        private void txtContent_TextChanged(object sender, EventArgs e)
-        {
-            OnContentChanged();
-        }
+        private void txtContent_TextChanged(object sender, EventArgs e) => OnContentChanged();
 
-        private void txtContent_MultilineChanged(object sender, EventArgs e)
-        {
-            OnContentChanged();
-        }
+        private void txtContent_MultilineChanged(object sender, EventArgs e) => OnContentChanged();
 
         private void gvTextList_SelectionChanged(object sender, EventArgs e)
         {
@@ -349,10 +344,7 @@ namespace WindowTextExtractor.Forms
             }
         }
 
-        private void menuItemExit_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
+        private void menuItemExit_Click(object sender, EventArgs e) => Close();
 
         private void menuItemFont_Click(object sender, EventArgs e)
         {
@@ -420,7 +412,7 @@ namespace WindowTextExtractor.Forms
         private void btnShowHide_Click(object sender, EventArgs e)
         {
             var windowHandle = IntPtr.Zero;
-            lock(_lockObject)
+            lock (_lockObject)
             {
                 windowHandle = _windowHandle;
             }
@@ -555,7 +547,7 @@ namespace WindowTextExtractor.Forms
                                 {
                                     var windowHandle = new IntPtr(element.Current.NativeWindowHandle);
                                     windowHandle = windowHandle == IntPtr.Zero ? User32.WindowFromPoint(new Point(cursorPosition.X, cursorPosition.Y)) : windowHandle;
-                                    
+
                                     var previousHandle = IntPtr.Zero;
                                     var previousProcessId = 0;
                                     lock (_lockObject)
@@ -634,8 +626,9 @@ namespace WindowTextExtractor.Forms
                                         }
                                         var windowInformation = WindowUtils.GetWindowInformation(windowHandle);
                                         FillInformation(windowInformation);
-                                        if (previousProcessId != element.Current.ProcessId && process.TryReadEnvironmentVariables(out var variables))
+                                        if (previousProcessId != _windowProcessId)
                                         {
+                                            process.TryReadEnvironmentVariables(out var variables);
                                             FillEnvironment(variables);
                                         }
                                         OnContentChanged();
@@ -931,9 +924,7 @@ namespace WindowTextExtractor.Forms
             OnThreadException(sender, new ThreadExceptionEventArgs(ex));
         }
 
-        private void OnThreadException(object sender, ThreadExceptionEventArgs e)
-        {
+        private void OnThreadException(object sender, ThreadExceptionEventArgs e) =>
             MessageBox.Show(e.Exception.ToString(), AssemblyUtils.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
     }
 }

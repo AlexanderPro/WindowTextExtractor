@@ -36,6 +36,7 @@
     <DefineConstants>TRACE;DEBUG;WIN32</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -45,6 +46,7 @@
     <DefineConstants>TRACE;WIN32</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -55,6 +57,7 @@
     <DefineConstants>TRACE;DEBUG;WIN64</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -64,6 +67,7 @@
     <DefineConstants>TRACE;WIN64</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Images\WindowTextExtractor.ico</ApplicationIcon>
@@ -93,6 +97,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccurateTimer.cs" />
+    <Compile Include="Diagnostics\IProcessMemoryAccessor.cs" />
+    <Compile Include="Diagnostics\NativeMethods.cs" />
+    <Compile Include="Diagnostics\ProcessBinaryReader.cs" />
+    <Compile Include="Diagnostics\ProcessEnvironment.cs" />
+    <Compile Include="Diagnostics\ProcessMemory.cs" />
+    <Compile Include="Diagnostics\ProcessMemoryAccessor.cs" />
+    <Compile Include="Diagnostics\ProcessMemoryAccessorWow64.cs" />
+    <Compile Include="Diagnostics\ProcessMemoryStream.cs" />
+    <Compile Include="Diagnostics\SystemInfo.cs" />
+    <Compile Include="Diagnostics\UniPtr.cs" />
     <Compile Include="Extensions\AutomationElementExtensions.cs" />
     <Compile Include="Extensions\ProcessExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
@@ -112,7 +126,6 @@
     <Compile Include="Native\Structs\CURSORINFO.cs" />
     <Compile Include="Native\Structs\ICONINFO.cs" />
     <Compile Include="Native\Winmm.cs" />
-    <Compile Include="ProcessEnvironment.cs" />
     <Compile Include="Utils\FileUtils.cs" />
     <Compile Include="Utils\ImageUtils.cs" />
     <Compile Include="Native\Dwmapi.cs" />
