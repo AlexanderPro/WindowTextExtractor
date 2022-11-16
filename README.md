@@ -9,6 +9,7 @@ An absolutely free and simple in use system tool to:
 * Show or hide almost any desktop window
 * Take a window screenshot
 * Record window stream in avi file
+* OCR support (including text, bar codes and QR codes) for Windows 10, 11 
 
 Screenshot
 ------------------
@@ -26,8 +27,8 @@ Install
 Requirements
 --------------------
 
-* OS Windows XP SP3 and later. Supports x86 and x64 systems.
-* .NET Framework 4.0
+* .NET Framework 4.0 (OS Windows XP SP3 and later) till version 1.14.1
+* .NET Framework 4.6 (OS Windows Vista SP2 and later) from version 1.15.0
 
 How to Use
 --------------------
