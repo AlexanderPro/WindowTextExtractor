@@ -12,6 +12,7 @@ using System.Drawing.Imaging;
 using System.Text;
 using System.Linq;
 using System.Xml.Linq;
+using Windows.Media.Ocr;
 using WindowTextExtractor.Extensions;
 using WindowTextExtractor.Utils;
 using WindowTextExtractor.Diagnostics;
@@ -113,6 +114,14 @@ namespace WindowTextExtractor.Forms
             else
             {
                 font.Dispose();
+            }
+
+            try
+            {
+                BindLanguages();
+            }
+            catch
+            {
             }
 
 #if WIN32
@@ -433,7 +442,18 @@ namespace WindowTextExtractor.Forms
                 _startRecordingTime = _isRecording ? DateTime.Now : (DateTime?)null;
                 if (_isRecording)
                 {
-                    _videoWriter.Open(_videoFileName, _image.Width, _image.Height, _fps, VideoCodec.Raw);
+                    try
+                    {
+                        _videoWriter.Open(_videoFileName, _image.Width, _image.Height, _fps, VideoCodec.Raw);
+                    }
+                    catch (Exception ex)
+                    {
+                        _startRecordingTime = null;
+                        _isRecording = false;
+                        _videoWriter.Close();
+                        MessageBox.Show($"Failed to start recording a video file. {ex.Message}", AssemblyUtils.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
                 }
                 else
                 {
@@ -446,11 +466,50 @@ namespace WindowTextExtractor.Forms
             button.Text = isRecording ? "Stop" : "Record";
             btnTarget.Enabled = !isRecording;
             btnShowHide.Enabled = !isRecording;
+            btnGrab.Enabled = !isRecording;
             cmbRefresh.Enabled = !isRecording;
             cmbCaptureCursor.Enabled = !isRecording;
+            cmbLanguages.Enabled = !isRecording;
             btnBrowseFile.Enabled = !isRecording;
             numericFps.Enabled = !isRecording;
             numericScale.Enabled = !isRecording;
+        }
+
+        private void btnGrab_Click(object sender, EventArgs e)
+        {
+            lock (_lockObject)
+            {
+                if (!_isRecording)
+                {
+                    var text = string.Empty;
+                    try
+                    {
+                        text = ImageUtils.ExtractTextAsync((Bitmap)_image.Clone(), cmbLanguages.SelectedValue as string).GetAwaiter().GetResult();
+                        var barcodes = ImageUtils.ExtractBarcodes((Bitmap)_image.Clone());
+                        if (!string.IsNullOrEmpty(barcodes))
+                        {
+                            text += Environment.NewLine + barcodes;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Failed to recognize a text in the image. {ex.Message}", AssemblyUtils.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    if (string.IsNullOrEmpty(text))
+                    {
+                        MessageBox.Show("Text is not found in the image.", AssemblyUtils.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        txtContent.Text = text;
+                        txtContent.ScrollTextToEnd();
+                        AddTextToList(text);
+                        tabContent.SelectedTab = tabpText;
+                    }
+                }
+            }
         }
 
         private void btnBrowseFile_Click(object sender, EventArgs e)
@@ -798,8 +857,11 @@ namespace WindowTextExtractor.Forms
         private void EnableImageTabControls()
         {
             btnRecord.Visible = _imageTab && btnShowHide.Visible;
+            btnGrab.Visible = _imageTab && btnShowHide.Visible;
             lblRefresh.Visible = _imageTab && btnShowHide.Visible;
             cmbRefresh.Visible = _imageTab && btnShowHide.Visible;
+            lblLanguages.Visible = _imageTab && btnShowHide.Visible;
+            cmbLanguages.Visible = _imageTab && btnShowHide.Visible;
             lblCaptureCursor.Visible = _imageTab && btnShowHide.Visible;
             cmbCaptureCursor.Visible = _imageTab && btnShowHide.Visible;
             lblFps.Visible = _imageTab && btnShowHide.Visible;
@@ -917,6 +979,13 @@ namespace WindowTextExtractor.Forms
             gvTextList.FirstDisplayedScrollingRowIndex = index;
         }
 
+        private void BindLanguages()
+        {
+            cmbLanguages.DisplayMember = "Text";
+            cmbLanguages.ValueMember = "Value";
+            cmbLanguages.DataSource = OcrEngine.AvailableRecognizerLanguages.Select(x => new { Text = x.DisplayName, Value = x.LanguageTag }).ToList();
+        }
+
         private void OnCurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             var ex = e.ExceptionObject as Exception;
@@ -925,6 +994,6 @@ namespace WindowTextExtractor.Forms
         }
 
         private void OnThreadException(object sender, ThreadExceptionEventArgs e) =>
-            MessageBox.Show(e.Exception.ToString(), AssemblyUtils.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(e.Exception.Message, AssemblyUtils.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 }

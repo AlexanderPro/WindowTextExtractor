@@ -44,6 +44,7 @@
             this.menuItemSaveTextAs = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSaveTextListAs = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSaveImageAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemSaveEnvironmentAs = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.menuItemExit = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemOptions = new System.Windows.Forms.ToolStripMenuItem();
@@ -69,6 +70,10 @@
             this.gvTextList = new System.Windows.Forms.DataGridView();
             this.dataGridColumnText = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabpImage = new System.Windows.Forms.TabPage();
+            this.tabpEnvironment = new System.Windows.Forms.TabPage();
+            this.gvEnvironment = new System.Windows.Forms.DataGridView();
+            this.clmnEnvironmentName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.clmnEnvironmentValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.numericFps = new System.Windows.Forms.NumericUpDown();
             this.lblFps = new System.Windows.Forms.Label();
             this.btnShowHide = new System.Windows.Forms.Button();
@@ -81,11 +86,9 @@
             this.numericScale = new System.Windows.Forms.NumericUpDown();
             this.cmbCaptureCursor = new System.Windows.Forms.ComboBox();
             this.lblCaptureCursor = new System.Windows.Forms.Label();
-            this.tabpEnvironment = new System.Windows.Forms.TabPage();
-            this.gvEnvironment = new System.Windows.Forms.DataGridView();
-            this.menuItemSaveEnvironmentAs = new System.Windows.Forms.ToolStripMenuItem();
-            this.clmnEnvironmentName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.clmnEnvironmentValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnGrab = new System.Windows.Forms.Button();
+            this.cmbLanguages = new System.Windows.Forms.ComboBox();
+            this.lblLanguages = new System.Windows.Forms.Label();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbContent)).BeginInit();
@@ -99,10 +102,10 @@
             this.splitTextContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gvTextList)).BeginInit();
             this.tabpImage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericFps)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericScale)).BeginInit();
             this.tabpEnvironment.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gvEnvironment)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericFps)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericScale)).BeginInit();
             this.SuspendLayout();
             // 
             // txtContent
@@ -128,8 +131,8 @@
             this.toolStripSeparatorThree});
             this.statusStrip.Location = new System.Drawing.Point(0, 490);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(734, 22);
-            this.statusStrip.TabIndex = 15;
+            this.statusStrip.Size = new System.Drawing.Size(784, 22);
+            this.statusStrip.TabIndex = 18;
             // 
             // lblTotalLines
             // 
@@ -178,7 +181,7 @@
             this.menuItemHelp});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(734, 24);
+            this.menuStrip.Size = new System.Drawing.Size(784, 24);
             this.menuStrip.TabIndex = 0;
             // 
             // menuItemFile
@@ -226,6 +229,14 @@
             this.menuItemSaveImageAs.Size = new System.Drawing.Size(194, 22);
             this.menuItemSaveImageAs.Text = "Save Image As...";
             this.menuItemSaveImageAs.Click += new System.EventHandler(this.menuItemSaveImageAs_Click);
+            // 
+            // menuItemSaveEnvironmentAs
+            // 
+            this.menuItemSaveEnvironmentAs.Enabled = false;
+            this.menuItemSaveEnvironmentAs.Name = "menuItemSaveEnvironmentAs";
+            this.menuItemSaveEnvironmentAs.Size = new System.Drawing.Size(194, 22);
+            this.menuItemSaveEnvironmentAs.Text = "Save Environment As...";
+            this.menuItemSaveEnvironmentAs.Click += new System.EventHandler(this.menuItemSaveEnvironmentAs_Click);
             // 
             // toolStripSeparator
             // 
@@ -358,8 +369,8 @@
             this.tabContent.Location = new System.Drawing.Point(0, 127);
             this.tabContent.Name = "tabContent";
             this.tabContent.SelectedIndex = 0;
-            this.tabContent.Size = new System.Drawing.Size(734, 364);
-            this.tabContent.TabIndex = 14;
+            this.tabContent.Size = new System.Drawing.Size(784, 364);
+            this.tabContent.TabIndex = 17;
             this.tabContent.SelectedIndexChanged += new System.EventHandler(this.tabContent_SelectedIndexChanged);
             // 
             // tabpInformation
@@ -367,7 +378,7 @@
             this.tabpInformation.Controls.Add(this.gvInformation);
             this.tabpInformation.Location = new System.Drawing.Point(4, 22);
             this.tabpInformation.Name = "tabpInformation";
-            this.tabpInformation.Size = new System.Drawing.Size(726, 338);
+            this.tabpInformation.Size = new System.Drawing.Size(776, 338);
             this.tabpInformation.TabIndex = 2;
             this.tabpInformation.Text = "Information";
             this.tabpInformation.UseVisualStyleBackColor = true;
@@ -398,7 +409,7 @@
             this.gvInformation.ShowCellToolTips = false;
             this.gvInformation.ShowEditingIcon = false;
             this.gvInformation.ShowRowErrors = false;
-            this.gvInformation.Size = new System.Drawing.Size(726, 338);
+            this.gvInformation.Size = new System.Drawing.Size(776, 338);
             this.gvInformation.TabIndex = 0;
             this.gvInformation.TabStop = false;
             // 
@@ -493,175 +504,6 @@
             this.tabpImage.Text = "Image";
             this.tabpImage.UseVisualStyleBackColor = true;
             // 
-            // numericFps
-            // 
-            this.numericFps.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericFps.Location = new System.Drawing.Point(529, 101);
-            this.numericFps.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.numericFps.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericFps.Name = "numericFps";
-            this.numericFps.Size = new System.Drawing.Size(88, 20);
-            this.numericFps.TabIndex = 11;
-            this.numericFps.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericFps.Visible = false;
-            this.numericFps.ValueChanged += new System.EventHandler(this.numericFps_ValueChanged);
-            // 
-            // lblFps
-            // 
-            this.lblFps.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblFps.AutoSize = true;
-            this.lblFps.Location = new System.Drawing.Point(526, 85);
-            this.lblFps.Name = "lblFps";
-            this.lblFps.Size = new System.Drawing.Size(30, 13);
-            this.lblFps.TabIndex = 10;
-            this.lblFps.Text = "FPS:";
-            this.lblFps.Visible = false;
-            // 
-            // btnShowHide
-            // 
-            this.btnShowHide.Location = new System.Drawing.Point(78, 38);
-            this.btnShowHide.Name = "btnShowHide";
-            this.btnShowHide.Size = new System.Drawing.Size(60, 60);
-            this.btnShowHide.TabIndex = 2;
-            this.btnShowHide.UseVisualStyleBackColor = true;
-            this.btnShowHide.Visible = false;
-            this.btnShowHide.Click += new System.EventHandler(this.btnShowHide_Click);
-            // 
-            // lblRefresh
-            // 
-            this.lblRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblRefresh.AutoSize = true;
-            this.lblRefresh.Location = new System.Drawing.Point(423, 38);
-            this.lblRefresh.Name = "lblRefresh";
-            this.lblRefresh.Size = new System.Drawing.Size(47, 13);
-            this.lblRefresh.TabIndex = 4;
-            this.lblRefresh.Text = "Refresh:";
-            this.lblRefresh.Visible = false;
-            // 
-            // cmbRefresh
-            // 
-            this.cmbRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmbRefresh.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbRefresh.FormattingEnabled = true;
-            this.cmbRefresh.Items.AddRange(new object[] {
-            "Yes",
-            "No"});
-            this.cmbRefresh.Location = new System.Drawing.Point(426, 54);
-            this.cmbRefresh.Name = "cmbRefresh";
-            this.cmbRefresh.Size = new System.Drawing.Size(88, 21);
-            this.cmbRefresh.TabIndex = 5;
-            this.cmbRefresh.Visible = false;
-            this.cmbRefresh.SelectedIndexChanged += new System.EventHandler(this.cmbRefresh_SelectedIndexChanged);
-            // 
-            // btnRecord
-            // 
-            this.btnRecord.Location = new System.Drawing.Point(144, 38);
-            this.btnRecord.Name = "btnRecord";
-            this.btnRecord.Size = new System.Drawing.Size(60, 60);
-            this.btnRecord.TabIndex = 3;
-            this.btnRecord.Text = "Record";
-            this.btnRecord.UseVisualStyleBackColor = true;
-            this.btnRecord.Visible = false;
-            this.btnRecord.Click += new System.EventHandler(this.btnRecord_Click);
-            // 
-            // lblRecord
-            // 
-            this.lblRecord.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblRecord.AutoSize = true;
-            this.lblRecord.Location = new System.Drawing.Point(631, 38);
-            this.lblRecord.Name = "lblRecord";
-            this.lblRecord.Size = new System.Drawing.Size(91, 13);
-            this.lblRecord.TabIndex = 8;
-            this.lblRecord.Text = "Record stream to:";
-            this.lblRecord.Visible = false;
-            // 
-            // btnBrowseFile
-            // 
-            this.btnBrowseFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnBrowseFile.Location = new System.Drawing.Point(634, 52);
-            this.btnBrowseFile.Name = "btnBrowseFile";
-            this.btnBrowseFile.Size = new System.Drawing.Size(88, 23);
-            this.btnBrowseFile.TabIndex = 9;
-            this.btnBrowseFile.Text = "Browse file ...";
-            this.btnBrowseFile.UseVisualStyleBackColor = true;
-            this.btnBrowseFile.Visible = false;
-            this.btnBrowseFile.Click += new System.EventHandler(this.btnBrowseFile_Click);
-            // 
-            // lblScale
-            // 
-            this.lblScale.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblScale.AutoSize = true;
-            this.lblScale.Location = new System.Drawing.Point(631, 85);
-            this.lblScale.Name = "lblScale";
-            this.lblScale.Size = new System.Drawing.Size(37, 13);
-            this.lblScale.TabIndex = 12;
-            this.lblScale.Text = "Scale:";
-            this.lblScale.Visible = false;
-            // 
-            // numericScale
-            // 
-            this.numericScale.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericScale.DecimalPlaces = 2;
-            this.numericScale.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.numericScale.Location = new System.Drawing.Point(634, 101);
-            this.numericScale.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.numericScale.Name = "numericScale";
-            this.numericScale.Size = new System.Drawing.Size(88, 20);
-            this.numericScale.TabIndex = 13;
-            this.numericScale.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericScale.Visible = false;
-            this.numericScale.ValueChanged += new System.EventHandler(this.numericScale_ValueChanged);
-            // 
-            // cmbCaptureCursor
-            // 
-            this.cmbCaptureCursor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmbCaptureCursor.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbCaptureCursor.FormattingEnabled = true;
-            this.cmbCaptureCursor.Items.AddRange(new object[] {
-            "Yes",
-            "No"});
-            this.cmbCaptureCursor.Location = new System.Drawing.Point(529, 54);
-            this.cmbCaptureCursor.Name = "cmbCaptureCursor";
-            this.cmbCaptureCursor.Size = new System.Drawing.Size(88, 21);
-            this.cmbCaptureCursor.TabIndex = 7;
-            this.cmbCaptureCursor.Visible = false;
-            this.cmbCaptureCursor.SelectedIndexChanged += new System.EventHandler(this.cmbCaptureCursor_SelectedIndexChanged);
-            // 
-            // lblCaptureCursor
-            // 
-            this.lblCaptureCursor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblCaptureCursor.AutoSize = true;
-            this.lblCaptureCursor.Location = new System.Drawing.Point(526, 38);
-            this.lblCaptureCursor.Name = "lblCaptureCursor";
-            this.lblCaptureCursor.Size = new System.Drawing.Size(79, 13);
-            this.lblCaptureCursor.TabIndex = 6;
-            this.lblCaptureCursor.Text = "Capture cursor:";
-            this.lblCaptureCursor.Visible = false;
-            // 
             // tabpEnvironment
             // 
             this.tabpEnvironment.Controls.Add(this.gvEnvironment);
@@ -702,14 +544,6 @@
             this.gvEnvironment.TabIndex = 1;
             this.gvEnvironment.TabStop = false;
             // 
-            // menuItemSaveEnvironmentAs
-            // 
-            this.menuItemSaveEnvironmentAs.Enabled = false;
-            this.menuItemSaveEnvironmentAs.Name = "menuItemSaveEnvironmentAs";
-            this.menuItemSaveEnvironmentAs.Size = new System.Drawing.Size(194, 22);
-            this.menuItemSaveEnvironmentAs.Text = "Save Environment As...";
-            this.menuItemSaveEnvironmentAs.Click += new System.EventHandler(this.menuItemSaveEnvironmentAs_Click);
-            // 
             // clmnEnvironmentName
             // 
             this.clmnEnvironmentName.FillWeight = 50F;
@@ -723,11 +557,219 @@
             this.clmnEnvironmentValue.Name = "clmnEnvironmentValue";
             this.clmnEnvironmentValue.ReadOnly = true;
             // 
+            // numericFps
+            // 
+            this.numericFps.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.numericFps.Location = new System.Drawing.Point(579, 101);
+            this.numericFps.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.numericFps.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericFps.Name = "numericFps";
+            this.numericFps.Size = new System.Drawing.Size(88, 20);
+            this.numericFps.TabIndex = 14;
+            this.numericFps.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericFps.Visible = false;
+            this.numericFps.ValueChanged += new System.EventHandler(this.numericFps_ValueChanged);
+            // 
+            // lblFps
+            // 
+            this.lblFps.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblFps.AutoSize = true;
+            this.lblFps.Location = new System.Drawing.Point(576, 85);
+            this.lblFps.Name = "lblFps";
+            this.lblFps.Size = new System.Drawing.Size(30, 13);
+            this.lblFps.TabIndex = 13;
+            this.lblFps.Text = "FPS:";
+            this.lblFps.Visible = false;
+            // 
+            // btnShowHide
+            // 
+            this.btnShowHide.Location = new System.Drawing.Point(78, 38);
+            this.btnShowHide.Name = "btnShowHide";
+            this.btnShowHide.Size = new System.Drawing.Size(60, 60);
+            this.btnShowHide.TabIndex = 2;
+            this.btnShowHide.UseVisualStyleBackColor = true;
+            this.btnShowHide.Visible = false;
+            this.btnShowHide.Click += new System.EventHandler(this.btnShowHide_Click);
+            // 
+            // lblRefresh
+            // 
+            this.lblRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblRefresh.AutoSize = true;
+            this.lblRefresh.Location = new System.Drawing.Point(453, 38);
+            this.lblRefresh.Name = "lblRefresh";
+            this.lblRefresh.Size = new System.Drawing.Size(47, 13);
+            this.lblRefresh.TabIndex = 5;
+            this.lblRefresh.Text = "Refresh:";
+            this.lblRefresh.Visible = false;
+            // 
+            // cmbRefresh
+            // 
+            this.cmbRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbRefresh.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbRefresh.FormattingEnabled = true;
+            this.cmbRefresh.Items.AddRange(new object[] {
+            "Yes",
+            "No"});
+            this.cmbRefresh.Location = new System.Drawing.Point(456, 54);
+            this.cmbRefresh.Name = "cmbRefresh";
+            this.cmbRefresh.Size = new System.Drawing.Size(108, 21);
+            this.cmbRefresh.TabIndex = 6;
+            this.cmbRefresh.Visible = false;
+            this.cmbRefresh.SelectedIndexChanged += new System.EventHandler(this.cmbRefresh_SelectedIndexChanged);
+            // 
+            // btnRecord
+            // 
+            this.btnRecord.Location = new System.Drawing.Point(144, 38);
+            this.btnRecord.Name = "btnRecord";
+            this.btnRecord.Size = new System.Drawing.Size(60, 60);
+            this.btnRecord.TabIndex = 3;
+            this.btnRecord.Text = "Record";
+            this.btnRecord.UseVisualStyleBackColor = true;
+            this.btnRecord.Visible = false;
+            this.btnRecord.Click += new System.EventHandler(this.btnRecord_Click);
+            // 
+            // lblRecord
+            // 
+            this.lblRecord.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblRecord.AutoSize = true;
+            this.lblRecord.Location = new System.Drawing.Point(681, 38);
+            this.lblRecord.Name = "lblRecord";
+            this.lblRecord.Size = new System.Drawing.Size(91, 13);
+            this.lblRecord.TabIndex = 9;
+            this.lblRecord.Text = "Record stream to:";
+            this.lblRecord.Visible = false;
+            // 
+            // btnBrowseFile
+            // 
+            this.btnBrowseFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBrowseFile.Location = new System.Drawing.Point(684, 52);
+            this.btnBrowseFile.Name = "btnBrowseFile";
+            this.btnBrowseFile.Size = new System.Drawing.Size(88, 23);
+            this.btnBrowseFile.TabIndex = 10;
+            this.btnBrowseFile.Text = "Browse file ...";
+            this.btnBrowseFile.UseVisualStyleBackColor = true;
+            this.btnBrowseFile.Visible = false;
+            this.btnBrowseFile.Click += new System.EventHandler(this.btnBrowseFile_Click);
+            // 
+            // lblScale
+            // 
+            this.lblScale.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblScale.AutoSize = true;
+            this.lblScale.Location = new System.Drawing.Point(681, 85);
+            this.lblScale.Name = "lblScale";
+            this.lblScale.Size = new System.Drawing.Size(37, 13);
+            this.lblScale.TabIndex = 15;
+            this.lblScale.Text = "Scale:";
+            this.lblScale.Visible = false;
+            // 
+            // numericScale
+            // 
+            this.numericScale.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.numericScale.DecimalPlaces = 2;
+            this.numericScale.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.numericScale.Location = new System.Drawing.Point(684, 101);
+            this.numericScale.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.numericScale.Name = "numericScale";
+            this.numericScale.Size = new System.Drawing.Size(88, 20);
+            this.numericScale.TabIndex = 16;
+            this.numericScale.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericScale.Visible = false;
+            this.numericScale.ValueChanged += new System.EventHandler(this.numericScale_ValueChanged);
+            // 
+            // cmbCaptureCursor
+            // 
+            this.cmbCaptureCursor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbCaptureCursor.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbCaptureCursor.FormattingEnabled = true;
+            this.cmbCaptureCursor.Items.AddRange(new object[] {
+            "Yes",
+            "No"});
+            this.cmbCaptureCursor.Location = new System.Drawing.Point(579, 54);
+            this.cmbCaptureCursor.Name = "cmbCaptureCursor";
+            this.cmbCaptureCursor.Size = new System.Drawing.Size(88, 21);
+            this.cmbCaptureCursor.TabIndex = 8;
+            this.cmbCaptureCursor.Visible = false;
+            this.cmbCaptureCursor.SelectedIndexChanged += new System.EventHandler(this.cmbCaptureCursor_SelectedIndexChanged);
+            // 
+            // lblCaptureCursor
+            // 
+            this.lblCaptureCursor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblCaptureCursor.AutoSize = true;
+            this.lblCaptureCursor.Location = new System.Drawing.Point(576, 38);
+            this.lblCaptureCursor.Name = "lblCaptureCursor";
+            this.lblCaptureCursor.Size = new System.Drawing.Size(79, 13);
+            this.lblCaptureCursor.TabIndex = 7;
+            this.lblCaptureCursor.Text = "Capture cursor:";
+            this.lblCaptureCursor.Visible = false;
+            // 
+            // btnGrab
+            // 
+            this.btnGrab.Location = new System.Drawing.Point(210, 38);
+            this.btnGrab.Name = "btnGrab";
+            this.btnGrab.Size = new System.Drawing.Size(60, 60);
+            this.btnGrab.TabIndex = 4;
+            this.btnGrab.Text = "Grab";
+            this.btnGrab.UseVisualStyleBackColor = true;
+            this.btnGrab.Visible = false;
+            this.btnGrab.Click += new System.EventHandler(this.btnGrab_Click);
+            // 
+            // cmbLanguages
+            // 
+            this.cmbLanguages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbLanguages.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbLanguages.FormattingEnabled = true;
+            this.cmbLanguages.Items.AddRange(new object[] {
+            "Yes",
+            "No"});
+            this.cmbLanguages.Location = new System.Drawing.Point(456, 101);
+            this.cmbLanguages.Name = "cmbLanguages";
+            this.cmbLanguages.Size = new System.Drawing.Size(108, 21);
+            this.cmbLanguages.TabIndex = 12;
+            this.cmbLanguages.Visible = false;
+            // 
+            // lblLanguages
+            // 
+            this.lblLanguages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblLanguages.AutoSize = true;
+            this.lblLanguages.Location = new System.Drawing.Point(453, 85);
+            this.lblLanguages.Name = "lblLanguages";
+            this.lblLanguages.Size = new System.Drawing.Size(89, 13);
+            this.lblLanguages.TabIndex = 11;
+            this.lblLanguages.Text = "OCR Languages:";
+            this.lblLanguages.Visible = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(734, 512);
+            this.ClientSize = new System.Drawing.Size(784, 512);
+            this.Controls.Add(this.lblLanguages);
+            this.Controls.Add(this.cmbLanguages);
+            this.Controls.Add(this.btnGrab);
             this.Controls.Add(this.cmbCaptureCursor);
             this.Controls.Add(this.lblCaptureCursor);
             this.Controls.Add(this.lblScale);
@@ -764,10 +806,10 @@
             this.splitTextContainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gvTextList)).EndInit();
             this.tabpImage.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.numericFps)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericScale)).EndInit();
             this.tabpEnvironment.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gvEnvironment)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericFps)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericScale)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -830,6 +872,9 @@
         private System.Windows.Forms.ToolStripMenuItem menuItemSaveEnvironmentAs;
         private System.Windows.Forms.DataGridViewTextBoxColumn clmnEnvironmentName;
         private System.Windows.Forms.DataGridViewTextBoxColumn clmnEnvironmentValue;
+        private System.Windows.Forms.Button btnGrab;
+        private System.Windows.Forms.ComboBox cmbLanguages;
+        private System.Windows.Forms.Label lblLanguages;
     }
 }
 
