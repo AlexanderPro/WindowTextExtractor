@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Management;
+using System.Windows.Forms;
 using mshtml;
 using WindowTextExtractor.Extensions;
 using WindowTextExtractor.Native;
@@ -51,7 +52,7 @@ namespace WindowTextExtractor.Utils
             return result;
         }
 
-        public static WindowInformation GetWindowInformation(IntPtr handle)
+        public static WindowInformation GetWindowInformation(IntPtr handle, Point cursorPosition)
         {
             var text = GetWindowText(handle);
             var wmText = GetWmGettext(handle);
@@ -72,6 +73,18 @@ namespace WindowTextExtractor.Utils
             var gclWndproc = User32.GetClassLong(handle, Constants.GCL_WNDPROC);
             var dwlDlgproc = User32.GetClassLong(handle, Constants.DWL_DLGPROC);
             var dwlUser = User32.GetClassLong(handle, Constants.DWL_USER);
+
+            var cursorDetailes = new Dictionary<string, string>();
+            cursorDetailes.Add("Position", $"X = {cursorPosition.X}, Y = {cursorPosition.Y}");
+
+            var monitorInfo = GetMonitorInfo(handle);
+            cursorDetailes.Add("Monitor Position", $"X = {cursorPosition.X - monitorInfo.rcMonitor.Left}, Y = {cursorPosition.Y - monitorInfo.rcMonitor.Top}");
+
+            var monitorNumber = GetMonitorNumber(cursorPosition);
+            cursorDetailes.Add("Monitor", monitorNumber.ToString());
+
+            var color = GetColorUnderCursor(cursorPosition);
+            cursorDetailes.Add("Color Picker", ColorTranslator.ToHtml(color));
 
             var windowDetailes = new Dictionary<string, string>();
             windowDetailes.Add("GetWindowText", text);
@@ -236,7 +249,7 @@ namespace WindowTextExtractor.Utils
             {
             }
             
-            return new WindowInformation(windowDetailes, processDetailes);
+            return new WindowInformation(cursorDetailes, windowDetailes, processDetailes);
         }
 
         public static Bitmap CaptureWindow(IntPtr handle, bool captureCursor = false)
@@ -387,7 +400,6 @@ namespace WindowTextExtractor.Utils
             };
         }
 
-
         private static Process GetProcessByIdSafely(int pId)
         {
             try
@@ -443,6 +455,34 @@ namespace WindowTextExtractor.Utils
                 result = 0;
             }
             return result;
+        }
+
+        private static Color GetColorUnderCursor(Point cursorPosition)
+        {
+            using (var bmp = new Bitmap(1, 1))
+            using (var graphics = Graphics.FromImage(bmp))
+            {
+                graphics.CopyFromScreen(cursorPosition, Point.Empty, new Size(1, 1));
+                var color = bmp.GetPixel(0, 0);
+                return color;
+            }
+        }
+
+        private static int GetMonitorNumber(Point cursorPosition)
+        {
+            var screenFromPoint = Screen.FromPoint(cursorPosition);
+            var screens = Screen.AllScreens.Select((x, i) => new { Index = i + 1, Item = x }).ToList();
+            var screen = screens.FirstOrDefault(x => x.Item.Equals(screenFromPoint));
+            return screen?.Index ?? 0;
+        }
+
+        private static MonitorInfo GetMonitorInfo(IntPtr handle)
+        {
+            var monitorHandle = User32.MonitorFromWindow(handle, Constants.MONITOR_DEFAULTTONEAREST);
+            var monitorInfo = new MonitorInfo();
+            monitorInfo.Init();
+            User32.GetMonitorInfo(monitorHandle, ref monitorInfo);
+            return monitorInfo;
         }
 
         private class WmiProcessInfo

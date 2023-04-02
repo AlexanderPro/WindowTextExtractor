@@ -7,16 +7,19 @@ namespace WindowTextExtractor
 {
     class WindowInformation
     {
+        public IDictionary<string, string> CursorDetails { get; private set; }
+
         public IDictionary<string, string> WindowDetails { get; private set; }
 
         public IDictionary<string, string> ProcessDetails { get; private set; }
 
-        public WindowInformation() : this(new Dictionary<string, string>(), new Dictionary<string, string>())
+        public WindowInformation() : this(new Dictionary<string, string>(), new Dictionary<string, string>(), new Dictionary<string, string>())
         {
         }
 
-        public WindowInformation(IDictionary<string, string> windowDetails, IDictionary<string, string> processDetails)
+        public WindowInformation(IDictionary<string, string> cursorDetails, IDictionary<string, string> windowDetails, IDictionary<string, string> processDetails)
         {
+            CursorDetails = cursorDetails;
             WindowDetails = windowDetails;
             ProcessDetails = processDetails;
         }
@@ -25,7 +28,17 @@ namespace WindowTextExtractor
         {
             const int paddingSize = 25;
             var builder = new StringBuilder(1024);
-            
+
+            if (CursorDetails.Keys.Any())
+            {
+                builder.AppendFormat($"Cursor Information {Environment.NewLine}");
+            }
+
+            foreach (var cursorDetailKey in CursorDetails.Keys)
+            {
+                builder.AppendFormat($"{cursorDetailKey.PadRight(paddingSize)}: {CursorDetails[cursorDetailKey]}{Environment.NewLine}");
+            }
+
             if (WindowDetails.Keys.Any())
             {
                 builder.AppendFormat($"Window Information {Environment.NewLine}");

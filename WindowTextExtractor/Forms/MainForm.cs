@@ -429,7 +429,7 @@ namespace WindowTextExtractor.Forms
             var cmdShow = button.Text == "Show" ? ShowWindowCommands.SW_SHOW : ShowWindowCommands.SW_HIDE;
             User32.ShowWindow(windowHandle, cmdShow);
             button.Text = User32.IsWindowVisible(windowHandle) ? "Hide" : "Show";
-            var windowInformation = WindowUtils.GetWindowInformation(windowHandle);
+            var windowInformation = WindowUtils.GetWindowInformation(windowHandle, Cursor.Position);
             FillInformation(windowInformation);
         }
 
@@ -683,7 +683,7 @@ namespace WindowTextExtractor.Forms
                                                 FillImage(newImage);
                                             }
                                         }
-                                        var windowInformation = WindowUtils.GetWindowInformation(windowHandle);
+                                        var windowInformation = WindowUtils.GetWindowInformation(windowHandle, cursorPosition);
                                         FillInformation(windowInformation);
                                         if (previousProcessId != _windowProcessId)
                                         {
@@ -888,6 +888,23 @@ namespace WindowTextExtractor.Forms
         {
             gvInformation.Rows.Clear();
             gvInformation.Tag = null;
+
+            if (windowInformation.CursorDetails.Keys.Any())
+            {
+                var indexHeader = gvInformation.Rows.Add();
+                var rowHeader = gvInformation.Rows[indexHeader];
+                rowHeader.Cells[0].Value = "Cursor Information";
+                rowHeader.Cells[0].Style.BackColor = Color.LightGray;
+                rowHeader.Cells[1].Style.BackColor = Color.LightGray;
+            }
+
+            foreach (var cursorDetailKey in windowInformation.CursorDetails.Keys)
+            {
+                var index = gvInformation.Rows.Add();
+                var row = gvInformation.Rows[index];
+                row.Cells[0].Value = cursorDetailKey;
+                row.Cells[1].Value = windowInformation.CursorDetails[cursorDetailKey];
+            }
 
             if (windowInformation.WindowDetails.Keys.Any())
             {
