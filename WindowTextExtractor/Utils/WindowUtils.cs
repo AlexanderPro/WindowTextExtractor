@@ -77,11 +77,14 @@ namespace WindowTextExtractor.Utils
             var cursorDetailes = new Dictionary<string, string>();
             cursorDetailes.Add("Position", $"X = {cursorPosition.X}, Y = {cursorPosition.Y}");
 
-            var monitorInfo = GetMonitorInfo(handle);
-            cursorDetailes.Add("Monitor Position", $"X = {cursorPosition.X - monitorInfo.rcMonitor.Left}, Y = {cursorPosition.Y - monitorInfo.rcMonitor.Top}");
-
-            var monitorNumber = GetMonitorNumber(cursorPosition);
-            cursorDetailes.Add("Monitor", monitorNumber.ToString());
+            var screenFromPoint = Screen.FromPoint(cursorPosition);
+            var screens = Screen.AllScreens.Select((x, i) => new { Index = i + 1, Item = x }).ToList();
+            var screen = screens.FirstOrDefault(x => x.Item.Equals(screenFromPoint));
+            if (screen != null)
+            {
+                cursorDetailes.Add("Monitor Position", $"X = {cursorPosition.X - screen.Item.Bounds.Left}, Y = {cursorPosition.Y - screen.Item.Bounds.Top}");
+                cursorDetailes.Add("Monitor", screen.Index.ToString());
+            }
 
             var color = GetColorUnderCursor(cursorPosition);
             cursorDetailes.Add("Color Picker", ColorTranslator.ToHtml(color));
@@ -466,23 +469,6 @@ namespace WindowTextExtractor.Utils
                 var color = bmp.GetPixel(0, 0);
                 return color;
             }
-        }
-
-        private static int GetMonitorNumber(Point cursorPosition)
-        {
-            var screenFromPoint = Screen.FromPoint(cursorPosition);
-            var screens = Screen.AllScreens.Select((x, i) => new { Index = i + 1, Item = x }).ToList();
-            var screen = screens.FirstOrDefault(x => x.Item.Equals(screenFromPoint));
-            return screen?.Index ?? 0;
-        }
-
-        private static MonitorInfo GetMonitorInfo(IntPtr handle)
-        {
-            var monitorHandle = User32.MonitorFromWindow(handle, Constants.MONITOR_DEFAULTTONEAREST);
-            var monitorInfo = new MonitorInfo();
-            monitorInfo.Init();
-            User32.GetMonitorInfo(monitorHandle, ref monitorInfo);
-            return monitorInfo;
         }
 
         private class WmiProcessInfo

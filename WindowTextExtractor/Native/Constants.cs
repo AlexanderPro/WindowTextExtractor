@@ -27,11 +27,6 @@
         public const int DWL_DLGPROC = 4;
         public const int DWL_USER = 8;
 
-        // MonitorFromWindow
-        public const uint MONITOR_DEFAULTTONULL = 0;
-        public const uint MONITOR_DEFAULTTOPRIMARY = 1;
-        public const uint MONITOR_DEFAULTTONEAREST = 2;
-
         public const int DWMWA_EXTENDED_FRAME_BOUNDS = 9;
 
         public const int EVENT_TYPE = 1;

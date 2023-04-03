@@ -150,7 +150,6 @@
     </Compile>
     <Compile Include="Native\Structs\CURSORINFO.cs" />
     <Compile Include="Native\Structs\ICONINFO.cs" />
-    <Compile Include="Native\Structs\MonitorInfo.cs" />
     <Compile Include="Native\Winmm.cs" />
     <Compile Include="Utils\FileUtils.cs" />
     <Compile Include="Utils\ImageUtils.cs" />
