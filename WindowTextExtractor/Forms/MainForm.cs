@@ -418,17 +418,41 @@ namespace WindowTextExtractor.Forms
             }
         }
 
-        private void btnShowHide_Click(object sender, EventArgs e)
+        private void actionButtonStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             var windowHandle = IntPtr.Zero;
             lock (_lockObject)
             {
                 windowHandle = _windowHandle;
             }
-            var button = (Button)sender;
-            var cmdShow = button.Text == "Show" ? ShowWindowCommands.SW_SHOW : ShowWindowCommands.SW_HIDE;
-            User32.ShowWindow(windowHandle, cmdShow);
-            button.Text = User32.IsWindowVisible(windowHandle) ? "Hide" : "Show";
+
+            switch (e.ClickedItem.Name)
+            {
+                case "miHide":
+                    User32.ShowWindow(windowHandle, ShowWindowCommands.SW_HIDE);
+                    break;
+
+                case "miShow":
+                    User32.ShowWindow(windowHandle, ShowWindowCommands.SW_SHOW);
+                    break;
+
+                case "miMinimize":
+                    User32.PostMessage(windowHandle, Constants.WM_SYSCOMMAND, Constants.SC_MINIMIZE, 0);
+                    break;
+
+                case "miMaximize":
+                    User32.PostMessage(windowHandle, Constants.WM_SYSCOMMAND, Constants.SC_MAXIMIZE, 0);
+                    break;
+
+                case "miRestore":
+                    User32.PostMessage(windowHandle, Constants.WM_SYSCOMMAND, Constants.SC_RESTORE, 0);
+                    break;
+
+                case "miClose":
+                    User32.PostMessage(windowHandle, Constants.WM_CLOSE, 0, 0);
+                    break;
+            }
+
             var windowInformation = WindowUtils.GetWindowInformation(windowHandle, Cursor.Position);
             FillInformation(windowInformation);
         }
@@ -465,7 +489,7 @@ namespace WindowTextExtractor.Forms
             var button = (Button)sender;
             button.Text = isRecording ? "Stop" : "Record";
             btnTarget.Enabled = !isRecording;
-            btnShowHide.Enabled = !isRecording;
+            btnAction.Enabled = !isRecording;
             btnGrab.Enabled = !isRecording;
             cmbRefresh.Enabled = !isRecording;
             cmbCaptureCursor.Enabled = !isRecording;
@@ -693,8 +717,7 @@ namespace WindowTextExtractor.Forms
                                         OnContentChanged();
                                     }
 
-                                    btnShowHide.Text = User32.IsWindowVisible(windowHandle) ? "Hide" : "Show";
-                                    btnShowHide.Visible = true;
+                                    btnAction.Visible = true;
                                 }
                                 else
                                 {
@@ -707,7 +730,7 @@ namespace WindowTextExtractor.Forms
                                     FillInformation(new WindowInformation());
                                     FillEnvironment(new Dictionary<string, string>());
                                     OnContentChanged();
-                                    btnShowHide.Visible = false;
+                                    btnAction.Visible = false;
                                 }
                                 EnableImageTabControls();
                             }
@@ -856,20 +879,20 @@ namespace WindowTextExtractor.Forms
 
         private void EnableImageTabControls()
         {
-            btnRecord.Visible = _imageTab && btnShowHide.Visible;
-            btnGrab.Visible = _imageTab && btnShowHide.Visible;
-            lblRefresh.Visible = _imageTab && btnShowHide.Visible;
-            cmbRefresh.Visible = _imageTab && btnShowHide.Visible;
-            lblLanguages.Visible = _imageTab && btnShowHide.Visible;
-            cmbLanguages.Visible = _imageTab && btnShowHide.Visible;
-            lblCaptureCursor.Visible = _imageTab && btnShowHide.Visible;
-            cmbCaptureCursor.Visible = _imageTab && btnShowHide.Visible;
-            lblFps.Visible = _imageTab && btnShowHide.Visible;
-            numericFps.Visible = _imageTab && btnShowHide.Visible;
-            lblScale.Visible = _imageTab && btnShowHide.Visible;
-            numericScale.Visible = _imageTab && btnShowHide.Visible;
-            lblRecord.Visible = _imageTab && btnShowHide.Visible;
-            btnBrowseFile.Visible = _imageTab && btnShowHide.Visible;
+            btnRecord.Visible = _imageTab && btnAction.Visible;
+            btnGrab.Visible = _imageTab && btnAction.Visible;
+            lblRefresh.Visible = _imageTab && btnAction.Visible;
+            cmbRefresh.Visible = _imageTab && btnAction.Visible;
+            lblLanguages.Visible = _imageTab && btnAction.Visible;
+            cmbLanguages.Visible = _imageTab && btnAction.Visible;
+            lblCaptureCursor.Visible = _imageTab && btnAction.Visible;
+            cmbCaptureCursor.Visible = _imageTab && btnAction.Visible;
+            lblFps.Visible = _imageTab && btnAction.Visible;
+            numericFps.Visible = _imageTab && btnAction.Visible;
+            lblScale.Visible = _imageTab && btnAction.Visible;
+            numericScale.Visible = _imageTab && btnAction.Visible;
+            lblRecord.Visible = _imageTab && btnAction.Visible;
+            btnBrowseFile.Visible = _imageTab && btnAction.Visible;
         }
 
         private void OnContentChanged()

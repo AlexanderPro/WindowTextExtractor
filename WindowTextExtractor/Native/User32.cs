@@ -108,5 +108,8 @@ namespace WindowTextExtractor.Native
 
         [DllImport("user32.dll")]
         public static extern bool DrawIconEx(IntPtr hdc, int xLeft, int yTop, IntPtr hIcon, int cxWidth, int cyHeight, int istepIfAniCur, IntPtr hbrFlickerFreeDraw, int diFlags);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr PostMessage(IntPtr hWnd, int msg, uint wParam, uint lParam);
     }
 }

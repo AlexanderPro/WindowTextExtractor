@@ -122,6 +122,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccurateTimer.cs" />
+    <Compile Include="Controls\SplitButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Diagnostics\IProcessMemoryAccessor.cs" />
     <Compile Include="Diagnostics\NativeMethods.cs" />
     <Compile Include="Diagnostics\ProcessBinaryReader.cs" />

@@ -5,12 +5,14 @@
         public const int WM_LBUTTONUP = 0x0202;
         public const int WM_MOUSEMOVE = 0x0200;
         public const int WM_COPYDATA = 0x004A;
-        public const int STD_OUTPUT_HANDLE = -11;
-        public const int SMTO_ABORTIFHUNG = 0x2;
-
+        public const int WM_CLOSE = 0x0010;
         public const int WM_GETTEXT = 0x000D;
         public const int WM_GETTEXTLENGTH = 0x000E;
         public const int WM_GETFONT = 0x0031;
+        public const int WM_SYSCOMMAND = 0x0112;
+
+        public const int STD_OUTPUT_HANDLE = -11;
+        public const int SMTO_ABORTIFHUNG = 0x2;
 
         // WindowLong
         public const int GWL_WNDPROC = -4;
@@ -26,6 +28,10 @@
         public const int GCL_WNDPROC = -24;
         public const int DWL_DLGPROC = 4;
         public const int DWL_USER = 8;
+
+        public const int SC_MINIMIZE = 0xF020;
+        public const int SC_MAXIMIZE = 0xF030;
+        public const int SC_RESTORE = 0xF120;
 
         public const int DWMWA_EXTENDED_FRAME_BOUNDS = 9;
 
