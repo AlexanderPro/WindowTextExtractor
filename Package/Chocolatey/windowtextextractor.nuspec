@@ -26,7 +26,7 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
     <!-- version should MATCH as closely as possible with the underlying software -->
     <!-- Is the version a prerelease of a version? https://docs.nuget.org/create/versioning#creating-prerelease-packages -->
     <!-- Note that unstable versions like 0.0.1 can be considered a released version, but it's possible that one can release a 0.0.1-beta before you release a 0.0.1 version. If the version number is final, that is considered a released version and not a prerelease. -->
-    <version>1.15.0</version>
+    <version>1.16.0</version>
     <packageSourceUrl>https://github.com/AlexanderPro/WindowTextExtractor/tree/master/Package/Chocolatey</packageSourceUrl>
     <!-- owners is a poor name for maintainers of the package. It sticks around by this name for compatibility reasons. It basically means you. -->
     <owners>AlexanderPro</owners>
@@ -41,12 +41,12 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
     <iconUrl>https://rawcdn.githack.com/AlexanderPro/chocolatey-packages/139a9955b6a7be267083d9d8835cb89bde61128d/windowtextextractor/icon.png</iconUrl>
     <!-- <copyright>Year Software Vendor</copyright> -->
     <!-- If there is a license Url available, it is is required for the community feed -->
-    <!-- <licenseUrl>Software License Location __REMOVE_OR_FILL_OUT__</licenseUrl>
-    <requireLicenseAcceptance>true</requireLicenseAcceptance>-->
+    <licenseUrl>https://github.com/AlexanderPro/WindowTextExtractor/blob/master/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <!--<projectSourceUrl>Software Source Location - is the software FOSS somewhere? Link to it with this</projectSourceUrl>-->
-    <!--<docsUrl>At what url are the software docs located?</docsUrl>-->
+    <docsUrl>https://github.com/AlexanderPro/WindowTextExtractor</docsUrl>
     <!--<mailingListUrl></mailingListUrl>-->
-    <!--<bugTrackerUrl></bugTrackerUrl>-->
+    <bugTrackerUrl>https://github.com/AlexanderPro/WindowTextExtractor/issues</bugTrackerUrl>
     <tags>viewer text extract password window asterisk asterix spy password-cracker password-recovery OCR screenshot capture</tags>
     <summary>WindowTextExtractor allows you to get a text, password, screenshot from any window of an operating system</summary>
     <description>WindowTextExtractor allows you to get a text from any window of an operating system including microsoft office programs, console windows, password textboxes, etc. It can recover passwords stored behind asterisks (*****) from most of the windows apps. It also shows a detailed window and its process information and allows you to take a window screenshot. 
