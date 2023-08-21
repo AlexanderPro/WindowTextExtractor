@@ -23,7 +23,7 @@ Install
 
 * Download the [WindowTextExtractor](https://github.com/AlexanderPro/WindowTextExtractor/releases) in the zip file
 * [Chocolatey](https://chocolatey.org/): `choco install windowtextextractor`
-* [Scoop](https://scoop.sh/): `scoop install windowtextextractor`
+* [Scoop](https://scoop.sh/): `scoop bucket add extras` and `scoop install extras/windowtextextractor`
 
 Requirements
 --------------------
