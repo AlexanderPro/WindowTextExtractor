@@ -28,8 +28,7 @@ namespace WindowTextExtractor.Utils
                 var message = User32.RegisterWindowMessage("WM_HTML_GETOBJECT");
                 if (message != 0)
                 {
-                    var messageResult = 0;
-                    User32.SendMessageTimeout(handle, message, 0, 0, Constants.SMTO_ABORTIFHUNG, 1000, out messageResult);
+                    User32.SendMessageTimeout(handle, message, 0, 0, Constants.SMTO_ABORTIFHUNG, 1000, out var messageResult);
                     if (messageResult != 0)
                     {
                         IHTMLDocument2 document = null;
@@ -39,8 +38,7 @@ namespace WindowTextExtractor.Utils
                         {
                             foreach (var element in document.all)
                             {
-                                var inputElement = element as IHTMLInputElement;
-                                if (inputElement != null && inputElement.type != null && inputElement.type.ToLower() == "password" && !string.IsNullOrEmpty(inputElement.value))
+                                if (element is IHTMLInputElement inputElement && inputElement.type != null && inputElement.type.ToLower() == "password" && !string.IsNullOrEmpty(inputElement.value))
                                 {
                                     result.Add(inputElement.value);
                                 }
@@ -147,10 +145,7 @@ namespace WindowTextExtractor.Utils
             
             try
             {
-                uint key;
-                Byte alpha;
-                uint flags;
-                var result = User32.GetLayeredWindowAttributes(handle, out key, out alpha, out flags);
+                var result = User32.GetLayeredWindowAttributes(handle, out var key, out var alpha, out var flags);
                 var layeredWindow = (LayeredWindow)flags;
                 windowDetailes.Add("LWA_ALPHA", layeredWindow.HasFlag(LayeredWindow.LWA_ALPHA) ? "+" : "-");
                 windowDetailes.Add("LWA_COLORKEY", layeredWindow.HasFlag(LayeredWindow.LWA_COLORKEY) ? "+" : "-");
@@ -282,12 +277,10 @@ namespace WindowTextExtractor.Utils
                         cursorInfo.cbSize = Marshal.SizeOf(typeof(CURSORINFO));
                         if (User32.GetCursorInfo(out cursorInfo) && cursorInfo.flags == Constants.CURSOR_SHOWING && User32.GetIconInfo(cursorInfo.hCursor, out var iconInfo))
                         {
-                            using (var graphics = Graphics.FromImage(image))
-                            {
-                                var x = cursorInfo.ptScreenPos.x - rectangle.Left - iconInfo.xHotspot;
-                                var y = cursorInfo.ptScreenPos.y - rectangle.Top - iconInfo.yHotspot;
-                                User32.DrawIconEx(graphics.GetHdc(), x, y, cursorInfo.hCursor, 0, 0, 0, IntPtr.Zero, Constants.DI_NORMAL | Constants.DI_COMPAT);
-                            }
+                            using var graphics = Graphics.FromImage(image);
+                            var x = cursorInfo.ptScreenPos.x - rectangle.Left - iconInfo.xHotspot;
+                            var y = cursorInfo.ptScreenPos.y - rectangle.Top - iconInfo.yHotspot;
+                            User32.DrawIconEx(graphics.GetHdc(), x, y, cursorInfo.hCursor, 0, 0, 0, IntPtr.Zero, Constants.DI_NORMAL | Constants.DI_COMPAT);
                         }
                     }
                     return image;
@@ -356,15 +349,13 @@ namespace WindowTextExtractor.Utils
 
         private static Rect GetWindowSize(IntPtr handle)
         {
-            Rect size;
-            User32.GetWindowRect(handle, out size);
+            User32.GetWindowRect(handle, out var size);
             return size;
         }
 
         private static Rect GetWindowClientSize(IntPtr handle)
         {
-            Rect size;
-            User32.GetClientRect(handle, out size);
+            User32.GetClientRect(handle, out var size);
             return size;
         }
 
@@ -417,34 +408,32 @@ namespace WindowTextExtractor.Utils
 
         private static WmiProcessInfo GetWmiProcessInfo(int pId)
         {
-            using (var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_Process WHERE ProcessId = " + pId))
-            using (var objects = searcher.Get())
+            using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_Process WHERE ProcessId = " + pId);
+            using var objects = searcher.Get();
+            var processInfo = new WmiProcessInfo();
+            foreach (ManagementObject obj in objects)
             {
-                var processInfo = new WmiProcessInfo();
-                foreach (ManagementObject obj in objects)
+                var argList = new string[] { string.Empty, string.Empty };
+                var returnVal = Convert.ToInt32(obj.InvokeMethod("GetOwner", argList));
+                if (returnVal == 0)
                 {
-                    var argList = new string[] { string.Empty, string.Empty };
-                    var returnVal = Convert.ToInt32(obj.InvokeMethod("GetOwner", argList));
-                    if (returnVal == 0)
-                    {
-                        // return DOMAIN\user
-                        processInfo.Owner = argList[1] + "\\" + argList[0];
-                        break;
-                    }
+                    // return DOMAIN\user
+                    processInfo.Owner = argList[1] + "\\" + argList[0];
+                    break;
                 }
-
-                var baseObject = objects.Cast<ManagementBaseObject>().FirstOrDefault();
-                if (baseObject != null)
-                {
-                    processInfo.CommandLine = baseObject["CommandLine"] != null ? baseObject["CommandLine"].ToString() : "";
-                    processInfo.HandleCount = baseObject["HandleCount"] != null ? (uint)baseObject["HandleCount"] : 0;
-                    processInfo.ThreadCount = baseObject["ThreadCount"] != null ? (uint)baseObject["ThreadCount"] : 0;
-                    processInfo.VirtualSize = baseObject["VirtualSize"] != null ? (ulong)baseObject["VirtualSize"] : 0;
-                    processInfo.WorkingSetSize = baseObject["WorkingSetSize"] != null ? (ulong)baseObject["WorkingSetSize"] : 0;
-                }
-
-                return processInfo;
             }
+
+            var baseObject = objects.Cast<ManagementBaseObject>().FirstOrDefault();
+            if (baseObject != null)
+            {
+                processInfo.CommandLine = baseObject["CommandLine"] != null ? baseObject["CommandLine"].ToString() : "";
+                processInfo.HandleCount = baseObject["HandleCount"] != null ? (uint)baseObject["HandleCount"] : 0;
+                processInfo.ThreadCount = baseObject["ThreadCount"] != null ? (uint)baseObject["ThreadCount"] : 0;
+                processInfo.VirtualSize = baseObject["VirtualSize"] != null ? (ulong)baseObject["VirtualSize"] : 0;
+                processInfo.WorkingSetSize = baseObject["WorkingSetSize"] != null ? (ulong)baseObject["WorkingSetSize"] : 0;
+            }
+
+            return processInfo;
         }
 
         private static int EnumWindows(IntPtr handle, ref IntPtr lParam)
@@ -462,13 +451,11 @@ namespace WindowTextExtractor.Utils
 
         private static Color GetColorUnderCursor(Point cursorPosition)
         {
-            using (var bmp = new Bitmap(1, 1))
-            using (var graphics = Graphics.FromImage(bmp))
-            {
-                graphics.CopyFromScreen(cursorPosition, Point.Empty, new Size(1, 1));
-                var color = bmp.GetPixel(0, 0);
-                return color;
-            }
+            using var bmp = new Bitmap(1, 1);
+            using var graphics = Graphics.FromImage(bmp);
+            graphics.CopyFromScreen(cursorPosition, Point.Empty, new Size(1, 1));
+            var color = bmp.GetPixel(0, 0);
+            return color;
         }
 
         private class WmiProcessInfo

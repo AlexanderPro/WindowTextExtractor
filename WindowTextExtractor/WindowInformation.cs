@@ -7,11 +7,11 @@ namespace WindowTextExtractor
 {
     class WindowInformation
     {
-        public IDictionary<string, string> CursorDetails { get; private set; }
+        public IDictionary<string, string> CursorDetails { get; }
 
-        public IDictionary<string, string> WindowDetails { get; private set; }
+        public IDictionary<string, string> WindowDetails { get; }
 
-        public IDictionary<string, string> ProcessDetails { get; private set; }
+        public IDictionary<string, string> ProcessDetails { get; }
 
         public WindowInformation() : this(new Dictionary<string, string>(), new Dictionary<string, string>(), new Dictionary<string, string>())
         {

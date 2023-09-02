@@ -27,6 +27,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile />
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -85,7 +86,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AForge.Video.FFMPEG, Version=2.2.5.0, Culture=neutral, PublicKeyToken=03563089b1be05dd, processorArchitecture=x86">
+    <Reference Include="AForge.Video.FFMPEG, Version=2.2.5.0, Culture=neutral, PublicKeyToken=03563089b1be05dd, processorArchitecture=x86" Condition=" '$(Platform)' == 'x86' ">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libs\AForge.Video.FFMPEG.dll</HintPath>
     </Reference>
@@ -145,10 +146,10 @@
     <Compile Include="Forms\AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\MainForm.cs">
+    <Compile Include="Forms\MainForm.cs" Condition=" '$(Platform)' == 'x86' ">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\MainForm.Designer.cs">
+    <Compile Include="Forms\MainForm.Designer.cs" Condition=" '$(Platform)' == 'x86' ">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Native\Structs\CURSORINFO.cs" />
@@ -201,9 +202,7 @@
     <None Include="App.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Libs\Windows.WinMD">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="Libs\Windows.WinMD" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -225,42 +224,18 @@
     <Content Include="Images\WindowTextExtractor.ico" />
     <Content Include="Images\WindowTextExtractor.png" />
     <Content Include="Images\WindowTextExtractor32.ico" />
-    <Content Include="Libs\AForge.Video.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\AForge.Video.FFMPEG.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\avcodec-53.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\avdevice-53.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\avfilter-2.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\avformat-53.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\avutil-51.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\postproc-52.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\PresentationCore.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\swresample-0.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\swscale-2.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Libs\System.Runtime.WindowsRuntime.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Libs\AForge.Video.dll" />
+    <Content Include="Libs\AForge.Video.FFMPEG.dll" Condition=" '$(Platform)' == 'x86' " />
+    <Content Include="Libs\avcodec-53.dll" />
+    <Content Include="Libs\avdevice-53.dll" />
+    <Content Include="Libs\avfilter-2.dll" />
+    <Content Include="Libs\avformat-53.dll" />
+    <Content Include="Libs\avutil-51.dll" />
+    <Content Include="Libs\postproc-52.dll" />
+    <Content Include="Libs\PresentationCore.dll" />
+    <Content Include="Libs\swresample-0.dll" />
+    <Content Include="Libs\swscale-2.dll" />
+    <Content Include="Libs\System.Runtime.WindowsRuntime.dll" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
@@ -281,6 +256,13 @@
     </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(ProjectDir)Libs\*.dll" "$(TargetDir)" /Y</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

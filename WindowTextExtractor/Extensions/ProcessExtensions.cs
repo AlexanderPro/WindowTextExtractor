@@ -40,19 +40,15 @@ namespace WindowTextExtractor.Extensions
             }
         }
 
-        public static Priority GetProcessPriority(this Process process)
+        public static Priority GetProcessPriority(this Process process) => Kernel32.GetPriorityClass(process.Handle) switch
         {
-            var priorityClass = Kernel32.GetPriorityClass(process.Handle);
-            switch (priorityClass)
-            {
-                case PriorityClass.REALTIME_PRIORITY_CLASS: return Priority.RealTime;
-                case PriorityClass.HIGH_PRIORITY_CLASS: return Priority.High;
-                case PriorityClass.ABOVE_NORMAL_PRIORITY_CLASS: return Priority.AboveNormal;
-                case PriorityClass.NORMAL_PRIORITY_CLASS: return Priority.Normal;
-                case PriorityClass.BELOW_NORMAL_PRIORITY_CLASS: return Priority.BelowNormal;
-                case PriorityClass.IDLE_PRIORITY_CLASS: return Priority.Idle;
-                default: return Priority.Normal;
-            }
-        }
+            PriorityClass.REALTIME_PRIORITY_CLASS => Priority.RealTime,
+            PriorityClass.HIGH_PRIORITY_CLASS => Priority.High,
+            PriorityClass.ABOVE_NORMAL_PRIORITY_CLASS => Priority.AboveNormal,
+            PriorityClass.NORMAL_PRIORITY_CLASS => Priority.Normal,
+            PriorityClass.BELOW_NORMAL_PRIORITY_CLASS => Priority.BelowNormal,
+            PriorityClass.IDLE_PRIORITY_CLASS => Priority.Idle,
+            _ => Priority.Normal
+        };
     }
 }

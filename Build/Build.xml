@@ -19,7 +19,7 @@
     <WindowTextExtractorDestFileWin64 Include="$(ApplicationPath)\WindowTextExtractor64.exe" />
     <WindowTextExtractorSourceConfgiFile Include="$(WindowTextExtractorProjectPath)\bin\x86\Release\WindowTextExtractor.exe.config" />
     <WindowTextExtractorDestConfgiFile Include="$(ApplicationPath)\WindowTextExtractor.exe.config" />
-    <WindowTextExtractorSourceLibFiles Include="$(WindowTextExtractorProjectPath)\bin\x86\Release\*.dll" />
+    <WindowTextExtractorSourceLibFiles Include="$(WindowTextExtractorProjectPath)\Libs\*dll;$(WindowTextExtractorProjectPath)\bin\x86\Release\zxing.dll;$(WindowTextExtractorProjectPath)\bin\x86\Release\zxing.presentation.dll" />
     <WindowTextExtractorDestLibFiles Include="$(ApplicationPath)\" />
   </ItemGroup>
 

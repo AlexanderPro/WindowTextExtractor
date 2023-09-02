@@ -46,14 +46,14 @@ namespace WindowTextExtractor.Forms
         private string _listText;
         private int _fps;
         private decimal _scale;
-        private object _lockObject;
         private bool _refreshImage;
         private bool _imageTab;
         private bool _isRecording;
         private bool _captureCursor;
         private DateTime? _startRecordingTime;
-        private VideoFileWriter _videoWriter;
         private Bitmap _image;
+        private readonly object _lockObject;
+        private readonly VideoFileWriter _videoWriter;
 
         private AccurateTimer _captureWindowTimer;
         private AccurateTimer _updatePictureBoxTimer;
@@ -67,10 +67,11 @@ namespace WindowTextExtractor.Forms
 
             AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
             Application.ThreadException += OnThreadException;
+            using var currentProcess = Process.GetCurrentProcess();
 
             _lockObject = new object();
             _isButtonTargetMouseDown = false;
-            _processId = Process.GetCurrentProcess().Id;
+            _processId = currentProcess.Id;
             _messageId = User32.RegisterWindowMessage("WINDOW_TEXT_EXTRACTOR_HOOK");
             _64BitFilePath = string.Empty;
             _informationFileName = string.Empty;
@@ -132,8 +133,7 @@ namespace WindowTextExtractor.Forms
                 _64BitFilePath = Path.Combine(directoryName, fileName);
                 if (!File.Exists(_64BitFilePath))
                 {
-                    var message = string.Format("{0} is not found.", fileName);
-                    MessageBox.Show(message, AssemblyUtils.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"{fileName} is not found.", AssemblyUtils.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     Close();
                     return;
                 }
@@ -345,7 +345,7 @@ namespace WindowTextExtractor.Forms
                     var builder = new StringBuilder(1024);
                     foreach (var variableKey in variables.Keys)
                     {
-                        builder.AppendFormat($"{variableKey.PadRight(paddingSize)}: {variables[variableKey]}{Environment.NewLine}");
+                        builder.AppendLine($"{variableKey,-paddingSize}: {variables[variableKey]}");
                     }
                     content = builder.ToString();
                 }
@@ -357,10 +357,13 @@ namespace WindowTextExtractor.Forms
 
         private void menuItemFont_Click(object sender, EventArgs e)
         {
-            var dialog = new FontDialog();
-            dialog.ShowHelp = false;
-            dialog.ShowColor = false;
-            dialog.Font = txtContent.Font;
+            var dialog = new FontDialog
+            {
+                ShowHelp = false,
+                ShowColor = false,
+                Font = txtContent.Font
+            };
+
             if (dialog.ShowDialog() != DialogResult.Cancel)
             {
                 txtContent.Font = dialog.Font;
@@ -644,7 +647,7 @@ namespace WindowTextExtractor.Forms
                                         return false;
                                     }
 
-                                    var process = Process.GetProcessById(element.Current.ProcessId);
+                                    using var process = Process.GetProcessById(element.Current.ProcessId);
                                     if (element.Current.IsPassword)
                                     {
                                         if (process.ProcessName.ToLower() == "iexplore")
@@ -667,7 +670,7 @@ namespace WindowTextExtractor.Forms
                                             Process.Start(new ProcessStartInfo
                                             {
                                                 FileName = _64BitFilePath,
-                                                Arguments = string.Format("{0} {1} {2}", Handle.ToInt32(), element.Current.NativeWindowHandle, _messageId)
+                                                Arguments = $"{Handle.ToInt32()} {element.Current.NativeWindowHandle} {_messageId}"
                                             });
                                         }
                                         else
@@ -701,11 +704,9 @@ namespace WindowTextExtractor.Forms
                                         }
                                         else
                                         {
-                                            using (var image = WindowUtils.CaptureWindow(windowHandle, captureCursor))
-                                            {
-                                                var newImage = ImageUtils.ResizeImage(image, (int)(image.Width * scale), (int)(image.Height * scale));
-                                                FillImage(newImage);
-                                            }
+                                            using var image = WindowUtils.CaptureWindow(windowHandle, captureCursor);
+                                            var newImage = ImageUtils.ResizeImage(image, (int)(image.Width * scale), (int)(image.Height * scale));
+                                            FillImage(newImage);
                                         }
                                         var windowInformation = WindowUtils.GetWindowInformation(windowHandle, cursorPosition);
                                         FillInformation(windowInformation);
@@ -776,10 +777,8 @@ namespace WindowTextExtractor.Forms
                     }
                     else
                     {
-                        using (var sourceImage = WindowUtils.CaptureWindow(windowHandle, captureCursor))
-                        {
-                            newImage = ImageUtils.ResizeImage(sourceImage, (int)(sourceImage.Width * scale), (int)(sourceImage.Height * scale));
-                        }
+                        using var sourceImage = WindowUtils.CaptureWindow(windowHandle, captureCursor);
+                        newImage = ImageUtils.ResizeImage(sourceImage, (int)(sourceImage.Width * scale), (int)(sourceImage.Height * scale));
                     }
                 }
             }
@@ -1028,8 +1027,7 @@ namespace WindowTextExtractor.Forms
 
         private void OnCurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            var ex = e.ExceptionObject as Exception;
-            ex = ex ?? new Exception("OnCurrentDomainUnhandledException");
+            var ex = e.ExceptionObject as Exception ?? new Exception("OnCurrentDomainUnhandledException");
             OnThreadException(sender, new ThreadExceptionEventArgs(ex));
         }
 

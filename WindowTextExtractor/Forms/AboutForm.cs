@@ -12,9 +12,9 @@ namespace WindowTextExtractor.Forms
         public AboutForm()
         {
             InitializeComponent();
-            Text = "About " + AssemblyUtils.AssemblyProductName;
-            lblProductName.Text = string.Format("{0} v{1}", AssemblyUtils.AssemblyProductName, AssemblyUtils.AssemblyProductVersion);
-            lblCopyright.Text = string.Format("{0}-{1} {2}", AssemblyUtils.AssemblyCopyright, DateTime.Now.Year, AssemblyUtils.AssemblyCompany);
+            Text = $"About {AssemblyUtils.AssemblyProductName}";
+            lblProductName.Text = $"{AssemblyUtils.AssemblyProductName} v{AssemblyUtils.AssemblyProductVersion}";
+            lblCopyright.Text = $"{AssemblyUtils.AssemblyCopyright}-{DateTime.Now.Year} {AssemblyUtils.AssemblyCompany}";
             linkUrl.Text = URL;
         }
 

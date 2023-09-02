@@ -38,20 +38,16 @@ namespace WindowTextExtractor.Utils
 
             destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
 
-            using (var graphics = Graphics.FromImage(destImage))
-            {
-                graphics.CompositingMode = CompositingMode.SourceCopy;
-                graphics.CompositingQuality = CompositingQuality.HighQuality;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graphics.SmoothingMode = SmoothingMode.HighQuality;
-                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            using var graphics = Graphics.FromImage(destImage);
+            graphics.CompositingMode = CompositingMode.SourceCopy;
+            graphics.CompositingQuality = CompositingQuality.HighQuality;
+            graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            graphics.SmoothingMode = SmoothingMode.HighQuality;
+            graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
-                using (var wrapMode = new ImageAttributes())
-                {
-                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
-                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
-                }
-            }
+            using var wrapMode = new ImageAttributes();
+            wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+            graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
 
             return destImage;
         }
@@ -91,89 +87,83 @@ namespace WindowTextExtractor.Utils
             var scaledBitmap = ScaleBitmapUniform(image, scale);
             var text = new StringBuilder();
 
-            using (var memory = new MemoryStream())
+            using var memory = new MemoryStream();
+            scaledBitmap.Save(memory, ImageFormat.Bmp);
+            memory.Position = 0;
+            var randomAccessStream = memory.AsRandomAccessStream();
+            var bmpDecoder = await BitmapDecoder.CreateAsync(randomAccessStream).AsTask().ConfigureAwait(false);
+         
+            using var softwareBmp = await bmpDecoder.GetSoftwareBitmapAsync().AsTask().ConfigureAwait(false);
+            await memory.FlushAsync();
+
+            var ocrEngine = OcrEngine.TryCreateFromLanguage(selectedLanguage);
+            var ocrResult = await ocrEngine.RecognizeAsync(softwareBmp).AsTask().ConfigureAwait(false);
+
+            var heightsList = new List<double>();
+
+            foreach (var ocrLine in ocrResult.Lines)
             {
-                scaledBitmap.Save(memory, ImageFormat.Bmp);
-                memory.Position = 0;
-                var randomAccessStream = memory.AsRandomAccessStream();
-                var bmpDecoder = await BitmapDecoder.CreateAsync(randomAccessStream).AsTask().ConfigureAwait(false);
-                using (var softwareBmp = await bmpDecoder.GetSoftwareBitmapAsync().AsTask().ConfigureAwait(false))
-                {
-                    await memory.FlushAsync();
-
-                    var ocrEngine = OcrEngine.TryCreateFromLanguage(selectedLanguage);
-                    var ocrResult = await ocrEngine.RecognizeAsync(softwareBmp).AsTask().ConfigureAwait(false);
-
-                    var heightsList = new List<double>();
-
-                    foreach (var ocrLine in ocrResult.Lines)
-                    {
-                        GetTextFromOcrLine(ocrLine, isSpaceJoiningOCRLang, text);
-                    }
-
-                    var lang = XmlLanguage.GetLanguage(selectedLanguage.LanguageTag);
-                    var culture = lang.GetEquivalentCulture();
-                    if (culture.TextInfo.IsRightToLeft)
-                    {
-                        ReverseWordsForRightToLeft(text);
-                    }
-
-                    return text.ToString();
-                }
+                GetTextFromOcrLine(ocrLine, isSpaceJoiningOCRLang, text);
             }
+
+            var lang = XmlLanguage.GetLanguage(selectedLanguage.LanguageTag);
+            var culture = lang.GetEquivalentCulture();
+            if (culture.TextInfo.IsRightToLeft)
+            {
+                ReverseWordsForRightToLeft(text);
+            }
+
+            return text.ToString();
         }
 
         private async static Task<double> GetIdealScaleFactorAsync(Bitmap image, Language selectedLanguage)
         {
-            using (var memory = new MemoryStream())
+            using var memory = new MemoryStream();
+            var heightsList = new List<double>();
+            double scaleFactor = 1.5;
+            image.Save(memory, ImageFormat.Bmp);
+            memory.Position = 0;
+            var bmpDecoder = await BitmapDecoder.CreateAsync(memory.AsRandomAccessStream()).AsTask().ConfigureAwait(false);
+         
+            using var softwareBmp = await bmpDecoder.GetSoftwareBitmapAsync().AsTask().ConfigureAwait(false);
+            if (selectedLanguage is null)
             {
-                var heightsList = new List<double>();
-                double scaleFactor = 1.5;
-                image.Save(memory, ImageFormat.Bmp);
-                memory.Position = 0;
-                var bmpDecoder = await BitmapDecoder.CreateAsync(memory.AsRandomAccessStream()).AsTask().ConfigureAwait(false);
-                using (var softwareBmp = await bmpDecoder.GetSoftwareBitmapAsync().AsTask().ConfigureAwait(false))
+                selectedLanguage = GetCurrentLanguage();
+            }
+
+            memory.Flush();
+            var ocrEngine = OcrEngine.TryCreateFromLanguage(selectedLanguage);
+            var ocrResult = await ocrEngine.RecognizeAsync(softwareBmp);
+
+            foreach (var ocrLine in ocrResult.Lines)
+            {
+                foreach (var ocrWord in ocrLine.Words)
                 {
-                    if (selectedLanguage is null)
-                    {
-                        selectedLanguage = GetCurrentLanguage();
-                    }
-
-                    memory.Flush();
-                    var ocrEngine = OcrEngine.TryCreateFromLanguage(selectedLanguage);
-                    var ocrResult = await ocrEngine.RecognizeAsync(softwareBmp);
-
-                    foreach (var ocrLine in ocrResult.Lines)
-                    {
-                        foreach (var ocrWord in ocrLine.Words)
-                        {
-                            heightsList.Add(ocrWord.BoundingRect.Height);
-                        }
-                    }
-
-                    double lineHeight = 10;
-
-                    if (heightsList.Count > 0)
-                    {
-                        lineHeight = heightsList.Average();
-                    }
-
-                    // Ideal Line Height is 40px
-                    const double idealLineHeight = 40.0;
-
-                    scaleFactor = idealLineHeight / lineHeight;
-
-                    if (image.Width * scaleFactor > OcrEngine.MaxImageDimension || image.Height * scaleFactor > OcrEngine.MaxImageDimension)
-                    {
-                        var largerDim = Math.Max(image.Width, image.Height);
-                        // find the largest possible scale factor, because the ideal scale factor is too high
-
-                        scaleFactor = OcrEngine.MaxImageDimension / largerDim;
-                    }
-
-                    return scaleFactor;
+                    heightsList.Add(ocrWord.BoundingRect.Height);
                 }
             }
+
+            double lineHeight = 10;
+
+            if (heightsList.Count > 0)
+            {
+                lineHeight = heightsList.Average();
+            }
+
+            // Ideal Line Height is 40px
+            const double idealLineHeight = 40.0;
+
+            scaleFactor = idealLineHeight / lineHeight;
+
+            if (image.Width * scaleFactor > OcrEngine.MaxImageDimension || image.Height * scaleFactor > OcrEngine.MaxImageDimension)
+            {
+                var largerDim = Math.Max(image.Width, image.Height);
+                // find the largest possible scale factor, because the ideal scale factor is too high
+
+                scaleFactor = OcrEngine.MaxImageDimension / largerDim;
+            }
+
+            return scaleFactor;
         }
 
         private static void ReverseWordsForRightToLeft(StringBuilder text)
@@ -241,27 +231,25 @@ namespace WindowTextExtractor.Utils
 
         private static Bitmap ScaleBitmapUniform(Bitmap passedBitmap, double scale)
         {
-            using (var memory = new MemoryStream())
-            {
-                passedBitmap.Save(memory, ImageFormat.Bmp);
-                memory.Position = 0;
-                var bitmapimage = new BitmapImage();
-                bitmapimage.BeginInit();
-                bitmapimage.StreamSource = memory;
-                bitmapimage.CacheOption = BitmapCacheOption.None;
-                bitmapimage.EndInit();
-                bitmapimage.Freeze();
-                
-                memory.Flush();
-                
-                var tbmpImg = new TransformedBitmap();
-                tbmpImg.BeginInit();
-                tbmpImg.Source = bitmapimage;
-                tbmpImg.Transform = new ScaleTransform(scale, scale);
-                tbmpImg.EndInit();
-                tbmpImg.Freeze();
-                return BitmapSourceToBitmap(tbmpImg);
-            }
+            using var memory = new MemoryStream();
+            passedBitmap.Save(memory, ImageFormat.Bmp);
+            memory.Position = 0;
+            var bitmapimage = new BitmapImage();
+            bitmapimage.BeginInit();
+            bitmapimage.StreamSource = memory;
+            bitmapimage.CacheOption = BitmapCacheOption.None;
+            bitmapimage.EndInit();
+            bitmapimage.Freeze();
+
+            memory.Flush();
+
+            var tbmpImg = new TransformedBitmap();
+            tbmpImg.BeginInit();
+            tbmpImg.Source = bitmapimage;
+            tbmpImg.Transform = new ScaleTransform(scale, scale);
+            tbmpImg.EndInit();
+            tbmpImg.Freeze();
+            return BitmapSourceToBitmap(tbmpImg);
         }
 
         private static Bitmap BitmapSourceToBitmap(BitmapSource source)
