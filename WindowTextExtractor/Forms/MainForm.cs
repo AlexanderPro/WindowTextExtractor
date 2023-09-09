@@ -242,7 +242,7 @@ namespace WindowTextExtractor.Forms
                 FileName = File.Exists(_informationFileName) ? Path.GetFileName(_informationFileName) : "*.txt",
                 DefaultExt = "txt",
                 RestoreDirectory = false,
-                Filter = "Text Documents (*.txt)|*.txt|All Files (*.*)|*.*"
+                Filter = "Text Documents (*.txt)|*.txt|XML Documents (*.xml)|*.xml|All Files (*.*)|*.*"
             };
 
             if (!File.Exists(_informationFileName))
@@ -253,8 +253,23 @@ namespace WindowTextExtractor.Forms
             if (dialog.ShowDialog() != DialogResult.Cancel)
             {
                 _informationFileName = dialog.FileName;
-                var content = gvInformation.Tag != null ? ((WindowInformation)gvInformation.Tag).ToString() : string.Empty;
-                File.WriteAllText(dialog.FileName, content, Encoding.UTF8);
+                var fileExtension = Path.GetExtension(dialog.FileName).ToLower();
+                if (fileExtension == ".xml")
+                {
+                    var information = (WindowInformation)gvInformation.Tag;
+                    var document = new XDocument();
+                    var elements = new XElement("information",
+                        new XElement("cursorInformation", information.CursorDetails.Select(x => new XElement("item", new XAttribute("name", x.Key), new XAttribute("value", x.Value)))),
+                        new XElement("windowInformation", information.WindowDetails.Select(x => new XElement("item", new XAttribute("name", x.Key), new XAttribute("value", x.Value)))),
+                        new XElement("processInformation", information.ProcessDetails.Select(x => new XElement("item", new XAttribute("name", x.Key), new XAttribute("value", x.Value)))));
+                    document.Add(elements);
+                    FileUtils.Save(dialog.FileName, document);
+                }
+                else
+                {
+                    var content = gvInformation.Tag != null ? ((WindowInformation)gvInformation.Tag).ToString() : string.Empty;
+                    File.WriteAllText(dialog.FileName, content, Encoding.UTF8);
+                }
             }
         }
 
@@ -290,10 +305,10 @@ namespace WindowTextExtractor.Forms
                 OverwritePrompt = true,
                 ValidateNames = true,
                 Title = "Save As",
-                FileName = File.Exists(_textListFileName) ? Path.GetFileName(_textListFileName) : "*.xml",
-                DefaultExt = "xml",
+                FileName = File.Exists(_textListFileName) ? Path.GetFileName(_textListFileName) : "*.txt",
+                DefaultExt = "txt",
                 RestoreDirectory = false,
-                Filter = "XML Documents (*.xml)|*.xml|All Files (*.*)|*.*"
+                Filter = "Text Documents (*.txt)|*.txt|XML Documents (*.xml)|*.xml|All Files (*.*)|*.*"
             };
 
             if (!File.Exists(_textListFileName))
@@ -304,9 +319,18 @@ namespace WindowTextExtractor.Forms
             if (dialog.ShowDialog() != DialogResult.Cancel)
             {
                 _textListFileName = dialog.FileName;
-                var document = new XDocument();
-                document.Add(new XElement("items", gvTextList.Rows.OfType<DataGridViewRow>().Select(x => new XElement("item", ((string)x.Cells[0].Value) ?? string.Empty))));
-                FileUtils.Save(_textListFileName, document);
+                var fileExtension = Path.GetExtension(dialog.FileName).ToLower();
+                if (fileExtension == ".xml")
+                {
+                    var document = new XDocument();
+                    document.Add(new XElement("items", gvTextList.Rows.OfType<DataGridViewRow>().Select(x => new XElement("item", ((string)x.Cells[0].Value) ?? string.Empty))));
+                    FileUtils.Save(dialog.FileName, document);
+                }
+                else
+                {
+                    var content = string.Join($"{Environment.NewLine}{new string('-', 100)}{Environment.NewLine}", gvTextList.Rows.OfType<DataGridViewRow>().Select(x => ((string)x.Cells[0].Value) ?? string.Empty));
+                    File.WriteAllText(dialog.FileName, content, Encoding.UTF8);
+                }
             }
         }
 
@@ -336,7 +360,8 @@ namespace WindowTextExtractor.Forms
                     fileExtension == ".gif" ? ImageFormat.Gif :
                     fileExtension == ".jpeg" ? ImageFormat.Jpeg :
                     fileExtension == ".png" ? ImageFormat.Png :
-                    fileExtension == ".tiff" ? ImageFormat.Tiff : ImageFormat.Wmf;
+                    fileExtension == ".tiff" ? ImageFormat.Tiff :
+                    fileExtension == ".wmf" ? ImageFormat.Wmf : ImageFormat.Bmp;
                 pbContent.Image.Save(dialog.FileName, imageFormat);
             }
         }
@@ -351,7 +376,7 @@ namespace WindowTextExtractor.Forms
                 FileName = File.Exists(_environmentFileName) ? Path.GetFileName(_environmentFileName) : "*.txt",
                 DefaultExt = "txt",
                 RestoreDirectory = false,
-                Filter = "Text Documents (*.txt)|*.txt|All Files (*.*)|*.*"
+                Filter = "Text Documents (*.txt)|*.txt|XML Documents (*.xml)|*.xml|All Files (*.*)|*.*"
             };
 
             if (!File.Exists(_environmentFileName))
@@ -362,18 +387,31 @@ namespace WindowTextExtractor.Forms
             if (dialog.ShowDialog() != DialogResult.Cancel)
             {
                 _environmentFileName = dialog.FileName;
-                var content = string.Empty;
-                if (gvEnvironment.Tag is IDictionary<string, string> variables)
+                var fileExtension = Path.GetExtension(dialog.FileName).ToLower();
+                if (fileExtension == ".xml")
                 {
-                    const int paddingSize = 25;
-                    var builder = new StringBuilder(1024);
-                    foreach (var variableKey in variables.Keys)
+                    if (gvEnvironment.Tag is IDictionary<string, string> variables)
                     {
-                        builder.AppendLine($"{variableKey,-paddingSize}: {variables[variableKey]}");
+                        var document = new XDocument();
+                        document.Add(new XElement("items", variables.Select(x => new XElement("item", new XAttribute("name", x.Key), new XAttribute("value", x.Value)))));
+                        FileUtils.Save(dialog.FileName, document);
                     }
-                    content = builder.ToString();
                 }
-                File.WriteAllText(dialog.FileName, content, Encoding.UTF8);
+                else
+                {
+                    var content = string.Empty;
+                    if (gvEnvironment.Tag is IDictionary<string, string> variables)
+                    {
+                        const int paddingSize = 25;
+                        var builder = new StringBuilder(1024);
+                        foreach (var variableKey in variables.Keys)
+                        {
+                            builder.AppendLine($"{variableKey,-paddingSize}: {variables[variableKey]}");
+                        }
+                        content = builder.ToString();
+                    }
+                    File.WriteAllText(dialog.FileName, content, Encoding.UTF8);
+                }
             }
         }
 

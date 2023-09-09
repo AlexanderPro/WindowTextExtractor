@@ -31,37 +31,42 @@ namespace WindowTextExtractor
 
             if (CursorDetails.Keys.Any())
             {
-                builder.AppendFormat($"Cursor Information {Environment.NewLine}");
+                builder.Append($"Cursor Information {Environment.NewLine}");
             }
 
             foreach (var cursorDetailKey in CursorDetails.Keys)
             {
-                builder.AppendFormat($"{cursorDetailKey.PadRight(paddingSize)}: {CursorDetails[cursorDetailKey]}{Environment.NewLine}");
+                builder.Append($"{cursorDetailKey.PadRight(paddingSize)}: {CursorDetails[cursorDetailKey]}{Environment.NewLine}");
+            }
+
+            if (CursorDetails.Keys.Any())
+            {
+                builder.Append(Environment.NewLine);
             }
 
             if (WindowDetails.Keys.Any())
             {
-                builder.AppendFormat($"Window Information {Environment.NewLine}");
+                builder.Append($"Window Information {Environment.NewLine}");
             }
             
             foreach (var windowDetailKey in WindowDetails.Keys)
             {
-                builder.AppendFormat($"{windowDetailKey.PadRight(paddingSize)}: {WindowDetails[windowDetailKey]}{Environment.NewLine}");
+                builder.Append($"{windowDetailKey.PadRight(paddingSize)}: {WindowDetails[windowDetailKey]}{Environment.NewLine}");
             }
 
             if (WindowDetails.Keys.Any())
             {
-                builder.AppendFormat($"{Environment.NewLine}");
+                builder.Append(Environment.NewLine);
             }
 
             if (ProcessDetails.Keys.Any())
             {
-                builder.AppendFormat($"Process Information {Environment.NewLine}");
+                builder.Append($"Process Information {Environment.NewLine}");
             }
 
             foreach (var processDetailKey in ProcessDetails.Keys)
             {
-                builder.AppendFormat($"{processDetailKey.PadRight(paddingSize)}: {ProcessDetails[processDetailKey]}{Environment.NewLine}");
+                builder.Append($"{processDetailKey.PadRight(paddingSize)}: {ProcessDetails[processDetailKey]}{Environment.NewLine}");
             }
 
             return builder.ToString();

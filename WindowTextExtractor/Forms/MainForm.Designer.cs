@@ -196,10 +196,10 @@
             // menuItemFile
             // 
             this.menuItemFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItemSaveInformationAs,
             this.menuItemSaveTextAs,
             this.menuItemSaveTextListAs,
             this.menuItemSaveImageAs,
+            this.menuItemSaveInformationAs,
             this.menuItemSaveEnvironmentAs,
             this.toolStripSeparator,
             this.menuItemExit});
