@@ -104,7 +104,7 @@ namespace WindowTextExtractor.Forms
 
             Application.AddMessageFilter(this);
 
-            menuItemAlwaysOnTop_Click(this, EventArgs.Empty);
+            MenuItemAlwaysOnTopClick(this, EventArgs.Empty);
             OnContentChanged();
 
             var font = new Font(DEFAULT_FONT_NAME, DEFAULT_FONT_SIZE, FontStyle.Regular, GraphicsUnit.Point);
@@ -190,11 +190,11 @@ namespace WindowTextExtractor.Forms
             base.WndProc(ref m);
         }
 
-        private void txtContent_TextChanged(object sender, EventArgs e) => OnContentChanged();
+        private void TextContentTextChanged(object sender, EventArgs e) => OnContentChanged();
 
-        private void txtContent_MultilineChanged(object sender, EventArgs e) => OnContentChanged();
+        private void TextContentMultilineChanged(object sender, EventArgs e) => OnContentChanged();
 
-        private void gvTextList_SelectionChanged(object sender, EventArgs e)
+        private void GridViewTextListSelectionChanged(object sender, EventArgs e)
         {
             foreach (DataGridViewRow row in gvTextList.Rows)
             {
@@ -208,7 +208,31 @@ namespace WindowTextExtractor.Forms
             }
         }
 
-        private void menuItemSaveInformationAs_Click(object sender, EventArgs e)
+        private void GridViewTextListCellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            var grid = (DataGridView)sender;
+
+            if (e.ColumnIndex == 1)
+            {
+                grid.Rows.RemoveAt(e.RowIndex);
+                if (grid.Rows.Count > 0)
+                {
+                    var lastRowIndex = grid.Rows.Count - 1;
+                    var lastRow = grid.Rows[lastRowIndex];
+                    var firstCell = lastRow.Cells[0];
+                    lastRow.Selected = true;
+                    grid.FirstDisplayedScrollingRowIndex = lastRowIndex;
+                    txtContent.Text = ((string)firstCell.Value) ?? string.Empty;
+                }
+                else
+                {
+                    txtContent.Text = string.Empty;
+                }
+                OnContentChanged();
+            }
+        }
+
+        private void MenuItemSaveInformationAsClick(object sender, EventArgs e)
         {
             var dialog = new SaveFileDialog
             {
@@ -234,7 +258,7 @@ namespace WindowTextExtractor.Forms
             }
         }
 
-        private void menuItemSaveTextAs_Click(object sender, EventArgs e)
+        private void MenuItemSaveTextAsClick(object sender, EventArgs e)
         {
             var dialog = new SaveFileDialog
             {
@@ -259,7 +283,7 @@ namespace WindowTextExtractor.Forms
             }
         }
 
-        private void menuItemSaveTextListAs_Click(object sender, EventArgs e)
+        private void MenuItemSaveTextListAsClick(object sender, EventArgs e)
         {
             var dialog = new SaveFileDialog
             {
@@ -286,7 +310,7 @@ namespace WindowTextExtractor.Forms
             }
         }
 
-        private void menuItemSaveImageAs_Click(object sender, EventArgs e)
+        private void MenuItemSaveImageAsClick(object sender, EventArgs e)
         {
             var dialog = new SaveFileDialog
             {
@@ -317,7 +341,7 @@ namespace WindowTextExtractor.Forms
             }
         }
 
-        private void menuItemSaveEnvironmentAs_Click(object sender, EventArgs e)
+        private void MenuItemSaveEnvironmentAsClick(object sender, EventArgs e)
         {
             var dialog = new SaveFileDialog
             {
@@ -353,9 +377,9 @@ namespace WindowTextExtractor.Forms
             }
         }
 
-        private void menuItemExit_Click(object sender, EventArgs e) => Close();
+        private void MenuItemExitClick(object sender, EventArgs e) => Close();
 
-        private void menuItemFont_Click(object sender, EventArgs e)
+        private void MenuItemFontClick(object sender, EventArgs e)
         {
             var dialog = new FontDialog
             {
@@ -370,19 +394,19 @@ namespace WindowTextExtractor.Forms
             }
         }
 
-        private void menuItemAlwaysOnTop_Click(object sender, EventArgs e)
+        private void MenuItemAlwaysOnTopClick(object sender, EventArgs e)
         {
             TopMost = !TopMost;
             menuItemAlwaysOnTop.Checked = TopMost;
         }
 
-        private void menuItemChecked_Click(object sender, EventArgs e)
+        private void MenuItemCheckedClick(object sender, EventArgs e)
         {
             var menuItem = (ToolStripMenuItem)sender;
             menuItem.Checked = !menuItem.Checked;
         }
 
-        private void menuItemShowTextList_Click(object sender, EventArgs e)
+        private void MenuItemShowTextListClick(object sender, EventArgs e)
         {
             menuItemShowTextList.Checked = !menuItemShowTextList.Checked;
             if (menuItemShowTextList.Checked)
@@ -397,13 +421,13 @@ namespace WindowTextExtractor.Forms
             }
         }
 
-        private void menuItemAbout_Click(object sender, EventArgs e)
+        private void MenuItemAboutClick(object sender, EventArgs e)
         {
             var dialog = new AboutForm();
             dialog.ShowDialog(this);
         }
 
-        private void btnTarget_MouseDown(object sender, MouseEventArgs e)
+        private void ButtonTargetMouseDown(object sender, MouseEventArgs e)
         {
             if (!_isButtonTargetMouseDown)
             {
@@ -421,7 +445,7 @@ namespace WindowTextExtractor.Forms
             }
         }
 
-        private void actionButtonStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        private void ActionButtonStripItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             var windowHandle = IntPtr.Zero;
             lock (_lockObject)
@@ -460,7 +484,7 @@ namespace WindowTextExtractor.Forms
             FillInformation(windowInformation);
         }
 
-        private void btnRecord_Click(object sender, EventArgs e)
+        private void ButtonRecordClick(object sender, EventArgs e)
         {
             var isRecording = false;
             lock (_lockObject)
@@ -502,7 +526,7 @@ namespace WindowTextExtractor.Forms
             numericScale.Enabled = !isRecording;
         }
 
-        private void btnGrab_Click(object sender, EventArgs e)
+        private void ButtonGrabClick(object sender, EventArgs e)
         {
             lock (_lockObject)
             {
@@ -539,7 +563,7 @@ namespace WindowTextExtractor.Forms
             }
         }
 
-        private void btnBrowseFile_Click(object sender, EventArgs e)
+        private void ButtonBrowseFileClick(object sender, EventArgs e)
         {
             var dialog = new SaveFileDialog
             {
@@ -562,13 +586,13 @@ namespace WindowTextExtractor.Forms
             }
         }
 
-        private void numericFps_ValueChanged(object sender, EventArgs e)
+        private void NumericFpsValueChanged(object sender, EventArgs e)
         {
             _fps = (int)((NumericUpDown)sender).Value;
             InitTimers(_fps);
         }
 
-        private void numericScale_ValueChanged(object sender, EventArgs e)
+        private void NumericScaleValueChanged(object sender, EventArgs e)
         {
             lock (_lockObject)
             {
@@ -576,7 +600,7 @@ namespace WindowTextExtractor.Forms
             }
         }
 
-        private void cmbRefresh_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBoxRefreshSelectedIndexChanged(object sender, EventArgs e)
         {
             lock (_lockObject)
             {
@@ -584,7 +608,7 @@ namespace WindowTextExtractor.Forms
             }
         }
 
-        private void cmbCaptureCursor_SelectedIndexChanged(object sender, EventArgs e)
+        private void ComboBoxCaptureCursorSelectedIndexChanged(object sender, EventArgs e)
         {
             lock (_lockObject)
             {
@@ -592,7 +616,7 @@ namespace WindowTextExtractor.Forms
             }
         }
 
-        private void tabContent_SelectedIndexChanged(object sender, EventArgs e)
+        private void TabContentSelectedIndexChanged(object sender, EventArgs e)
         {
             lock (_lockObject)
             {

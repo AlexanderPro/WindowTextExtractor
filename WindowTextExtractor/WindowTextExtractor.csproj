@@ -219,6 +219,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\1x1.png" />
+    <Content Include="Images\Close.png" />
     <Content Include="Images\Target.png" />
     <Content Include="Images\Target32.ico" />
     <Content Include="Images\WindowTextExtractor.ico" />
