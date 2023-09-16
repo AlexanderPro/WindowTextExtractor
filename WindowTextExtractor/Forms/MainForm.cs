@@ -30,6 +30,8 @@ namespace WindowTextExtractor.Forms
         private const int DEFAULT_FONT_SIZE = 10;
         private const int DEFAULT_FPS = 12;
         private const decimal DEFAULT_SCALE = 1;
+        private const int DEFAULT_BORDER_WIDTH = 10;
+        private readonly Color DEAFULT_BORDER_COLOR = Color.Blue;
 
         private readonly int _processId;
         private readonly int _messageId;
@@ -52,6 +54,10 @@ namespace WindowTextExtractor.Forms
         private bool _captureCursor;
         private DateTime? _startRecordingTime;
         private Bitmap _image;
+        private Graphics _graphics;
+        private Pen _pen;
+        private int _borderWidth;
+        private Color _borderColor;
         private readonly object _lockObject;
         private readonly VideoFileWriter _videoWriter;
 
@@ -90,6 +96,8 @@ namespace WindowTextExtractor.Forms
             _startRecordingTime = null;
             _fps = DEFAULT_FPS;
             _scale = DEFAULT_SCALE;
+            _borderWidth = DEFAULT_BORDER_WIDTH;
+            _borderColor = DEAFULT_BORDER_COLOR;
             numericFps.Value = DEFAULT_FPS;
             numericScale.Value = DEFAULT_SCALE;
             cmbRefresh.SelectedIndex = 0;
@@ -465,6 +473,32 @@ namespace WindowTextExtractor.Forms
             dialog.ShowDialog(this);
         }
 
+        private void MenuItemBorderColorClick(object sender, EventArgs e)
+        {
+            var dialog = new ColorDialog
+            {
+                AllowFullOpen = true,
+                AnyColor = true,
+                FullOpen = true,
+                Color = _borderColor
+            };
+
+            if (dialog.ShowDialog() != DialogResult.Cancel)
+            {
+                _borderColor = dialog.Color;
+            }
+        }
+
+        private void MenuItemBorderWidthClick(object sender, EventArgs e)
+        {
+            var borderWidthForm = new BorderWidthForm(_borderWidth);
+            var result = borderWidthForm.ShowDialog(this);
+            if (result == DialogResult.OK)
+            {
+                _borderWidth = borderWidthForm.BorderWidth;
+            }
+        }
+
         private void ButtonTargetMouseDown(object sender, MouseEventArgs e)
         {
             if (!_isButtonTargetMouseDown)
@@ -666,18 +700,29 @@ namespace WindowTextExtractor.Forms
 
         public bool PreFilterMessage(ref Message m)
         {
+            Action restore = () =>
+            {
+                _isButtonTargetMouseDown = false;
+                if (_windowHandle != IntPtr.Zero)
+                {
+                    WindowUtils.UpdateWindow(_windowHandle);
+                    _graphics?.Dispose();
+                    _pen?.Dispose();
+                }
+                User32.SetCursor(Cursors.Default.Handle);
+                if (!TopMost)
+                {
+                    BringToFront();
+                }
+            };
+
             switch (m.Msg)
             {
                 case Constants.WM_LBUTTONUP:
                     {
                         if (_isButtonTargetMouseDown)
                         {
-                            _isButtonTargetMouseDown = false;
-                            User32.SetCursor(Cursors.Default.Handle);
-                            if (!TopMost)
-                            {
-                                BringToFront();
-                            }
+                            restore.Invoke();
                         }
                     }
                     break;
@@ -702,6 +747,19 @@ namespace WindowTextExtractor.Forms
                                     {
                                         previousHandle = _windowHandle;
                                         previousProcessId = _windowProcessId;
+                                    }
+
+                                    if (previousHandle != windowHandle)
+                                    {
+                                        WindowUtils.UpdateWindow(previousHandle);
+                                        _graphics?.Dispose();
+                                        _pen?.Dispose();
+                                        _graphics = Graphics.FromHwnd(windowHandle);
+                                        _pen = new Pen(_borderColor, _borderWidth);
+                                        if (_borderWidth > 0)
+                                        {
+                                            _graphics.DrawBorder(windowHandle, _pen);
+                                        }
                                     }
 
                                     if (!menuItemAlwaysRefreshTabs.Checked && previousHandle == windowHandle)
@@ -784,6 +842,7 @@ namespace WindowTextExtractor.Forms
                                 }
                                 else
                                 {
+                                    WindowUtils.UpdateWindow(_windowHandle);
                                     lock (_lockObject)
                                     {
                                         _windowHandle = IntPtr.Zero;
@@ -800,7 +859,8 @@ namespace WindowTextExtractor.Forms
                         }
                         catch (Exception e)
                         {
-                            MessageBox.Show(e.ToString());
+                            MessageBox.Show(e.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            restore.Invoke();
                         }
                     }
                     break;
@@ -829,24 +889,36 @@ namespace WindowTextExtractor.Forms
 
             var newImage = (Bitmap)null;
 
-            if (windowHandle != null && User32.IsWindow(windowHandle))
+            try
             {
-                if (imageTab || isRecording)
+                if (windowHandle != null && windowHandle != IntPtr.Zero && User32.IsWindowVisible(windowHandle))
                 {
-                    if (scale == 1m)
+                    if (imageTab || isRecording)
                     {
-                        newImage = WindowUtils.CaptureWindow(windowHandle, captureCursor);
-                    }
-                    else
-                    {
-                        using var sourceImage = WindowUtils.CaptureWindow(windowHandle, captureCursor);
-                        newImage = ImageUtils.ResizeImage(sourceImage, (int)(sourceImage.Width * scale), (int)(sourceImage.Height * scale));
+                        if (scale == 1m)
+                        {
+                            newImage = WindowUtils.CaptureWindow(windowHandle, captureCursor);
+                        }
+                        else
+                        {
+                            using var sourceImage = WindowUtils.CaptureWindow(windowHandle, captureCursor);
+                            newImage = ImageUtils.ResizeImage(sourceImage, (int)(sourceImage.Width * scale), (int)(sourceImage.Height * scale));
+                        }
                     }
                 }
+                else
+                {
+                    newImage = Properties.Resources.OnePixel;
+                }
             }
-            else
+            catch (Exception e)
             {
-                newImage = (Bitmap)Properties.Resources.OnePixel.Clone();
+                Invoke((MethodInvoker)delegate
+                {
+                    MessageBox.Show(e.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                });
+
+                throw;
             }
 
             var oldImage = (Bitmap)null;
@@ -918,7 +990,7 @@ namespace WindowTextExtractor.Forms
             }
             catch (ArgumentException e) when (e.Message.Contains("size must be of the same as video size"))
             {
-                BeginInvoke((MethodInvoker)delegate
+                Invoke((MethodInvoker)delegate
                 {
                     MessageBox.Show("Don't resize the window while recording.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 });

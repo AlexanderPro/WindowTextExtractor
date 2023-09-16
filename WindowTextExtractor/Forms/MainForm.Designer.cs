@@ -40,10 +40,10 @@
             this.toolStripSeparatorThree = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.menuItemFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemSaveInformationAs = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSaveTextAs = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSaveTextListAs = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSaveImageAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemSaveInformationAs = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemSaveEnvironmentAs = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.menuItemExit = new System.Windows.Forms.ToolStripMenuItem();
@@ -97,6 +97,9 @@
             this.cmbLanguages = new System.Windows.Forms.ComboBox();
             this.lblLanguages = new System.Windows.Forms.Label();
             this.btnAction = new WindowTextExtractor.Controls.SplitButton();
+            this.menuItemSelectedWindow = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemBorderColor = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemBorderWidth = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbContent)).BeginInit();
@@ -207,14 +210,6 @@
             this.menuItemFile.Size = new System.Drawing.Size(37, 20);
             this.menuItemFile.Text = "File";
             // 
-            // menuItemSaveInformationAs
-            // 
-            this.menuItemSaveInformationAs.Enabled = false;
-            this.menuItemSaveInformationAs.Name = "menuItemSaveInformationAs";
-            this.menuItemSaveInformationAs.Size = new System.Drawing.Size(194, 22);
-            this.menuItemSaveInformationAs.Text = "Save Information As...";
-            this.menuItemSaveInformationAs.Click += new System.EventHandler(this.MenuItemSaveInformationAsClick);
-            // 
             // menuItemSaveTextAs
             // 
             this.menuItemSaveTextAs.Enabled = false;
@@ -238,6 +233,14 @@
             this.menuItemSaveImageAs.Size = new System.Drawing.Size(194, 22);
             this.menuItemSaveImageAs.Text = "Save Image As...";
             this.menuItemSaveImageAs.Click += new System.EventHandler(this.MenuItemSaveImageAsClick);
+            // 
+            // menuItemSaveInformationAs
+            // 
+            this.menuItemSaveInformationAs.Enabled = false;
+            this.menuItemSaveInformationAs.Name = "menuItemSaveInformationAs";
+            this.menuItemSaveInformationAs.Size = new System.Drawing.Size(194, 22);
+            this.menuItemSaveInformationAs.Text = "Save Information As...";
+            this.menuItemSaveInformationAs.Click += new System.EventHandler(this.MenuItemSaveInformationAsClick);
             // 
             // menuItemSaveEnvironmentAs
             // 
@@ -264,6 +267,7 @@
             this.menuItemOptions.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemFont,
             this.menuItemTextList,
+            this.menuItemSelectedWindow,
             this.menuItemAlwaysOnTop,
             this.menuItemAlwaysRefreshTabs});
             this.menuItemOptions.Name = "menuItemOptions";
@@ -836,6 +840,29 @@
             this.btnAction.UseVisualStyleBackColor = true;
             this.btnAction.Visible = false;
             // 
+            // menuItemSelectedWindow
+            // 
+            this.menuItemSelectedWindow.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemBorderColor,
+            this.menuItemBorderWidth});
+            this.menuItemSelectedWindow.Name = "menuItemSelectedWindow";
+            this.menuItemSelectedWindow.Size = new System.Drawing.Size(300, 22);
+            this.menuItemSelectedWindow.Text = "Selected Window";
+            // 
+            // menuItemBorderColor
+            // 
+            this.menuItemBorderColor.Name = "menuItemBorderColor";
+            this.menuItemBorderColor.Size = new System.Drawing.Size(180, 22);
+            this.menuItemBorderColor.Text = "Border Color";
+            this.menuItemBorderColor.Click += new System.EventHandler(this.MenuItemBorderColorClick);
+            // 
+            // menuItemBorderWidth
+            // 
+            this.menuItemBorderWidth.Name = "menuItemBorderWidth";
+            this.menuItemBorderWidth.Size = new System.Drawing.Size(180, 22);
+            this.menuItemBorderWidth.Text = "Border Width";
+            this.menuItemBorderWidth.Click += new System.EventHandler(this.MenuItemBorderWidthClick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -958,6 +985,9 @@
         private System.Windows.Forms.ToolStripMenuItem miClose;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridColumnText;
         private System.Windows.Forms.DataGridViewImageColumn dataGridColumnClose;
+        private System.Windows.Forms.ToolStripMenuItem menuItemSelectedWindow;
+        private System.Windows.Forms.ToolStripMenuItem menuItemBorderColor;
+        private System.Windows.Forms.ToolStripMenuItem menuItemBorderWidth;
     }
 }
 

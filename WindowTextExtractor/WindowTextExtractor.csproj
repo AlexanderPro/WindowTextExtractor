@@ -137,6 +137,7 @@
     <Compile Include="Diagnostics\SystemInfo.cs" />
     <Compile Include="Diagnostics\UniPtr.cs" />
     <Compile Include="Extensions\AutomationElementExtensions.cs" />
+    <Compile Include="Extensions\GraphicsExtensions.cs" />
     <Compile Include="Extensions\ProcessExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\TextBoxExtensions.cs" />
@@ -146,12 +147,19 @@
     <Compile Include="Forms\AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\BorderWidthForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\BorderWidthForm.Designer.cs">
+      <DependentUpon>BorderWidthForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\MainForm.cs" Condition=" '$(Platform)' == 'x86' ">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\MainForm.Designer.cs" Condition=" '$(Platform)' == 'x86' ">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Native\Enums\RedrawWindowFlags.cs" />
     <Compile Include="Native\Structs\CURSORINFO.cs" />
     <Compile Include="Native\Structs\ICONINFO.cs" />
     <Compile Include="Native\Winmm.cs" />
@@ -190,6 +198,9 @@
     <Compile Include="WindowInformation.cs" />
     <EmbeddedResource Include="Forms\AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\BorderWidthForm.resx">
+      <DependentUpon>BorderWidthForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

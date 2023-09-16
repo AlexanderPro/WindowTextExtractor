@@ -18,6 +18,9 @@ namespace WindowTextExtractor.Utils
 {
     static class WindowUtils
     {
+        public static void UpdateWindow(IntPtr handle) =>
+            User32.RedrawWindow(handle, IntPtr.Zero, IntPtr.Zero, RedrawWindowFlags.Frame | RedrawWindowFlags.AllChildren | RedrawWindowFlags.UpdateNow | RedrawWindowFlags.Erase | RedrawWindowFlags.Invalidate);
+
         public static IList<string> GetPasswordsFromHtmlPage(IntPtr handle)
         {
             var result = new List<string>();
@@ -62,7 +65,7 @@ namespace WindowTextExtractor.Utils
             var isVisible = User32.IsWindowVisible(handle);
             var placement = GetWindowPlacement(handle);
             var threadId = User32.GetWindowThreadProcessId(handle, out var processId);
-            var process = GetProcessByIdSafely(processId);
+            using var process = GetProcessByIdSafely(processId);
 
             var gwlStyle = User32.GetWindowLong(handle, Constants.GWL_STYLE);
             var gwlExstyle = User32.GetWindowLong(handle, Constants.GWL_EXSTYLE);
@@ -205,9 +208,10 @@ namespace WindowTextExtractor.Utils
             processDetailes.Add("Process Id", processId.ToString());
             try
             {
-                var parentProcess = process.GetParentProcess();
+                using var parentProcess = process.GetParentProcess();
+                using var mainModule = parentProcess.MainModule;
                 processDetailes.Add("Parent Process Id", parentProcess.Id.ToString());
-                processDetailes.Add("Parent", Path.GetFileName(parentProcess.MainModule.FileName));
+                processDetailes.Add("Parent", Path.GetFileName(mainModule.FileName));
             }
             catch
             {
@@ -237,7 +241,8 @@ namespace WindowTextExtractor.Utils
             
             try
             {
-                var fileVersionInfo = process.MainModule.FileVersionInfo;
+                using var mainModule = process.MainModule;
+                var fileVersionInfo = mainModule.FileVersionInfo;
                 processDetailes.Add("Product Name", fileVersionInfo.ProductName);
                 processDetailes.Add("Copyright", fileVersionInfo.LegalCopyright);
                 processDetailes.Add("File Version", fileVersionInfo.FileVersion);
@@ -252,7 +257,7 @@ namespace WindowTextExtractor.Utils
 
         public static Bitmap CaptureWindow(IntPtr handle, bool captureCursor = false)
         {
-            User32.GetWindowRect(handle, out Rect rectangle);
+            User32.GetWindowRect(handle, out var rectangle);
             var posX = rectangle.Left;
             var posY = rectangle.Top;
             var width = rectangle.Width;
@@ -280,7 +285,13 @@ namespace WindowTextExtractor.Utils
                             using var graphics = Graphics.FromImage(image);
                             var x = cursorInfo.ptScreenPos.x - rectangle.Left - iconInfo.xHotspot;
                             var y = cursorInfo.ptScreenPos.y - rectangle.Top - iconInfo.yHotspot;
-                            User32.DrawIconEx(graphics.GetHdc(), x, y, cursorInfo.hCursor, 0, 0, 0, IntPtr.Zero, Constants.DI_NORMAL | Constants.DI_COMPAT);
+                            var hdc = graphics.GetHdc();
+                            User32.DrawIconEx(hdc, x, y, cursorInfo.hCursor, 0, 0, 0, IntPtr.Zero, Constants.DI_NORMAL | Constants.DI_COMPAT);
+                            User32.DestroyIcon(cursorInfo.hCursor);
+                            Gdi32.DeleteObject(iconInfo.hbmMask);
+                            Gdi32.DeleteObject(iconInfo.hbmColor);
+                            graphics.ReleaseHdc();
+                            Gdi32.DeleteDC(hdc);
                         }
                     }
                     return image;
