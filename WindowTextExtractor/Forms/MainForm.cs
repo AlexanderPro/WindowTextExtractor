@@ -16,6 +16,7 @@ using Windows.Media.Ocr;
 using WindowTextExtractor.Extensions;
 using WindowTextExtractor.Utils;
 using WindowTextExtractor.Diagnostics;
+using WindowTextExtractor.Settings;
 using WindowTextExtractor.Native;
 using WindowTextExtractor.Native.Enums;
 using WindowTextExtractor.Native.Structs;
@@ -25,14 +26,6 @@ namespace WindowTextExtractor.Forms
 {
     public partial class MainForm : Form, IMessageFilter
     {
-        private const string DEFAULT_VIDEO_FILE_NAME = "Window.avi";
-        private const string DEFAULT_FONT_NAME = "Courier New";
-        private const int DEFAULT_FONT_SIZE = 10;
-        private const int DEFAULT_FPS = 12;
-        private const decimal DEFAULT_SCALE = 1;
-        private const int DEFAULT_BORDER_WIDTH = 10;
-        private readonly Color DEAFULT_BORDER_COLOR = Color.Blue;
-
         private readonly int _processId;
         private readonly int _messageId;
         private bool _isButtonTargetMouseDown;
@@ -46,18 +39,13 @@ namespace WindowTextExtractor.Forms
         private IntPtr _windowHandle;
         private int _windowProcessId;
         private string _listText;
-        private int _fps;
-        private decimal _scale;
-        private bool _refreshImage;
         private bool _imageTab;
         private bool _isRecording;
-        private bool _captureCursor;
         private DateTime? _startRecordingTime;
         private Bitmap _image;
         private Graphics _graphics;
         private Pen _pen;
-        private int _borderWidth;
-        private Color _borderColor;
+        private ApplicationSettings _settings;
         private readonly object _lockObject;
         private readonly VideoFileWriter _videoWriter;
 
@@ -84,24 +72,13 @@ namespace WindowTextExtractor.Forms
             _textFileName = string.Empty;
             _textListFileName = string.Empty;
             _imageFileName = string.Empty;
-            _videoFileName = Path.Combine(AssemblyUtils.AssemblyDirectory, DEFAULT_VIDEO_FILE_NAME);
             _environmentFileName = string.Empty;
             _windowHandle = IntPtr.Zero;
             _windowProcessId = 0;
             _listText = string.Empty;
-            _refreshImage = true;
-            _captureCursor = true;
             _imageTab = false;
             _isRecording = false;
             _startRecordingTime = null;
-            _fps = DEFAULT_FPS;
-            _scale = DEFAULT_SCALE;
-            _borderWidth = DEFAULT_BORDER_WIDTH;
-            _borderColor = DEAFULT_BORDER_COLOR;
-            numericFps.Value = DEFAULT_FPS;
-            numericScale.Value = DEFAULT_SCALE;
-            cmbRefresh.SelectedIndex = 0;
-            cmbCaptureCursor.SelectedIndex = 0;
             _image = null;
             _videoWriter = new VideoFileWriter();
         }
@@ -110,20 +87,14 @@ namespace WindowTextExtractor.Forms
         {
             base.OnLoad(e);
 
+            var isSettingsLoaded = LoadSettings();
+            if (!isSettingsLoaded)
+            {
+                Application.Exit();
+            }
+
             Application.AddMessageFilter(this);
-
-            MenuItemAlwaysOnTopClick(this, EventArgs.Empty);
             OnContentChanged();
-
-            var font = new Font(DEFAULT_FONT_NAME, DEFAULT_FONT_SIZE, FontStyle.Regular, GraphicsUnit.Point);
-            if (font.Name == DEFAULT_FONT_NAME)
-            {
-                txtContent.Font = font;
-            }
-            else
-            {
-                font.Dispose();
-            }
 
             try
             {
@@ -148,7 +119,7 @@ namespace WindowTextExtractor.Forms
             }
 #endif
 
-            InitTimers(_fps);
+            InitTimers(_settings.FPS);
             _updateButtonTimer = new AccurateTimer(UpdateButtonCallback, 500);
         }
 
@@ -436,34 +407,76 @@ namespace WindowTextExtractor.Forms
 
             if (dialog.ShowDialog() != DialogResult.Cancel)
             {
-                txtContent.Font = dialog.Font;
+                lock (_lockObject)
+                {
+                    txtContent.Font = dialog.Font;
+                    _settings.FontName = dialog.Font.Name;
+                    _settings.FontSize = dialog.Font.Size;
+                    _settings.FontStyle = dialog.Font.Style;
+                    _settings.FontUnit = dialog.Font.Unit;
+                    SaveSettings(_settings);
+                }
             }
         }
 
         private void MenuItemAlwaysOnTopClick(object sender, EventArgs e)
         {
-            TopMost = !TopMost;
-            menuItemAlwaysOnTop.Checked = TopMost;
+            lock (_lockObject)
+            {
+                TopMost = !TopMost;
+                menuItemAlwaysOnTop.Checked = TopMost;
+                _settings.AlwaysOnTop = TopMost;
+                SaveSettings(_settings);
+            }
         }
 
         private void MenuItemCheckedClick(object sender, EventArgs e)
         {
-            var menuItem = (ToolStripMenuItem)sender;
-            menuItem.Checked = !menuItem.Checked;
+            lock (_lockObject)
+            {
+                var menuItem = (ToolStripMenuItem)sender;
+                menuItem.Checked = !menuItem.Checked;
+                switch (menuItem.Name)
+                {
+                    case "menuItemAlwaysRefreshTabs":
+                        {
+                            _settings.AlwaysRefreshTabs = menuItem.Checked;
+                        }
+                        break;
+
+                    case "menuItemShowEmptyItems":
+                        {
+                            _settings.ShowEmptyItems = menuItem.Checked;
+                        }
+                        break;
+
+                    case "menuItemNotRepeated":
+                        {
+                            _settings.NotRepeatedNewItems = menuItem.Checked;
+                        }
+                        break;
+                }
+                SaveSettings(_settings);
+            }
         }
 
         private void MenuItemShowTextListClick(object sender, EventArgs e)
         {
-            menuItemShowTextList.Checked = !menuItemShowTextList.Checked;
-            if (menuItemShowTextList.Checked)
+            lock (_lockObject)
             {
-                splitTextContainer.Panel2Collapsed = false;
-                splitTextContainer.Panel2.Show();
-            }
-            else
-            {
-                splitTextContainer.Panel2Collapsed = true;
-                splitTextContainer.Panel2.Hide();
+                menuItemShowTextList.Checked = !menuItemShowTextList.Checked;
+                if (menuItemShowTextList.Checked)
+                {
+                    splitTextContainer.Panel2Collapsed = false;
+                    splitTextContainer.Panel2.Show();
+                }
+                else
+                {
+                    splitTextContainer.Panel2Collapsed = true;
+                    splitTextContainer.Panel2.Hide();
+                }
+                _settings.ShowTextList = menuItemShowTextList.Checked;
+                SaveSettings(_settings);
             }
         }
 
@@ -480,22 +493,30 @@ namespace WindowTextExtractor.Forms
                 AllowFullOpen = true,
                 AnyColor = true,
                 FullOpen = true,
-                Color = _borderColor
+                Color = ColorTranslator.FromHtml(_settings.BorderColor)
             };
 
             if (dialog.ShowDialog() != DialogResult.Cancel)
             {
-                _borderColor = dialog.Color;
+                lock (_lockObject)
+                {
+                    _settings.BorderColor = ColorTranslator.ToHtml(dialog.Color);
+                    SaveSettings(_settings);
+                }
             }
         }
 
         private void MenuItemBorderWidthClick(object sender, EventArgs e)
         {
-            var borderWidthForm = new BorderWidthForm(_borderWidth);
+            var borderWidthForm = new BorderWidthForm(_settings.BorderWidth);
             var result = borderWidthForm.ShowDialog(this);
             if (result == DialogResult.OK)
             {
-                _borderWidth = borderWidthForm.BorderWidth;
+                lock (_lockObject)
+                {
+                    _settings.BorderWidth = borderWidthForm.BorderWidth;
+                    SaveSettings(_settings);
+                }
             }
         }
 
@@ -567,7 +588,7 @@ namespace WindowTextExtractor.Forms
                 {
                     try
                     {
-                        _videoWriter.Open(_videoFileName, _image.Width, _image.Height, _fps, VideoCodec.Raw);
+                        _videoWriter.Open(_videoFileName, _image.Width, _image.Height, _settings.FPS, VideoCodec.Raw);
                     }
                     catch (Exception ex)
                     {
@@ -660,15 +681,20 @@ namespace WindowTextExtractor.Forms
 
         private void NumericFpsValueChanged(object sender, EventArgs e)
         {
-            _fps = (int)((NumericUpDown)sender).Value;
-            InitTimers(_fps);
+            lock (_lockObject)
+            {
+                _settings.FPS = (int)((NumericUpDown)sender).Value;
+                SaveSettings(_settings);
+                InitTimers(_settings.FPS);
+            }
         }
 
         private void NumericScaleValueChanged(object sender, EventArgs e)
         {
             lock (_lockObject)
             {
-                _scale = ((NumericUpDown)sender).Value;
+                _settings.Scale = ((NumericUpDown)sender).Value;
+                SaveSettings(_settings);
             }
         }
 
@@ -676,7 +702,8 @@ namespace WindowTextExtractor.Forms
         {
             lock (_lockObject)
             {
-                _refreshImage = ((ComboBox)sender).SelectedIndex == 0;
+                _settings.RefreshImage = ((ComboBox)sender).SelectedIndex == 0;
+                SaveSettings(_settings);
             }
         }
 
@@ -684,7 +711,8 @@ namespace WindowTextExtractor.Forms
         {
             lock (_lockObject)
             {
-                _captureCursor = ((ComboBox)sender).SelectedIndex == 0;
+                _settings.CaptureCursor = ((ComboBox)sender).SelectedIndex == 0;
+                SaveSettings(_settings);
             }
         }
 
@@ -755,8 +783,8 @@ namespace WindowTextExtractor.Forms
                                         _graphics?.Dispose();
                                         _pen?.Dispose();
                                         _graphics = Graphics.FromHwnd(windowHandle);
-                                        _pen = new Pen(_borderColor, _borderWidth);
-                                        if (_borderWidth > 0)
+                                        _pen = new Pen(ColorTranslator.FromHtml(_settings.BorderColor), _settings.BorderWidth);
+                                        if (_settings.BorderWidth > 0)
                                         {
                                             _graphics.DrawBorder(windowHandle, _pen);
                                         }
@@ -814,8 +842,8 @@ namespace WindowTextExtractor.Forms
                                         {
                                             _windowHandle = windowHandle;
                                             _windowProcessId = element.Current.ProcessId;
-                                            scale = _scale;
-                                            captureCursor = _captureCursor;
+                                            scale = _settings.Scale;
+                                            captureCursor = _settings.CaptureCursor;
                                         }
                                         if (scale == 1m)
                                         {
@@ -880,11 +908,11 @@ namespace WindowTextExtractor.Forms
 
             lock (_lockObject)
             {
-                scale = _scale;
+                scale = _settings.Scale;
                 windowHandle = _windowHandle;
                 imageTab = _imageTab;
                 isRecording = _isRecording;
-                captureCursor = _captureCursor;
+                captureCursor = _settings.CaptureCursor;
             }
 
             var newImage = (Bitmap)null;
@@ -941,7 +969,7 @@ namespace WindowTextExtractor.Forms
 
             lock (_lockObject)
             {
-                if (_imageTab && _refreshImage)
+                if (_imageTab && _settings.RefreshImage)
                 {
                     image = (Bitmap)_image.Clone();
                 }
@@ -1157,6 +1185,46 @@ namespace WindowTextExtractor.Forms
             cmbLanguages.DisplayMember = "Text";
             cmbLanguages.ValueMember = "Value";
             cmbLanguages.DataSource = OcrEngine.AvailableRecognizerLanguages.Select(x => new { Text = x.DisplayName, Value = x.LanguageTag }).ToList();
+        }
+
+        private bool LoadSettings()
+        {
+            try
+            {
+                _settings = ApplicationSettingsFile.Load();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Failed to read the settings.{Environment.NewLine}{e.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            _videoFileName = Path.Combine(AssemblyUtils.AssemblyDirectory, _settings.VideoFileName);
+
+            numericFps.Value = _settings.FPS;
+            numericScale.Value = _settings.Scale;
+            TopMost = _settings.AlwaysOnTop;
+            menuItemAlwaysOnTop.Checked = _settings.AlwaysOnTop;
+            menuItemShowEmptyItems.Checked = _settings.ShowEmptyItems;
+            menuItemShowTextList.Checked = _settings.ShowTextList;
+            menuItemNotRepeated.Checked = _settings.NotRepeatedNewItems;
+            menuItemAlwaysRefreshTabs.Checked = _settings.AlwaysRefreshTabs;
+            cmbRefresh.SelectedIndex = _settings.RefreshImage ? 0 : 1;
+            cmbCaptureCursor.SelectedIndex = _settings.CaptureCursor ? 0 : 1;
+            txtContent.Font = new Font(_settings.FontName, _settings.FontSize, _settings.FontStyle, _settings.FontUnit);
+            return true;
+        }
+
+        private void SaveSettings(ApplicationSettings settings)
+        {
+            try
+            {
+                ApplicationSettingsFile.Save(settings);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Failed to save the settings.{Environment.NewLine}{e.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void OnCurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
