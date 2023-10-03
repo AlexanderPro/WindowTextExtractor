@@ -25,6 +25,17 @@ namespace WindowTextExtractor.Utils
     static class ImageUtils
     {
         /// <summary>
+        /// Converting a Cursor to a Bitmap
+        /// </summary>
+        public static Bitmap CursorToImage(Cursor cursor)
+        {
+            var bitmap = new Bitmap(cursor.Size.Width, cursor.Size.Height);
+            using var graphics = Graphics.FromImage(bitmap);
+            cursor.Draw(graphics, new Rectangle(0, 0, cursor.Size.Width, cursor.Size.Height));
+            return bitmap;
+        }
+
+        /// <summary>
         /// Resize the image to the specified width and height.
         /// </summary>
         /// <param name="image">The image to resize.</param>

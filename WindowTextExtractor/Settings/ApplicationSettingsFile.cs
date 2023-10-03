@@ -6,6 +6,7 @@ namespace WindowTextExtractor.Settings
 {
     public static class ApplicationSettingsFile
     {
+        private const string ImageFileName = "TargetIcon";
         private const string SettingsFileName = "Settings.json";
         private const string SettingsDirectory = "WindowTextExtractor";
 
@@ -33,6 +34,8 @@ namespace WindowTextExtractor.Settings
             return JsonConvert.DeserializeObject<ApplicationSettings>(jsonContent);
         }
 
+        public static string GetImageFileName(string fileName = ImageFileName) => GetFileInfo(fileName).FullName;
+        
         private static FileInfo GetFileInfo(string fileName) => new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SettingsDirectory, fileName));
     }
 }

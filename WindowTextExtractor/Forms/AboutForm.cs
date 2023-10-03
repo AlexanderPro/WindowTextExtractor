@@ -18,19 +18,27 @@ namespace WindowTextExtractor.Forms
             linkUrl.Text = URL;
         }
 
-        private void btnOk_Click(object sender, EventArgs e)
+        private void ButtonOkClick(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void linkUrl_Click(object sender, EventArgs e)
+        private void LinkUrlClick(object sender, EventArgs e)
         {
             Process.Start(URL);
         }
 
-        private void AboutForm_KeyDown(object sender, KeyEventArgs e)
+        private void FormKeyDown(object sender, KeyEventArgs e)
         {
-            btnOk_Click(sender, e);
+            if (e.KeyValue == 13)
+            {
+                ButtonOkClick(sender, e);
+            }
+
+            if (e.KeyValue == 27)
+            {
+                Close();
+            }
         }
     }
 }

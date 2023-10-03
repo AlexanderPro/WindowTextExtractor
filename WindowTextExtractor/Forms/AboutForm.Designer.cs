@@ -63,7 +63,7 @@
             this.linkUrl.TabIndex = 2;
             this.linkUrl.TabStop = true;
             this.linkUrl.Text = "URL";
-            this.linkUrl.Click += new System.EventHandler(this.linkUrl_Click);
+            this.linkUrl.Click += new System.EventHandler(this.LinkUrlClick);
             // 
             // btnOk
             // 
@@ -73,7 +73,7 @@
             this.btnOk.TabIndex = 3;
             this.btnOk.Text = "Ok";
             this.btnOk.UseVisualStyleBackColor = true;
-            this.btnOk.Click += new System.EventHandler(this.btnOk_Click);
+            this.btnOk.Click += new System.EventHandler(this.ButtonOkClick);
             // 
             // pbImage
             // 
@@ -100,10 +100,9 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "AboutForm";
-            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "About";
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AboutForm_KeyDown);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormKeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.pbImage)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

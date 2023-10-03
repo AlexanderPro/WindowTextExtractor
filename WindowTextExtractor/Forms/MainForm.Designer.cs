@@ -49,6 +49,13 @@
             this.menuItemExit = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemOptions = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemFont = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemTargetIcon = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemDefaultIcon = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemSystemCursor = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemChangeIcon = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemSelectedWindow = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemBorderColor = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemBorderWidth = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemTextList = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemShowTextList = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemShowEmptyItems = new System.Windows.Forms.ToolStripMenuItem();
@@ -97,9 +104,6 @@
             this.cmbLanguages = new System.Windows.Forms.ComboBox();
             this.lblLanguages = new System.Windows.Forms.Label();
             this.btnAction = new WindowTextExtractor.Controls.SplitButton();
-            this.menuItemSelectedWindow = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemBorderColor = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItemBorderWidth = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbContent)).BeginInit();
@@ -266,8 +270,9 @@
             // 
             this.menuItemOptions.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemFont,
-            this.menuItemTextList,
+            this.menuItemTargetIcon,
             this.menuItemSelectedWindow,
+            this.menuItemTextList,
             this.menuItemAlwaysOnTop,
             this.menuItemAlwaysRefreshTabs});
             this.menuItemOptions.Name = "menuItemOptions";
@@ -280,6 +285,60 @@
             this.menuItemFont.Size = new System.Drawing.Size(300, 22);
             this.menuItemFont.Text = "Font...";
             this.menuItemFont.Click += new System.EventHandler(this.MenuItemFontClick);
+            // 
+            // menuItemTargetIcon
+            // 
+            this.menuItemTargetIcon.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemDefaultIcon,
+            this.menuItemSystemCursor,
+            this.menuItemChangeIcon});
+            this.menuItemTargetIcon.Name = "menuItemTargetIcon";
+            this.menuItemTargetIcon.Size = new System.Drawing.Size(300, 22);
+            this.menuItemTargetIcon.Text = "Target Icon";
+            // 
+            // menuItemDefaultIcon
+            // 
+            this.menuItemDefaultIcon.Name = "menuItemDefaultIcon";
+            this.menuItemDefaultIcon.Size = new System.Drawing.Size(153, 22);
+            this.menuItemDefaultIcon.Text = "Default Icon";
+            this.menuItemDefaultIcon.Click += new System.EventHandler(this.MenuItemDefaultIcon);
+            // 
+            // menuItemSystemCursor
+            // 
+            this.menuItemSystemCursor.Name = "menuItemSystemCursor";
+            this.menuItemSystemCursor.Size = new System.Drawing.Size(153, 22);
+            this.menuItemSystemCursor.Text = "System Cursor";
+            this.menuItemSystemCursor.Click += new System.EventHandler(this.MenuItemSystemCursor);
+            // 
+            // menuItemChangeIcon
+            // 
+            this.menuItemChangeIcon.Name = "menuItemChangeIcon";
+            this.menuItemChangeIcon.Size = new System.Drawing.Size(153, 22);
+            this.menuItemChangeIcon.Text = "Change Icon ...";
+            this.menuItemChangeIcon.Click += new System.EventHandler(this.MenuItemChangeIcon);
+            // 
+            // menuItemSelectedWindow
+            // 
+            this.menuItemSelectedWindow.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemBorderColor,
+            this.menuItemBorderWidth});
+            this.menuItemSelectedWindow.Name = "menuItemSelectedWindow";
+            this.menuItemSelectedWindow.Size = new System.Drawing.Size(300, 22);
+            this.menuItemSelectedWindow.Text = "Selected Window";
+            // 
+            // menuItemBorderColor
+            // 
+            this.menuItemBorderColor.Name = "menuItemBorderColor";
+            this.menuItemBorderColor.Size = new System.Drawing.Size(144, 22);
+            this.menuItemBorderColor.Text = "Border Color";
+            this.menuItemBorderColor.Click += new System.EventHandler(this.MenuItemBorderColorClick);
+            // 
+            // menuItemBorderWidth
+            // 
+            this.menuItemBorderWidth.Name = "menuItemBorderWidth";
+            this.menuItemBorderWidth.Size = new System.Drawing.Size(144, 22);
+            this.menuItemBorderWidth.Text = "Border Width";
+            this.menuItemBorderWidth.Click += new System.EventHandler(this.MenuItemBorderWidthClick);
             // 
             // menuItemTextList
             // 
@@ -375,9 +434,9 @@
             this.tabContent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabContent.Controls.Add(this.tabpInformation);
             this.tabContent.Controls.Add(this.tabpText);
             this.tabContent.Controls.Add(this.tabpImage);
+            this.tabContent.Controls.Add(this.tabpInformation);
             this.tabContent.Controls.Add(this.tabpEnvironment);
             this.tabContent.Location = new System.Drawing.Point(0, 127);
             this.tabContent.Name = "tabContent";
@@ -840,29 +899,6 @@
             this.btnAction.UseVisualStyleBackColor = true;
             this.btnAction.Visible = false;
             // 
-            // menuItemSelectedWindow
-            // 
-            this.menuItemSelectedWindow.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItemBorderColor,
-            this.menuItemBorderWidth});
-            this.menuItemSelectedWindow.Name = "menuItemSelectedWindow";
-            this.menuItemSelectedWindow.Size = new System.Drawing.Size(300, 22);
-            this.menuItemSelectedWindow.Text = "Selected Window";
-            // 
-            // menuItemBorderColor
-            // 
-            this.menuItemBorderColor.Name = "menuItemBorderColor";
-            this.menuItemBorderColor.Size = new System.Drawing.Size(180, 22);
-            this.menuItemBorderColor.Text = "Border Color";
-            this.menuItemBorderColor.Click += new System.EventHandler(this.MenuItemBorderColorClick);
-            // 
-            // menuItemBorderWidth
-            // 
-            this.menuItemBorderWidth.Name = "menuItemBorderWidth";
-            this.menuItemBorderWidth.Size = new System.Drawing.Size(180, 22);
-            this.menuItemBorderWidth.Text = "Border Width";
-            this.menuItemBorderWidth.Click += new System.EventHandler(this.MenuItemBorderWidthClick);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -988,6 +1024,10 @@
         private System.Windows.Forms.ToolStripMenuItem menuItemSelectedWindow;
         private System.Windows.Forms.ToolStripMenuItem menuItemBorderColor;
         private System.Windows.Forms.ToolStripMenuItem menuItemBorderWidth;
+        private System.Windows.Forms.ToolStripMenuItem menuItemTargetIcon;
+        private System.Windows.Forms.ToolStripMenuItem menuItemDefaultIcon;
+        private System.Windows.Forms.ToolStripMenuItem menuItemSystemCursor;
+        private System.Windows.Forms.ToolStripMenuItem menuItemChangeIcon;
     }
 }
 

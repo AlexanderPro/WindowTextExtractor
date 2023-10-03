@@ -26,8 +26,6 @@ namespace WindowTextExtractor.Forms
 {
     public partial class MainForm : Form, IMessageFilter
     {
-        private readonly int _processId;
-        private readonly int _messageId;
         private bool _isButtonTargetMouseDown;
         private string _64BitFilePath;
         private string _informationFileName;
@@ -36,6 +34,7 @@ namespace WindowTextExtractor.Forms
         private string _imageFileName;
         private string _videoFileName;
         private string _environmentFileName;
+        private Bitmap _targetIcon;
         private IntPtr _windowHandle;
         private int _windowProcessId;
         private string _listText;
@@ -46,6 +45,8 @@ namespace WindowTextExtractor.Forms
         private Graphics _graphics;
         private Pen _pen;
         private ApplicationSettings _settings;
+        private readonly int _processId;
+        private readonly int _messageId;
         private readonly object _lockObject;
         private readonly VideoFileWriter _videoWriter;
 
@@ -73,6 +74,7 @@ namespace WindowTextExtractor.Forms
             _textListFileName = string.Empty;
             _imageFileName = string.Empty;
             _environmentFileName = string.Empty;
+            _targetIcon = null;
             _windowHandle = IntPtr.Zero;
             _windowProcessId = 0;
             _listText = string.Empty;
@@ -87,14 +89,25 @@ namespace WindowTextExtractor.Forms
         {
             base.OnLoad(e);
 
-            var isSettingsLoaded = LoadSettings();
-            if (!isSettingsLoaded)
+            try
             {
+                LoadSettings();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to read the settings.{Environment.NewLine}{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Application.Exit();
             }
 
-            Application.AddMessageFilter(this);
-            OnContentChanged();
+            try
+            {
+                LoadTargetIcon();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load the target icon.{Environment.NewLine}{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Exit();
+            }
 
             try
             {
@@ -104,6 +117,8 @@ namespace WindowTextExtractor.Forms
             {
             }
 
+            Application.AddMessageFilter(this);
+            OnContentChanged();            
 #if WIN32
             if (Environment.Is64BitOperatingSystem)
             {
@@ -229,7 +244,7 @@ namespace WindowTextExtractor.Forms
                 dialog.InitialDirectory = AssemblyUtils.AssemblyDirectory;
             }
 
-            if (dialog.ShowDialog() != DialogResult.Cancel)
+            if (dialog.ShowDialog(this) != DialogResult.Cancel)
             {
                 _informationFileName = dialog.FileName;
                 var fileExtension = Path.GetExtension(dialog.FileName).ToLower();
@@ -270,7 +285,7 @@ namespace WindowTextExtractor.Forms
                 dialog.InitialDirectory = AssemblyUtils.AssemblyDirectory;
             }
 
-            if (dialog.ShowDialog() != DialogResult.Cancel)
+            if (dialog.ShowDialog(this) != DialogResult.Cancel)
             {
                 _textFileName = dialog.FileName;
                 File.WriteAllText(dialog.FileName, txtContent.Text, Encoding.UTF8);
@@ -295,7 +310,7 @@ namespace WindowTextExtractor.Forms
                 dialog.InitialDirectory = AssemblyUtils.AssemblyDirectory;
             }
 
-            if (dialog.ShowDialog() != DialogResult.Cancel)
+            if (dialog.ShowDialog(this) != DialogResult.Cancel)
             {
                 _textListFileName = dialog.FileName;
                 var fileExtension = Path.GetExtension(dialog.FileName).ToLower();
@@ -323,7 +338,7 @@ namespace WindowTextExtractor.Forms
                 FileName = File.Exists(_imageFileName) ? Path.GetFileName(_imageFileName) : "*.bmp",
                 DefaultExt = "bmp",
                 RestoreDirectory = false,
-                Filter = "Bitmap Image (*.bmp)|*.bmp|Gif Image (*.gif)|*.gif|JPEG Image (*.jpeg)|*.jpeg|Png Image (*.png)|*.png|Tiff Image (*.tiff)|*.tiff|Wmf Image (*.wmf)|*.wmf"
+                Filter = "Bitmap Image (*.bmp)|*.bmp|Gif Image (*.gif)|*.gif|JPEG Image (*.jpeg)|*.jpeg|Png Image (*.png)|*.png|Tiff Image (*.tiff)|*.tiff|Wmf Image (*.wmf)|*.wmf|All Files (*.*)|*.*"
             };
 
             if (!File.Exists(_imageFileName))
@@ -331,7 +346,7 @@ namespace WindowTextExtractor.Forms
                 dialog.InitialDirectory = AssemblyUtils.AssemblyDirectory;
             }
 
-            if (dialog.ShowDialog() != DialogResult.Cancel)
+            if (dialog.ShowDialog(this) != DialogResult.Cancel)
             {
                 _imageFileName = dialog.FileName;
                 var fileExtension = Path.GetExtension(dialog.FileName).ToLower();
@@ -363,7 +378,7 @@ namespace WindowTextExtractor.Forms
                 dialog.InitialDirectory = AssemblyUtils.AssemblyDirectory;
             }
 
-            if (dialog.ShowDialog() != DialogResult.Cancel)
+            if (dialog.ShowDialog(this) != DialogResult.Cancel)
             {
                 _environmentFileName = dialog.FileName;
                 var fileExtension = Path.GetExtension(dialog.FileName).ToLower();
@@ -405,7 +420,7 @@ namespace WindowTextExtractor.Forms
                 Font = txtContent.Font
             };
 
-            if (dialog.ShowDialog() != DialogResult.Cancel)
+            if (dialog.ShowDialog(this) != DialogResult.Cancel)
             {
                 lock (_lockObject)
                 {
@@ -414,6 +429,73 @@ namespace WindowTextExtractor.Forms
                     _settings.FontSize = dialog.Font.Size;
                     _settings.FontStyle = dialog.Font.Style;
                     _settings.FontUnit = dialog.Font.Unit;
+                    SaveSettings(_settings);
+                }
+            }
+        }
+
+        private void MenuItemDefaultIcon(object sender, EventArgs e)
+        {
+            menuItemDefaultIcon.Checked = true;
+            menuItemSystemCursor.Checked = false;
+            menuItemChangeIcon.Checked = false;
+            btnTarget.Image = Properties.Resources.TargetButton;
+
+            lock (_lockObject)
+            {
+                _settings.TargetIcon = TargetIconType.Default;
+                SaveSettings(_settings);
+            }
+        }
+
+        private void MenuItemSystemCursor(object sender, EventArgs e)
+        {
+            menuItemDefaultIcon.Checked = false;
+            menuItemSystemCursor.Checked = true;
+            menuItemChangeIcon.Checked = false;
+            btnTarget.Image = ImageUtils.CursorToImage(Cursors.Default);
+
+            lock (_lockObject)
+            {
+                _settings.TargetIcon = TargetIconType.System;
+                SaveSettings(_settings);
+            }
+        }
+
+        private void MenuItemChangeIcon(object sender, EventArgs e)
+        {
+            var form = new TargetIconForm(_settings);
+            var result = form.ShowDialog(this);
+            if (result == DialogResult.OK)
+            {
+                var imageFileName = ApplicationSettingsFile.GetImageFileName();
+                try
+                {
+                    File.Copy(form.FileName, imageFileName, true);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to copy the file {form.FileName} to Roaming profile.{ Environment.NewLine}{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                try
+                {
+                    SetImage(imageFileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to load the file {imageFileName}.{Environment.NewLine}{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                menuItemDefaultIcon.Checked = false;
+                menuItemSystemCursor.Checked = false;
+                menuItemChangeIcon.Checked = true;
+
+                lock (_lockObject)
+                {
+                    _settings.TargetIcon = TargetIconType.Custom;
                     SaveSettings(_settings);
                 }
             }
@@ -496,7 +578,7 @@ namespace WindowTextExtractor.Forms
                 Color = ColorTranslator.FromHtml(_settings.BorderColor)
             };
 
-            if (dialog.ShowDialog() != DialogResult.Cancel)
+            if (dialog.ShowDialog(this) != DialogResult.Cancel)
             {
                 lock (_lockObject)
                 {
@@ -508,13 +590,13 @@ namespace WindowTextExtractor.Forms
 
         private void MenuItemBorderWidthClick(object sender, EventArgs e)
         {
-            var borderWidthForm = new BorderWidthForm(_settings.BorderWidth);
-            var result = borderWidthForm.ShowDialog(this);
+            var form = new BorderWidthForm(_settings.BorderWidth);
+            var result = form.ShowDialog(this);
             if (result == DialogResult.OK)
             {
                 lock (_lockObject)
                 {
-                    _settings.BorderWidth = borderWidthForm.BorderWidth;
+                    _settings.BorderWidth = form.BorderWidth;
                     SaveSettings(_settings);
                 }
             }
@@ -583,7 +665,7 @@ namespace WindowTextExtractor.Forms
             lock (_lockObject)
             {
                 _isRecording = !_isRecording;
-                _startRecordingTime = _isRecording ? DateTime.Now : (DateTime?)null;
+                _startRecordingTime = _isRecording ? DateTime.Now : null;
                 if (_isRecording)
                 {
                     try
@@ -670,7 +752,7 @@ namespace WindowTextExtractor.Forms
                 Filter = "Video Files (*.avi)|*.avi|All Files (*.*)|*.*"
             };
 
-            if (dialog.ShowDialog() != DialogResult.Cancel)
+            if (dialog.ShowDialog(this) != DialogResult.Cancel)
             {
                 lock (_lockObject)
                 {
@@ -761,7 +843,20 @@ namespace WindowTextExtractor.Forms
                         {
                             if (_isButtonTargetMouseDown)
                             {
-                                User32.SetCursor(Properties.Resources.Target32.Handle);
+                                var cursorHandle = IntPtr.Zero;
+                                if (_settings.TargetIcon == TargetIconType.Default)
+                                {
+                                    cursorHandle = Properties.Resources.Target32.Handle;
+                                }
+                                else if (_settings.TargetIcon == TargetIconType.System)
+                                {
+                                    cursorHandle = Cursors.Default.Handle;
+                                }
+                                else
+                                {
+                                    cursorHandle = _targetIcon.GetHicon();
+                                }
+                                User32.SetCursor(cursorHandle);
                                 var cursorPosition = Cursor.Position;
                                 var element = AutomationElement.FromPoint(new System.Windows.Point(cursorPosition.X, cursorPosition.Y));
                                 if (element != null && element.Current.ProcessId != _processId)
@@ -790,7 +885,7 @@ namespace WindowTextExtractor.Forms
                                         }
                                     }
 
-                                    if (!menuItemAlwaysRefreshTabs.Checked && previousHandle == windowHandle)
+                                    if (!_settings.AlwaysRefreshTabs && previousHandle == windowHandle)
                                     {
                                         return false;
                                     }
@@ -832,9 +927,12 @@ namespace WindowTextExtractor.Forms
                                     {
                                         var text = element.GetTextFromConsole() ?? element.GetTextFromWindow();
                                         text = text == null ? "" : text.TrimEnd().TrimEnd(Environment.NewLine);
-                                        txtContent.Text = text;
-                                        txtContent.ScrollTextToEnd();
-                                        AddTextToList(text);
+                                        if (_settings.ShowEmptyItems || (!_settings.ShowEmptyItems && !string.IsNullOrEmpty(text)))
+                                        {
+                                            txtContent.Text = text;
+                                            txtContent.ScrollTextToEnd();
+                                            AddTextToList(text);
+                                        }
 
                                         var scale = 1m;
                                         var captureCursor = false;
@@ -1161,12 +1259,12 @@ namespace WindowTextExtractor.Forms
 
         private void AddTextToList(string text)
         {
-            if (!menuItemShowEmptyItems.Checked && string.IsNullOrEmpty(text))
+            if (!_settings.ShowEmptyItems && string.IsNullOrEmpty(text))
             {
                 return;
             }
 
-            if (menuItemNotRepeated.Checked && _listText == text)
+            if (_settings.NotRepeatedNewItems && _listText == text)
             {
                 return;
             }
@@ -1187,23 +1285,46 @@ namespace WindowTextExtractor.Forms
             cmbLanguages.DataSource = OcrEngine.AvailableRecognizerLanguages.Select(x => new { Text = x.DisplayName, Value = x.LanguageTag }).ToList();
         }
 
-        private bool LoadSettings()
+        private void LoadTargetIcon()
         {
-            try
+            if (_settings.TargetIcon == TargetIconType.Default)
             {
-                _settings = ApplicationSettingsFile.Load();
-            }
-            catch (Exception e)
+                btnTarget.Image?.Dispose();
+                btnTarget.Image = Properties.Resources.TargetButton;
+            } 
+            else if (_settings.TargetIcon == TargetIconType.System)
             {
-                MessageBox.Show($"Failed to read the settings.{Environment.NewLine}{e.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
+                btnTarget.Image?.Dispose();
+                btnTarget.Image = ImageUtils.CursorToImage(Cursors.Default);
             }
+            else
+            {
+                var imageFileName = ApplicationSettingsFile.GetImageFileName();
+                SetImage(imageFileName);
+            }
+        }
 
+        private void SetImage(string fileName)
+        {
+            using var image = new Bitmap(fileName);
+            var scaledImage = new Bitmap((image.Width > ApplicationSettings.ImageSize || image.Height > ApplicationSettings.ImageSize) ? ImageUtils.ResizeImage(image, ApplicationSettings.ImageSize, ApplicationSettings.ImageSize) : image);
+            var scaledIcon = new Bitmap((image.Width > ApplicationSettings.IconSize || image.Height > ApplicationSettings.IconSize) ? ImageUtils.ResizeImage(image, ApplicationSettings.IconSize, ApplicationSettings.IconSize) : image);
+            btnTarget.Image?.Dispose();
+            btnTarget.Image = scaledImage;
+            _targetIcon?.Dispose();
+            _targetIcon = scaledIcon;
+        }
+
+        private void LoadSettings()
+        {
+            _settings = ApplicationSettingsFile.Load();
             _videoFileName = Path.Combine(AssemblyUtils.AssemblyDirectory, _settings.VideoFileName);
-
             numericFps.Value = _settings.FPS;
             numericScale.Value = _settings.Scale;
             TopMost = _settings.AlwaysOnTop;
+            menuItemDefaultIcon.Checked = _settings.TargetIcon == TargetIconType.Default;
+            menuItemSystemCursor.Checked = _settings.TargetIcon == TargetIconType.System;
+            menuItemChangeIcon.Checked = _settings.TargetIcon == TargetIconType.Custom;
             menuItemAlwaysOnTop.Checked = _settings.AlwaysOnTop;
             menuItemShowEmptyItems.Checked = _settings.ShowEmptyItems;
             menuItemShowTextList.Checked = _settings.ShowTextList;
@@ -1212,7 +1333,11 @@ namespace WindowTextExtractor.Forms
             cmbRefresh.SelectedIndex = _settings.RefreshImage ? 0 : 1;
             cmbCaptureCursor.SelectedIndex = _settings.CaptureCursor ? 0 : 1;
             txtContent.Font = new Font(_settings.FontName, _settings.FontSize, _settings.FontStyle, _settings.FontUnit);
-            return true;
+            if (!_settings.ShowTextList)
+            {
+                splitTextContainer.Panel2Collapsed = true;
+                splitTextContainer.Panel2.Hide();
+            }
         }
 
         private void SaveSettings(ApplicationSettings settings)

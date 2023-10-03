@@ -144,6 +144,12 @@
     <Compile Include="Extensions\ProcessExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\TextBoxExtensions.cs" />
+    <Compile Include="Forms\TargetIconForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TargetIconForm.Designer.cs">
+      <DependentUpon>TargetIconForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\AboutForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -168,6 +174,7 @@
     <Compile Include="Native\Winmm.cs" />
     <Compile Include="Settings\ApplicationSettings.cs" />
     <Compile Include="Settings\ApplicationSettingsFile.cs" />
+    <Compile Include="Settings\TargetIconType.cs" />
     <Compile Include="Utils\FileUtils.cs" />
     <Compile Include="Utils\ImageUtils.cs" />
     <Compile Include="Native\Dwmapi.cs" />
@@ -201,6 +208,9 @@
     <Compile Include="Utils\AssemblyUtils.cs" />
     <Compile Include="Utils\WindowUtils.cs" />
     <Compile Include="WindowInformation.cs" />
+    <EmbeddedResource Include="Forms\TargetIconForm.resx">
+      <DependentUpon>TargetIconForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>

@@ -10,8 +10,11 @@ namespace WindowTextExtractor.Settings
         private const GraphicsUnit DefaultFontUnit = GraphicsUnit.Point;
         private const int DefaultFps = 12;
         private const decimal DefaultScale = 1;
-        private const int DefaultBorderWidth = 10;
+        private const int DefaultBorderWidth = 5;
         private const string DefaultBorderColor = "Blue";
+
+        public const int ImageSize = 48;
+        public const int IconSize = 32;
 
         public const string DefaultFontName = "Courier New";
 
@@ -47,6 +50,8 @@ namespace WindowTextExtractor.Settings
 
         public bool CaptureCursor { get; set; }
 
+        public TargetIconType TargetIcon { get; set; }
+
         public static ApplicationSettings CreateDefault() => new ApplicationSettings
         {
             VideoFileName = DefaultVideoFileName,
@@ -64,7 +69,8 @@ namespace WindowTextExtractor.Settings
             AlwaysOnTop = true,
             AlwaysRefreshTabs = true,
             RefreshImage = true,
-            CaptureCursor = true
+            CaptureCursor = true,
+            TargetIcon = TargetIconType.Default
         };
     }
 }

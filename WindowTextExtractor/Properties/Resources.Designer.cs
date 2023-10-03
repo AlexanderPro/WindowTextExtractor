@@ -103,6 +103,16 @@ namespace WindowTextExtractor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap TargetButton {
+            get {
+                object obj = ResourceManager.GetObject("TargetButton", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap WindowTextExtractor {
             get {
                 object obj = ResourceManager.GetObject("WindowTextExtractor", resourceCulture);
