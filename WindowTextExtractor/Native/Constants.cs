@@ -29,6 +29,12 @@
         public const int DWL_DLGPROC = 4;
         public const int DWL_USER = 8;
 
+        // LayeredWindowAttributes
+        public const int LWA_ALPHA = 0x00000002;
+
+        // WindowStyle
+        public const long WS_EX_LAYERED = 0x00080000L;
+
         public const int SC_MINIMIZE = 0xF020;
         public const int SC_MAXIMIZE = 0xF030;
         public const int SC_RESTORE = 0xF120;
@@ -40,7 +46,6 @@
         public const int CURSOR_SHOWING = 0x00000001;
 
         public const int DI_COMPAT = 0x0004;
-
         public const int DI_NORMAL = 0x0003;
     }
 }

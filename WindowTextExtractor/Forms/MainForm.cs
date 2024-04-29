@@ -638,6 +638,14 @@ namespace WindowTextExtractor.Forms
                     User32.ShowWindow(windowHandle, ShowWindowCommands.SW_SHOW);
                     break;
 
+                case "miTransparent":
+                    WindowUtils.SetTransparency(windowHandle, 100);
+                    break;
+
+                case "miOpaque":
+                    WindowUtils.SetTransparency(windowHandle, 0);
+                    break;
+
                 case "miMinimize":
                     User32.PostMessage(windowHandle, Constants.WM_SYSCOMMAND, Constants.SC_MINIMIZE, 0);
                     break;

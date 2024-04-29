@@ -60,10 +60,10 @@ namespace WindowTextExtractor.Native
         public static extern IntPtr GetParent(IntPtr hWnd);
 
         [DllImport("user32.dll")]
-        public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+        public static extern int SetWindowLong(IntPtr hWnd, int nIndex, long dwNewLong);
 
         [DllImport("user32.dll")]
-        public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+        public static extern long GetWindowLong(IntPtr hWnd, int nIndex);
 
         [DllImport("user32.dll")]
         public static extern int GetClassLong(IntPtr hWnd, int nIndex);
@@ -117,5 +117,8 @@ namespace WindowTextExtractor.Native
 
         [DllImport("user32.dll")]
         public static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprcUpdate, IntPtr hrgnUpdate, RedrawWindowFlags flags);
+
+        [DllImport("user32.dll")]
+        public static extern bool SetLayeredWindowAttributes(IntPtr hwnd, uint crKey, Byte bAlpha, uint dwFlags);
     }
 }

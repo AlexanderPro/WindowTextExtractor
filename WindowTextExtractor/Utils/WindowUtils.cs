@@ -310,6 +310,20 @@ namespace WindowTextExtractor.Utils
             }
         }
 
+        public static void SetTransparency(IntPtr handle, int percent)
+        {
+            var opacity = (byte)Math.Round(255 * (100 - percent) / 100f, MidpointRounding.AwayFromZero);
+            SetOpacity(handle, opacity);
+        }
+
+
+        public static void SetOpacity(IntPtr handle, byte opacity)
+        {
+            var exStyle = User32.GetWindowLong(handle, Constants.GWL_EXSTYLE);
+            User32.SetWindowLong(handle, Constants.GWL_EXSTYLE, exStyle | Constants.WS_EX_LAYERED);
+            User32.SetLayeredWindowAttributes(handle, 0, opacity, Constants.LWA_ALPHA);
+        }
+
         private static string GetWindowText(IntPtr handle)
         {
             var builder = new StringBuilder(1024);
