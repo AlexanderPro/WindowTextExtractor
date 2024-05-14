@@ -316,7 +316,6 @@ namespace WindowTextExtractor.Utils
             SetOpacity(handle, opacity);
         }
 
-
         public static void SetOpacity(IntPtr handle, byte opacity)
         {
             var exStyle = User32.GetWindowLong(handle, Constants.GWL_EXSTYLE);
@@ -326,10 +325,17 @@ namespace WindowTextExtractor.Utils
 
         private static string GetWindowText(IntPtr handle)
         {
-            var builder = new StringBuilder(1024);
-            User32.GetWindowText(handle, builder, builder.Capacity);
-            var windowText = builder.ToString();
-            return windowText;
+            var length = User32.GetWindowTextLength(handle);
+            if (length > 0)
+            {
+                var builder = new StringBuilder(length + 1);
+                User32.GetWindowText(handle, builder, builder.Capacity);
+                return builder.ToString();
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
 
         private static string GetWmGettext(IntPtr handle)
