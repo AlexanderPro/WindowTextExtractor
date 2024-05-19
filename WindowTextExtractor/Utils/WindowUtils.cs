@@ -6,6 +6,7 @@ using System.Text;
 using System.Drawing;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.ComponentModel;
 using System.Management;
 using System.Windows.Forms;
 using mshtml;
@@ -51,6 +52,50 @@ namespace WindowTextExtractor.Utils
                 }
             }
             return result;
+        }
+
+        public static string ExtractTextFromConsoleWindow(int processId)
+        {
+            try
+            {
+                Kernel32.FreeConsole();
+                var result = Kernel32.AttachConsole(processId);
+                if (!result)
+                {
+                    var error = Marshal.GetLastWin32Error();
+                    throw new Win32Exception(error);
+                }
+                var handle = Kernel32.GetStdHandle(Constants.STD_OUTPUT_HANDLE);
+                if (handle == IntPtr.Zero)
+                {
+                    var error = Marshal.GetLastWin32Error();
+                    throw new Win32Exception(error);
+                }
+                result = Kernel32.GetConsoleScreenBufferInfo(handle, out var binfo);
+                if (!result)
+                {
+                    var error = Marshal.GetLastWin32Error();
+                    throw new Win32Exception(error);
+                }
+
+                var buffer = new char[binfo.srWindow.Right];
+                var textBuilder = new StringBuilder();
+                for (var i = 0; i < binfo.dwSize.Y; i++)
+                {
+                    if (Kernel32.ReadConsoleOutputCharacter(handle, buffer, (uint)buffer.Length, new Coord(0, (short)i), out var numberOfCharsRead))
+                    {
+                        textBuilder.AppendLine(new string(buffer));
+                    }
+                }
+
+                var text = textBuilder.ToString().TrimEnd();
+                return text;
+            }
+            catch
+            {
+                Kernel32.FreeConsole();
+                return null;
+            }
         }
 
         public static WindowInformation GetWindowInformation(IntPtr handle, Point cursorPosition)

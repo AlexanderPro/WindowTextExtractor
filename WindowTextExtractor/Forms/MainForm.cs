@@ -867,10 +867,23 @@ namespace WindowTextExtractor.Forms
                                 User32.SetCursor(cursorHandle);
                                 var cursorPosition = Cursor.Position;
                                 var element = AutomationElement.FromPoint(new System.Windows.Point(cursorPosition.X, cursorPosition.Y));
-                                if (element != null && element.Current.ProcessId != _processId)
+                                var windowProcessId = element.Current.ProcessId;
+                                if (element != null && windowProcessId != _processId)
                                 {
                                     var windowHandle = new IntPtr(element.Current.NativeWindowHandle);
-                                    windowHandle = windowHandle == IntPtr.Zero ? User32.WindowFromPoint(new Point(cursorPosition.X, cursorPosition.Y)) : windowHandle;
+                                    if (windowHandle == IntPtr.Zero)
+                                    {
+                                        windowHandle = User32.WindowFromPoint(new Point(cursorPosition.X, cursorPosition.Y));
+                                        if (windowHandle != IntPtr.Zero)
+                                        {
+                                            User32.GetWindowThreadProcessId(windowHandle, out windowProcessId);
+                                            var windowStyle = User32.GetWindowLong(windowHandle, Constants.GWL_STYLE);
+                                            if (((windowStyle & Constants.WS_CAPTION) != 0 || (windowStyle & Constants.WS_SYSMENU) != 0 || (windowStyle & Constants.WS_POPUP) != 0))
+                                            {
+                                                element = AutomationElement.FromHandle(windowHandle);
+                                            }
+                                        }
+                                    }
 
                                     var previousHandle = IntPtr.Zero;
                                     var previousProcessId = 0;
@@ -898,7 +911,7 @@ namespace WindowTextExtractor.Forms
                                         return false;
                                     }
 
-                                    using var process = Process.GetProcessById(element.Current.ProcessId);
+                                    using var process = Process.GetProcessById(windowProcessId);
                                     if (element.Current.IsPassword)
                                     {
                                         if (process.ProcessName.ToLower() == "iexplore")
@@ -933,7 +946,7 @@ namespace WindowTextExtractor.Forms
                                     }
                                     else
                                     {
-                                        var text = element.GetTextFromConsole() ?? element.GetTextFromWindow();
+                                        var text = WindowUtils.ExtractTextFromConsoleWindow(windowProcessId) ?? element.GetTextFromWindow();
                                         text = text == null ? "" : text.TrimEnd().TrimEnd(Environment.NewLine);
                                         if (_settings.ShowEmptyItems || (!_settings.ShowEmptyItems && !string.IsNullOrEmpty(text)))
                                         {
@@ -947,7 +960,7 @@ namespace WindowTextExtractor.Forms
                                         lock (_lockObject)
                                         {
                                             _windowHandle = windowHandle;
-                                            _windowProcessId = element.Current.ProcessId;
+                                            _windowProcessId = windowProcessId;
                                             scale = _settings.Scale;
                                             captureCursor = _settings.CaptureCursor;
                                         }

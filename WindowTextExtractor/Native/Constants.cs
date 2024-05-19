@@ -29,6 +29,11 @@
         public const int DWL_DLGPROC = 4;
         public const int DWL_USER = 8;
 
+        // WindowStyle
+        public const long WS_CAPTION = 0x00C00000L;
+        public const long WS_SYSMENU = 0x00080000L;
+        public const long WS_POPUP = 0x80000000L;
+
         // LayeredWindowAttributes
         public const int LWA_ALPHA = 0x00000002;
 
