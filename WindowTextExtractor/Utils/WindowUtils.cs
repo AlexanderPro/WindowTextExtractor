@@ -368,7 +368,7 @@ namespace WindowTextExtractor.Utils
             User32.SetLayeredWindowAttributes(handle, 0, opacity, Constants.LWA_ALPHA);
         }
 
-        private static string GetWindowText(IntPtr handle)
+        public static string GetWindowText(IntPtr handle)
         {
             var length = User32.GetWindowTextLength(handle);
             if (length > 0)
