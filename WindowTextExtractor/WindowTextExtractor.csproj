@@ -126,6 +126,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccurateTimer.cs" />
+    <Compile Include="Controls\Magnifier.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Magnifier.Designer.cs">
+      <DependentUpon>Magnifier.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\SplitButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -144,6 +150,12 @@
     <Compile Include="Extensions\ProcessExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\TextBoxExtensions.cs" />
+    <Compile Include="Forms\MagnifierForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MagnifierForm.Designer.cs">
+      <DependentUpon>MagnifierForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\TargetIconForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -168,13 +180,18 @@
     <Compile Include="Forms\MainForm.Designer.cs" Condition=" '$(Platform)' == 'x86' ">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Native\Enums\DpiType.cs" />
     <Compile Include="Native\Enums\RedrawWindowFlags.cs" />
+    <Compile Include="Native\Shcore.cs" />
     <Compile Include="Native\Structs\CURSORINFO.cs" />
     <Compile Include="Native\Structs\ICONINFO.cs" />
+    <Compile Include="Native\Structs\OSVERSIONINFOEXW.cs" />
     <Compile Include="Native\Winmm.cs" />
     <Compile Include="Settings\ApplicationSettings.cs" />
     <Compile Include="Settings\ApplicationSettingsFile.cs" />
+    <Compile Include="Settings\MagnifierSettings.cs" />
     <Compile Include="Settings\TargetIconType.cs" />
+    <Compile Include="Utils\DPIUtils.cs" />
     <Compile Include="Utils\FileUtils.cs" />
     <Compile Include="Utils\ImageUtils.cs" />
     <Compile Include="Native\Dwmapi.cs" />
@@ -208,6 +225,9 @@
     <Compile Include="Utils\AssemblyUtils.cs" />
     <Compile Include="Utils\WindowUtils.cs" />
     <Compile Include="WindowInformation.cs" />
+    <EmbeddedResource Include="Controls\Magnifier.resx">
+      <DependentUpon>Magnifier.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\TargetIconForm.resx">
       <DependentUpon>TargetIconForm.cs</DependentUpon>
     </EmbeddedResource>

@@ -60,6 +60,9 @@
             this.menuItemShowTextList = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemShowEmptyItems = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemNotRepeated = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemMagnifier = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemMagnifierEnabled = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemMagnifierFactor = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemAlwaysOnTop = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemAlwaysRefreshTabs = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemHelp = new System.Windows.Forms.ToolStripMenuItem();
@@ -87,6 +90,8 @@
             this.actionButtonStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.miHide = new System.Windows.Forms.ToolStripMenuItem();
             this.miShow = new System.Windows.Forms.ToolStripMenuItem();
+            this.miTransparent = new System.Windows.Forms.ToolStripMenuItem();
+            this.miOpaque = new System.Windows.Forms.ToolStripMenuItem();
             this.miMinimize = new System.Windows.Forms.ToolStripMenuItem();
             this.miMaximize = new System.Windows.Forms.ToolStripMenuItem();
             this.miRestore = new System.Windows.Forms.ToolStripMenuItem();
@@ -103,9 +108,8 @@
             this.btnGrab = new System.Windows.Forms.Button();
             this.cmbLanguages = new System.Windows.Forms.ComboBox();
             this.lblLanguages = new System.Windows.Forms.Label();
+            this.magnifier = new WindowTextExtractor.Controls.Magnifier();
             this.btnAction = new WindowTextExtractor.Controls.SplitButton();
-            this.miTransparent = new System.Windows.Forms.ToolStripMenuItem();
-            this.miOpaque = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbContent)).BeginInit();
@@ -133,13 +137,14 @@
             this.txtContent.Multiline = true;
             this.txtContent.Name = "txtContent";
             this.txtContent.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtContent.Size = new System.Drawing.Size(547, 332);
+            this.txtContent.Size = new System.Drawing.Size(546, 332);
             this.txtContent.TabIndex = 0;
             this.txtContent.MultilineChanged += new System.EventHandler(this.TextContentMultilineChanged);
             this.txtContent.TextChanged += new System.EventHandler(this.TextContentTextChanged);
             // 
             // statusStrip
             // 
+            this.statusStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblTotalLines,
             this.toolStripSeparatorOne,
@@ -193,12 +198,14 @@
             // 
             // menuStrip
             // 
+            this.menuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemFile,
             this.menuItemOptions,
             this.menuItemHelp});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
+            this.menuStrip.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
             this.menuStrip.Size = new System.Drawing.Size(784, 24);
             this.menuStrip.TabIndex = 0;
             // 
@@ -275,6 +282,7 @@
             this.menuItemTargetIcon,
             this.menuItemSelectedWindow,
             this.menuItemTextList,
+            this.menuItemMagnifier,
             this.menuItemAlwaysOnTop,
             this.menuItemAlwaysRefreshTabs});
             this.menuItemOptions.Name = "menuItemOptions";
@@ -377,6 +385,31 @@
             this.menuItemNotRepeated.Text = "Not Repeated New Items";
             this.menuItemNotRepeated.Click += new System.EventHandler(this.MenuItemCheckedClick);
             // 
+            // menuItemMagnifier
+            // 
+            this.menuItemMagnifier.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemMagnifierEnabled,
+            this.menuItemMagnifierFactor});
+            this.menuItemMagnifier.Name = "menuItemMagnifier";
+            this.menuItemMagnifier.Size = new System.Drawing.Size(300, 22);
+            this.menuItemMagnifier.Text = "Magnifier";
+            // 
+            // menuItemMagnifierEnabled
+            // 
+            this.menuItemMagnifierEnabled.Checked = true;
+            this.menuItemMagnifierEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.menuItemMagnifierEnabled.Name = "menuItemMagnifierEnabled";
+            this.menuItemMagnifierEnabled.Size = new System.Drawing.Size(116, 22);
+            this.menuItemMagnifierEnabled.Text = "Enabled";
+            this.menuItemMagnifierEnabled.Click += new System.EventHandler(this.MenuItemCheckedClick);
+            // 
+            // menuItemMagnifierFactor
+            // 
+            this.menuItemMagnifierFactor.Name = "menuItemMagnifierFactor";
+            this.menuItemMagnifierFactor.Size = new System.Drawing.Size(116, 22);
+            this.menuItemMagnifierFactor.Text = "Factor";
+            this.menuItemMagnifierFactor.Click += new System.EventHandler(this.MenuItemMagnifierFactorClick);
+            // 
             // menuItemAlwaysOnTop
             // 
             this.menuItemAlwaysOnTop.Name = "menuItemAlwaysOnTop";
@@ -452,7 +485,7 @@
             this.tabpText.Controls.Add(this.splitTextContainer);
             this.tabpText.Location = new System.Drawing.Point(4, 22);
             this.tabpText.Name = "tabpText";
-            this.tabpText.Padding = new System.Windows.Forms.Padding(3);
+            this.tabpText.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
             this.tabpText.Size = new System.Drawing.Size(776, 338);
             this.tabpText.TabIndex = 0;
             this.tabpText.Text = "Text";
@@ -472,7 +505,7 @@
             // 
             this.splitTextContainer.Panel2.Controls.Add(this.gvTextList);
             this.splitTextContainer.Size = new System.Drawing.Size(770, 332);
-            this.splitTextContainer.SplitterDistance = 547;
+            this.splitTextContainer.SplitterDistance = 546;
             this.splitTextContainer.TabIndex = 1;
             // 
             // gvTextList
@@ -496,13 +529,14 @@
             this.gvTextList.Name = "gvTextList";
             this.gvTextList.ReadOnly = true;
             this.gvTextList.RowHeadersVisible = false;
+            this.gvTextList.RowHeadersWidth = 51;
             this.gvTextList.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.gvTextList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.gvTextList.ShowCellErrors = false;
             this.gvTextList.ShowCellToolTips = false;
             this.gvTextList.ShowEditingIcon = false;
             this.gvTextList.ShowRowErrors = false;
-            this.gvTextList.Size = new System.Drawing.Size(219, 332);
+            this.gvTextList.Size = new System.Drawing.Size(220, 332);
             this.gvTextList.TabIndex = 1;
             this.gvTextList.TabStop = false;
             this.gvTextList.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.GridViewTextListCellClick);
@@ -513,6 +547,7 @@
             this.dataGridColumnText.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.dataGridColumnText.FillWeight = 133.2487F;
             this.dataGridColumnText.HeaderText = "Text";
+            this.dataGridColumnText.MinimumWidth = 6;
             this.dataGridColumnText.Name = "dataGridColumnText";
             this.dataGridColumnText.ReadOnly = true;
             this.dataGridColumnText.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
@@ -523,6 +558,7 @@
             this.dataGridColumnClose.FillWeight = 16.75127F;
             this.dataGridColumnClose.HeaderText = "Close";
             this.dataGridColumnClose.Image = global::WindowTextExtractor.Properties.Resources.Close;
+            this.dataGridColumnClose.MinimumWidth = 6;
             this.dataGridColumnClose.Name = "dataGridColumnClose";
             this.dataGridColumnClose.ReadOnly = true;
             this.dataGridColumnClose.Resizable = System.Windows.Forms.DataGridViewTriState.False;
@@ -533,7 +569,7 @@
             this.tabpImage.Controls.Add(this.pbContent);
             this.tabpImage.Location = new System.Drawing.Point(4, 22);
             this.tabpImage.Name = "tabpImage";
-            this.tabpImage.Padding = new System.Windows.Forms.Padding(3);
+            this.tabpImage.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
             this.tabpImage.Size = new System.Drawing.Size(776, 338);
             this.tabpImage.TabIndex = 1;
             this.tabpImage.Text = "Image";
@@ -570,6 +606,7 @@
             this.gvInformation.Name = "gvInformation";
             this.gvInformation.ReadOnly = true;
             this.gvInformation.RowHeadersVisible = false;
+            this.gvInformation.RowHeadersWidth = 51;
             this.gvInformation.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.gvInformation.ShowCellErrors = false;
             this.gvInformation.ShowCellToolTips = false;
@@ -583,12 +620,14 @@
             // 
             this.clmnName.FillWeight = 50F;
             this.clmnName.HeaderText = "Name";
+            this.clmnName.MinimumWidth = 6;
             this.clmnName.Name = "clmnName";
             this.clmnName.ReadOnly = true;
             // 
             // clmnValue
             // 
             this.clmnValue.HeaderText = "Value";
+            this.clmnValue.MinimumWidth = 6;
             this.clmnValue.Name = "clmnValue";
             this.clmnValue.ReadOnly = true;
             // 
@@ -623,6 +662,7 @@
             this.gvEnvironment.Name = "gvEnvironment";
             this.gvEnvironment.ReadOnly = true;
             this.gvEnvironment.RowHeadersVisible = false;
+            this.gvEnvironment.RowHeadersWidth = 51;
             this.gvEnvironment.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.gvEnvironment.ShowCellErrors = false;
             this.gvEnvironment.ShowCellToolTips = false;
@@ -636,19 +676,21 @@
             // 
             this.clmnEnvironmentName.FillWeight = 50F;
             this.clmnEnvironmentName.HeaderText = "Name";
+            this.clmnEnvironmentName.MinimumWidth = 6;
             this.clmnEnvironmentName.Name = "clmnEnvironmentName";
             this.clmnEnvironmentName.ReadOnly = true;
             // 
             // clmnEnvironmentValue
             // 
             this.clmnEnvironmentValue.HeaderText = "Value";
+            this.clmnEnvironmentValue.MinimumWidth = 6;
             this.clmnEnvironmentValue.Name = "clmnEnvironmentValue";
             this.clmnEnvironmentValue.ReadOnly = true;
             // 
             // numericFps
             // 
             this.numericFps.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericFps.Location = new System.Drawing.Point(579, 101);
+            this.numericFps.Location = new System.Drawing.Point(573, 101);
             this.numericFps.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -674,7 +716,7 @@
             // 
             this.lblFps.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblFps.AutoSize = true;
-            this.lblFps.Location = new System.Drawing.Point(576, 85);
+            this.lblFps.Location = new System.Drawing.Point(570, 85);
             this.lblFps.Name = "lblFps";
             this.lblFps.Size = new System.Drawing.Size(30, 13);
             this.lblFps.TabIndex = 13;
@@ -683,6 +725,7 @@
             // 
             // actionButtonStrip
             // 
+            this.actionButtonStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.actionButtonStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miHide,
             this.miShow,
@@ -693,50 +736,62 @@
             this.miRestore,
             this.miClose});
             this.actionButtonStrip.Name = "actionButtonStrip";
-            this.actionButtonStrip.Size = new System.Drawing.Size(181, 202);
+            this.actionButtonStrip.Size = new System.Drawing.Size(136, 180);
             this.actionButtonStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ActionButtonStripItemClicked);
             // 
             // miHide
             // 
             this.miHide.Name = "miHide";
-            this.miHide.Size = new System.Drawing.Size(180, 22);
+            this.miHide.Size = new System.Drawing.Size(135, 22);
             this.miHide.Text = "Hide";
             // 
             // miShow
             // 
             this.miShow.Name = "miShow";
-            this.miShow.Size = new System.Drawing.Size(180, 22);
+            this.miShow.Size = new System.Drawing.Size(135, 22);
             this.miShow.Text = "Show";
+            // 
+            // miTransparent
+            // 
+            this.miTransparent.Name = "miTransparent";
+            this.miTransparent.Size = new System.Drawing.Size(135, 22);
+            this.miTransparent.Text = "Transparent";
+            // 
+            // miOpaque
+            // 
+            this.miOpaque.Name = "miOpaque";
+            this.miOpaque.Size = new System.Drawing.Size(135, 22);
+            this.miOpaque.Text = "Opaque";
             // 
             // miMinimize
             // 
             this.miMinimize.Name = "miMinimize";
-            this.miMinimize.Size = new System.Drawing.Size(180, 22);
+            this.miMinimize.Size = new System.Drawing.Size(135, 22);
             this.miMinimize.Text = "Minimize";
             // 
             // miMaximize
             // 
             this.miMaximize.Name = "miMaximize";
-            this.miMaximize.Size = new System.Drawing.Size(180, 22);
+            this.miMaximize.Size = new System.Drawing.Size(135, 22);
             this.miMaximize.Text = "Maximize";
             // 
             // miRestore
             // 
             this.miRestore.Name = "miRestore";
-            this.miRestore.Size = new System.Drawing.Size(180, 22);
+            this.miRestore.Size = new System.Drawing.Size(135, 22);
             this.miRestore.Text = "Restore";
             // 
             // miClose
             // 
             this.miClose.Name = "miClose";
-            this.miClose.Size = new System.Drawing.Size(180, 22);
+            this.miClose.Size = new System.Drawing.Size(135, 22);
             this.miClose.Text = "Close";
             // 
             // lblRefresh
             // 
             this.lblRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblRefresh.AutoSize = true;
-            this.lblRefresh.Location = new System.Drawing.Point(453, 38);
+            this.lblRefresh.Location = new System.Drawing.Point(447, 38);
             this.lblRefresh.Name = "lblRefresh";
             this.lblRefresh.Size = new System.Drawing.Size(47, 13);
             this.lblRefresh.TabIndex = 5;
@@ -751,7 +806,7 @@
             this.cmbRefresh.Items.AddRange(new object[] {
             "Yes",
             "No"});
-            this.cmbRefresh.Location = new System.Drawing.Point(456, 54);
+            this.cmbRefresh.Location = new System.Drawing.Point(450, 54);
             this.cmbRefresh.Name = "cmbRefresh";
             this.cmbRefresh.Size = new System.Drawing.Size(108, 21);
             this.cmbRefresh.TabIndex = 6;
@@ -837,7 +892,7 @@
             this.cmbCaptureCursor.Items.AddRange(new object[] {
             "Yes",
             "No"});
-            this.cmbCaptureCursor.Location = new System.Drawing.Point(579, 54);
+            this.cmbCaptureCursor.Location = new System.Drawing.Point(573, 54);
             this.cmbCaptureCursor.Name = "cmbCaptureCursor";
             this.cmbCaptureCursor.Size = new System.Drawing.Size(88, 21);
             this.cmbCaptureCursor.TabIndex = 8;
@@ -848,7 +903,7 @@
             // 
             this.lblCaptureCursor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblCaptureCursor.AutoSize = true;
-            this.lblCaptureCursor.Location = new System.Drawing.Point(576, 38);
+            this.lblCaptureCursor.Location = new System.Drawing.Point(570, 38);
             this.lblCaptureCursor.Name = "lblCaptureCursor";
             this.lblCaptureCursor.Size = new System.Drawing.Size(79, 13);
             this.lblCaptureCursor.TabIndex = 7;
@@ -874,7 +929,7 @@
             this.cmbLanguages.Items.AddRange(new object[] {
             "Yes",
             "No"});
-            this.cmbLanguages.Location = new System.Drawing.Point(456, 101);
+            this.cmbLanguages.Location = new System.Drawing.Point(450, 101);
             this.cmbLanguages.Name = "cmbLanguages";
             this.cmbLanguages.Size = new System.Drawing.Size(108, 21);
             this.cmbLanguages.TabIndex = 12;
@@ -884,12 +939,25 @@
             // 
             this.lblLanguages.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblLanguages.AutoSize = true;
-            this.lblLanguages.Location = new System.Drawing.Point(453, 85);
+            this.lblLanguages.Location = new System.Drawing.Point(447, 85);
             this.lblLanguages.Name = "lblLanguages";
             this.lblLanguages.Size = new System.Drawing.Size(89, 13);
             this.lblLanguages.TabIndex = 11;
             this.lblLanguages.Text = "OCR Languages:";
             this.lblLanguages.Visible = false;
+            // 
+            // magnifier
+            // 
+            this.magnifier.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.magnifier.BorderColor = System.Drawing.Color.Empty;
+            this.magnifier.BorderWidth = 0F;
+            this.magnifier.Location = new System.Drawing.Point(671, 27);
+            this.magnifier.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.magnifier.Name = "magnifier";
+            this.magnifier.Size = new System.Drawing.Size(110, 118);
+            this.magnifier.TabIndex = 19;
+            this.magnifier.TabStop = false;
+            this.magnifier.Visible = false;
             // 
             // btnAction
             // 
@@ -903,23 +971,12 @@
             this.btnAction.UseVisualStyleBackColor = true;
             this.btnAction.Visible = false;
             // 
-            // miTransparent
-            // 
-            this.miTransparent.Name = "miTransparent";
-            this.miTransparent.Size = new System.Drawing.Size(180, 22);
-            this.miTransparent.Text = "Transparent";
-            // 
-            // miOpaque
-            // 
-            this.miOpaque.Name = "miOpaque";
-            this.miOpaque.Size = new System.Drawing.Size(180, 22);
-            this.miOpaque.Text = "Opaque";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 512);
+            this.Controls.Add(this.magnifier);
             this.Controls.Add(this.lblLanguages);
             this.Controls.Add(this.cmbLanguages);
             this.Controls.Add(this.btnGrab);
@@ -1046,6 +1103,10 @@
         private System.Windows.Forms.ToolStripMenuItem menuItemChangeIcon;
         private System.Windows.Forms.ToolStripMenuItem miTransparent;
         private System.Windows.Forms.ToolStripMenuItem miOpaque;
+        private Controls.Magnifier magnifier;
+        private System.Windows.Forms.ToolStripMenuItem menuItemMagnifier;
+        private System.Windows.Forms.ToolStripMenuItem menuItemMagnifierEnabled;
+        private System.Windows.Forms.ToolStripMenuItem menuItemMagnifierFactor;
     }
 }
 

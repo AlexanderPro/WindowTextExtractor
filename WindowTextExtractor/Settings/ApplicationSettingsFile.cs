@@ -31,7 +31,9 @@ namespace WindowTextExtractor.Settings
             }
 
             var jsonContent = File.ReadAllText(fileInfo.FullName);
-            return JsonConvert.DeserializeObject<ApplicationSettings>(jsonContent);
+            var settings = JsonConvert.DeserializeObject<ApplicationSettings>(jsonContent);
+            settings.Magnifier ??= new MagnifierSettings();
+            return settings;
         }
 
         public static string GetImageFileName(string fileName = ImageFileName) => GetFileInfo(fileName).FullName;

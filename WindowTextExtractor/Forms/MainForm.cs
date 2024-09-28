@@ -64,6 +64,9 @@ namespace WindowTextExtractor.Forms
             Application.ThreadException += OnThreadException;
             using var currentProcess = Process.GetCurrentProcess();
 
+            magnifier.BorderWidth = 1;
+            magnifier.BorderColor = Color.DarkGray;
+
             _lockObject = new object();
             _isButtonTargetMouseDown = false;
             _processId = currentProcess.Id;
@@ -537,6 +540,12 @@ namespace WindowTextExtractor.Forms
                             _settings.NotRepeatedNewItems = menuItem.Checked;
                         }
                         break;
+
+                    case "menuItemMagnifierEnabled":
+                        {
+                            _settings.Magnifier.Enabled = menuItem.Checked;
+                        }
+                        break;
                 }
                 SaveSettings(_settings);
             }
@@ -602,6 +611,20 @@ namespace WindowTextExtractor.Forms
             }
         }
 
+        private void MenuItemMagnifierFactorClick(object sender, EventArgs e)
+        {
+            var form = new MagnifierForm(_settings.Magnifier.Factor);
+            var result = form.ShowDialog(this);
+            if (result == DialogResult.OK)
+            {
+                lock (_lockObject)
+                {
+                    _settings.Magnifier.Factor = form.Factor;
+                    SaveSettings(_settings);
+                }
+            }
+        }
+
         private void ButtonTargetMouseDown(object sender, MouseEventArgs e)
         {
             if (!_isButtonTargetMouseDown)
@@ -613,6 +636,12 @@ namespace WindowTextExtractor.Forms
                 gvEnvironment.Tag = null;
                 gvTextList.Rows.Clear();
                 txtContent.Text = string.Empty;
+                if (_settings.Magnifier.Enabled)
+                {
+                    magnifier.Visible = false;
+                    magnifier.Clear();
+                }
+
                 if (!TopMost)
                 {
                     SendToBack();
@@ -818,7 +847,7 @@ namespace WindowTextExtractor.Forms
 
         public bool PreFilterMessage(ref Message m)
         {
-            Action restore = () =>
+            void restore()
             {
                 _isButtonTargetMouseDown = false;
                 if (_windowHandle != IntPtr.Zero)
@@ -828,11 +857,17 @@ namespace WindowTextExtractor.Forms
                     _pen?.Dispose();
                 }
                 User32.SetCursor(Cursors.Default.Handle);
+                if (_settings.Magnifier.Enabled)
+                {
+                    magnifier.Visible = false;
+                    magnifier.Clear();
+                }
+
                 if (!TopMost)
                 {
                     BringToFront();
                 }
-            };
+            }
 
             switch (m.Msg)
             {
@@ -840,7 +875,7 @@ namespace WindowTextExtractor.Forms
                     {
                         if (_isButtonTargetMouseDown)
                         {
-                            restore.Invoke();
+                            restore();
                         }
                     }
                     break;
@@ -869,6 +904,12 @@ namespace WindowTextExtractor.Forms
                                 var element = AutomationElement.FromPoint(new System.Windows.Point(cursorPosition.X, cursorPosition.Y));
                                 if (element != null && element.Current.ProcessId != _processId)
                                 {
+                                    if (_settings.Magnifier.Enabled)
+                                    {
+                                        magnifier.Visible = true;
+                                        magnifier.Draw(cursorPosition, _settings.Magnifier.Factor);
+                                    }
+
                                     var windowHandle = new IntPtr(element.Current.NativeWindowHandle);
                                     if (windowHandle == IntPtr.Zero)
                                     {
@@ -1001,6 +1042,12 @@ namespace WindowTextExtractor.Forms
                                     FillEnvironment(new Dictionary<string, string>());
                                     OnContentChanged();
                                     btnAction.Visible = false;
+
+                                    if (_settings.Magnifier.Enabled)
+                                    {
+                                        magnifier.Visible = false;
+                                        magnifier.Clear();
+                                    }
                                 }
                                 EnableImageTabControls();
                             }
@@ -1008,7 +1055,7 @@ namespace WindowTextExtractor.Forms
                         catch (Exception e)
                         {
                             MessageBox.Show(e.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            restore.Invoke();
+                            restore();
                         }
                     }
                     break;
@@ -1352,6 +1399,7 @@ namespace WindowTextExtractor.Forms
             menuItemShowTextList.Checked = _settings.ShowTextList;
             menuItemNotRepeated.Checked = _settings.NotRepeatedNewItems;
             menuItemAlwaysRefreshTabs.Checked = _settings.AlwaysRefreshTabs;
+            menuItemMagnifierEnabled.Checked = _settings.Magnifier.Enabled;
             cmbRefresh.SelectedIndex = _settings.RefreshImage ? 0 : 1;
             cmbCaptureCursor.SelectedIndex = _settings.CaptureCursor ? 0 : 1;
             txtContent.Font = new Font(_settings.FontName, _settings.FontSize, _settings.FontStyle, _settings.FontUnit);

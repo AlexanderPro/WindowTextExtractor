@@ -52,6 +52,8 @@ namespace WindowTextExtractor.Settings
 
         public TargetIconType TargetIcon { get; set; }
 
+        public MagnifierSettings Magnifier { get; set; }
+
         public static ApplicationSettings CreateDefault() => new ApplicationSettings
         {
             VideoFileName = DefaultVideoFileName,
@@ -70,7 +72,8 @@ namespace WindowTextExtractor.Settings
             AlwaysRefreshTabs = true,
             RefreshImage = true,
             CaptureCursor = true,
-            TargetIcon = TargetIconType.Default
+            TargetIcon = TargetIconType.Default,
+            Magnifier = new MagnifierSettings()
         };
     }
 }

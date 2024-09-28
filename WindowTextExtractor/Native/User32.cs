@@ -101,6 +101,9 @@ namespace WindowTextExtractor.Native
         public static extern IntPtr GetWindowDC(IntPtr ptr);
 
         [DllImport("user32.dll")]
+        public static extern IntPtr GetDC(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
         public static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDc);
 
         [DllImport("user32.dll")]
@@ -123,5 +126,8 @@ namespace WindowTextExtractor.Native
 
         [DllImport("user32.dll")]
         public static extern bool SetLayeredWindowAttributes(IntPtr hwnd, uint crKey, Byte bAlpha, uint dwFlags);
+
+        [DllImport("User32.dll")]
+        public static extern IntPtr MonitorFromPoint([In] Point pt, [In] uint dwFlags);
     }
 }
