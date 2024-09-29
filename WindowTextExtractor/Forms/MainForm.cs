@@ -428,10 +428,10 @@ namespace WindowTextExtractor.Forms
                 lock (_lockObject)
                 {
                     txtContent.Font = dialog.Font;
-                    _settings.FontName = dialog.Font.Name;
-                    _settings.FontSize = dialog.Font.Size;
-                    _settings.FontStyle = dialog.Font.Style;
-                    _settings.FontUnit = dialog.Font.Unit;
+                    _settings.Font.Name = dialog.Font.Name;
+                    _settings.Font.Size = dialog.Font.Size;
+                    _settings.Font.Style = dialog.Font.Style;
+                    _settings.Font.Unit = dialog.Font.Unit;
                     SaveSettings(_settings);
                 }
             }
@@ -471,10 +471,10 @@ namespace WindowTextExtractor.Forms
             var result = form.ShowDialog(this);
             if (result == DialogResult.OK)
             {
-                var imageFileName = ApplicationSettingsFile.GetImageFileName();
+                var imageFileInfo = ApplicationSettingsFile.GetImageFileName();
                 try
                 {
-                    File.Copy(form.FileName, imageFileName, true);
+                    File.Copy(form.FileName, imageFileInfo.FullName, true);
                 }
                 catch (Exception ex)
                 {
@@ -484,11 +484,11 @@ namespace WindowTextExtractor.Forms
 
                 try
                 {
-                    SetImage(imageFileName);
+                    SetImage(imageFileInfo.FullName);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Failed to load the file {imageFileName}.{Environment.NewLine}{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Failed to load the file {imageFileInfo.FullName}.{Environment.NewLine}{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
@@ -1368,8 +1368,21 @@ namespace WindowTextExtractor.Forms
             }
             else
             {
-                var imageFileName = ApplicationSettingsFile.GetImageFileName();
-                SetImage(imageFileName);
+                var imageFileInfo = ApplicationSettingsFile.GetImageFileName();
+                if (imageFileInfo.Exists)
+                {
+                    SetImage(imageFileInfo.FullName);
+                }
+                else
+                {
+                    btnTarget.Image?.Dispose();
+                    btnTarget.Image = Properties.Resources.TargetButton;
+                    menuItemDefaultIcon.Checked = true;
+                    menuItemSystemCursor.Checked = false;
+                    menuItemChangeIcon.Checked = false;
+                    _settings.TargetIcon = TargetIconType.Default;
+                    SaveSettings(_settings);
+                }
             }
         }
 
@@ -1386,7 +1399,7 @@ namespace WindowTextExtractor.Forms
 
         private void LoadSettings()
         {
-            _settings = ApplicationSettingsFile.Load();
+            _settings = ApplicationSettingsFile.Read();
             _videoFileName = Path.Combine(AssemblyUtils.AssemblyDirectory, _settings.VideoFileName);
             numericFps.Value = _settings.FPS;
             numericScale.Value = _settings.Scale;
@@ -1402,7 +1415,7 @@ namespace WindowTextExtractor.Forms
             menuItemMagnifierEnabled.Checked = _settings.Magnifier.Enabled;
             cmbRefresh.SelectedIndex = _settings.RefreshImage ? 0 : 1;
             cmbCaptureCursor.SelectedIndex = _settings.CaptureCursor ? 0 : 1;
-            txtContent.Font = new Font(_settings.FontName, _settings.FontSize, _settings.FontStyle, _settings.FontUnit);
+            txtContent.Font = new Font(_settings.Font.Name, _settings.Font.Size, _settings.Font.Style, _settings.Font.Unit);
             if (!_settings.ShowTextList)
             {
                 splitTextContainer.Panel2Collapsed = true;

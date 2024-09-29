@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using WindowTextExtractor.Utils;
 using Newtonsoft.Json;
 
 namespace WindowTextExtractor.Settings
@@ -8,36 +9,81 @@ namespace WindowTextExtractor.Settings
     {
         private const string ImageFileName = "TargetIcon";
         private const string SettingsFileName = "Settings.json";
-        private const string SettingsDirectory = "WindowTextExtractor";
 
-        public static void Save(ApplicationSettings settings, string fileName = SettingsFileName)
+        public static ApplicationSettings Read()
         {
-            var fileInfo = GetFileInfo(fileName);
-            if (!Directory.Exists(fileInfo.Directory.FullName))
+            var fileInfo = GetCurrentDirectoryFileInfo(SettingsFileName);
+            if (fileInfo.Exists)
             {
-                Directory.CreateDirectory(fileInfo.Directory.FullName);
+                if (fileInfo.Length == 0)
+                {
+                    return ApplicationSettings.CreateDefault();
+                }
+                return Read(fileInfo.FullName);
             }
 
-            var json = JsonConvert.SerializeObject(settings, Formatting.Indented);
-            File.WriteAllText(fileInfo.FullName, json);
-        }
-
-        public static ApplicationSettings Load(string fileName = SettingsFileName)
-        {
-            var fileInfo = GetFileInfo(fileName);
-            if (!File.Exists(fileInfo.FullName))
+            fileInfo = GetProfileFileInfo(SettingsFileName);
+            if (!fileInfo.Exists)
             {
                 return ApplicationSettings.CreateDefault();
             }
+            return Read(fileInfo.FullName);
+        }
 
-            var jsonContent = File.ReadAllText(fileInfo.FullName);
+        public static void Save(ApplicationSettings settings)
+        {
+            var fileInfo = GetCurrentDirectoryFileInfo(SettingsFileName);
+            if (fileInfo.Exists)
+            {
+                Save(fileInfo, settings);
+                return;
+            }
+
+            fileInfo = GetProfileFileInfo(SettingsFileName);
+            Save(fileInfo, settings);
+        }
+
+        public static FileInfo GetImageFileName()
+        {
+            var fileInfo = GetCurrentDirectoryFileInfo(SettingsFileName);
+            if (fileInfo.Exists)
+            {
+                return GetCurrentDirectoryFileInfo(ImageFileName);
+            }
+
+            return GetProfileFileInfo(ImageFileName);
+        }
+
+        private static FileInfo GetCurrentDirectoryFileInfo(string fileName)
+        {
+            var fullFileName = Path.Combine(AssemblyUtils.AssemblyDirectory, fileName);
+            return new FileInfo(fullFileName);
+        }
+
+        private static FileInfo GetProfileFileInfo(string fileName)
+        {
+            var directoryName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AssemblyUtils.AssemblyTitle, AssemblyUtils.AssemblyProductVersion);
+            var fullFileName = Path.Combine(directoryName, fileName);
+            return new FileInfo(fullFileName);
+        }
+
+        private static ApplicationSettings Read(string fileName)
+        {
+            var jsonContent = File.ReadAllText(fileName);
             var settings = JsonConvert.DeserializeObject<ApplicationSettings>(jsonContent);
+            settings.Font ??= new FontSettings();
             settings.Magnifier ??= new MagnifierSettings();
             return settings;
         }
 
-        public static string GetImageFileName(string fileName = ImageFileName) => GetFileInfo(fileName).FullName;
-        
-        private static FileInfo GetFileInfo(string fileName) => new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), SettingsDirectory, fileName));
+        private static void Save(FileInfo fileInfo, ApplicationSettings settings)
+        {
+            if (!fileInfo.Directory.Exists)
+            {
+                fileInfo.Directory.Create();
+            }
+            var json = JsonConvert.SerializeObject(settings, Formatting.Indented);
+            File.WriteAllText(fileInfo.FullName, json);
+        }
     }
 }

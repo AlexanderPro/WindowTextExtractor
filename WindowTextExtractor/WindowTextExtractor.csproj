@@ -189,6 +189,7 @@
     <Compile Include="Native\Winmm.cs" />
     <Compile Include="Settings\ApplicationSettings.cs" />
     <Compile Include="Settings\ApplicationSettingsFile.cs" />
+    <Compile Include="Settings\FontSettings.cs" />
     <Compile Include="Settings\MagnifierSettings.cs" />
     <Compile Include="Settings\TargetIconType.cs" />
     <Compile Include="Utils\DPIUtils.cs" />

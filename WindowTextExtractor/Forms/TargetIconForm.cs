@@ -112,8 +112,8 @@ namespace WindowTextExtractor.Forms
             }
             else
             {
-                var imageFileName = ApplicationSettingsFile.GetImageFileName();
-                SetImageSafely(imageFileName);
+                var imageFileInfo = ApplicationSettingsFile.GetImageFileName();
+                SetImageSafely(imageFileInfo.FullName);
             }
         }
 
