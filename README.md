@@ -1,5 +1,12 @@
-![WindowTextExtractor](https://user-images.githubusercontent.com/8102586/68278238-f6d29b00-0081-11ea-8c64-e6999283b65f.png) WindowTextExtractor
-=============
+<div align="center">
+
+<img src="https://user-images.githubusercontent.com/8102586/68278238-f6d29b00-0081-11ea-8c64-e6999283b65f.png" alt="logo" width="100">
+
+# WindowTextExtractor
+
+</div>
+
+---
 
 An absolutely free and simple in use system tool to:
 * Extract text from modal windows, buttons, textboxes, lists, etc
