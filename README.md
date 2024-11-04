@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://user-images.githubusercontent.com/8102586/68278238-f6d29b00-0081-11ea-8c64-e6999283b65f.png" alt="logo" width="100">
+<img src="./WindowTextExtractor/Images/WindowTextExtractor.png" alt="logo" width="100">
 
 # WindowTextExtractor
 
