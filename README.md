@@ -6,8 +6,6 @@
 
 </div>
 
----
-
 An absolutely free and simple in use system tool to:
 * Extract text from modal windows, buttons, textboxes, lists, etc
 * Show passwords stored behind asterisks (*****) from most of the windows apps
