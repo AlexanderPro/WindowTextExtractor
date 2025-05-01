@@ -302,7 +302,7 @@ namespace WindowTextExtractor.Utils
 
         public static Bitmap CaptureWindow(IntPtr handle, bool captureCursor = false)
         {
-            User32.GetWindowRect(handle, out var rectangle);
+            var rectangle = GetWindowRectWithoutMargins(handle);
             var posX = rectangle.Left;
             var posY = rectangle.Top;
             var width = rectangle.Width;
@@ -533,6 +533,21 @@ namespace WindowTextExtractor.Utils
             var color = bmp.GetPixel(0, 0);
             return color;
         }
+
+        private static Rect GetWindowRectWithoutMargins(IntPtr hWnd)
+        {
+            Rect size;
+            if (Environment.OSVersion.Version.Major < 6)
+            {
+                User32.GetWindowRect(hWnd, out size);
+            }
+            else if (Dwmapi.DwmGetWindowAttribute(hWnd, Constants.DWMWA_EXTENDED_FRAME_BOUNDS, out size, Marshal.SizeOf(typeof(Rect))) != 0)
+            {
+                User32.GetWindowRect(hWnd, out size);
+            }
+            return size;
+        }
+
 
         private class WmiProcessInfo
         {
