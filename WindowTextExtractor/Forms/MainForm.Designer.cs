@@ -459,7 +459,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pbContent.Location = new System.Drawing.Point(3, 3);
             this.pbContent.Name = "pbContent";
-            this.pbContent.Size = new System.Drawing.Size(720, 351);
+            this.pbContent.Size = new System.Drawing.Size(720, 335);
             this.pbContent.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pbContent.TabIndex = 4;
             this.pbContent.TabStop = false;
@@ -485,7 +485,7 @@
             this.tabpText.Controls.Add(this.splitTextContainer);
             this.tabpText.Location = new System.Drawing.Point(4, 22);
             this.tabpText.Name = "tabpText";
-            this.tabpText.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabpText.Padding = new System.Windows.Forms.Padding(3);
             this.tabpText.Size = new System.Drawing.Size(776, 338);
             this.tabpText.TabIndex = 0;
             this.tabpText.Text = "Text";
@@ -569,7 +569,7 @@
             this.tabpImage.Controls.Add(this.pbContent);
             this.tabpImage.Location = new System.Drawing.Point(4, 22);
             this.tabpImage.Name = "tabpImage";
-            this.tabpImage.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabpImage.Padding = new System.Windows.Forms.Padding(3);
             this.tabpImage.Size = new System.Drawing.Size(776, 338);
             this.tabpImage.TabIndex = 1;
             this.tabpImage.Text = "Image";
