@@ -56,12 +56,10 @@ namespace WindowTextExtractor.Forms
         private AccurateTimer _writeVideoFrameTimer;
 
 
-        public MainForm()
+        public MainForm(ApplicationSettings settings)
         {
             InitializeComponent();
-
-            AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
-            Application.ThreadException += OnThreadException;
+           
             using var currentProcess = Process.GetCurrentProcess();
 
             magnifier.BorderWidth = 1;
@@ -86,6 +84,7 @@ namespace WindowTextExtractor.Forms
             _startRecordingTime = null;
             _image = null;
             _videoWriter = new VideoFileWriter();
+            _settings = settings;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -544,6 +543,12 @@ namespace WindowTextExtractor.Forms
                     case "menuItemMagnifierEnabled":
                         {
                             _settings.Magnifier.Enabled = menuItem.Checked;
+                        }
+                        break;
+
+                    case "menuItemHighDpiSupport":
+                        {
+                            _settings.HighDpiSupport = menuItem.Checked;
                         }
                         break;
                 }
@@ -1399,7 +1404,6 @@ namespace WindowTextExtractor.Forms
 
         private void LoadSettings()
         {
-            _settings = ApplicationSettingsFile.Read();
             _videoFileName = Path.Combine(AssemblyUtils.AssemblyDirectory, _settings.VideoFileName);
             numericFps.Value = _settings.FPS;
             numericScale.Value = _settings.Scale;
@@ -1413,6 +1417,7 @@ namespace WindowTextExtractor.Forms
             menuItemNotRepeated.Checked = _settings.NotRepeatedNewItems;
             menuItemAlwaysRefreshTabs.Checked = _settings.AlwaysRefreshTabs;
             menuItemMagnifierEnabled.Checked = _settings.Magnifier.Enabled;
+            menuItemHighDpiSupport.Checked = _settings.HighDpiSupport;
             cmbRefresh.SelectedIndex = _settings.RefreshImage ? 0 : 1;
             cmbCaptureCursor.SelectedIndex = _settings.CaptureCursor ? 0 : 1;
             txtContent.Font = new Font(_settings.Font.Name, _settings.Font.Size, _settings.Font.Style, _settings.Font.Unit);
@@ -1434,14 +1439,5 @@ namespace WindowTextExtractor.Forms
                 MessageBox.Show($"Failed to save the settings.{Environment.NewLine}{e.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        private void OnCurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            var ex = e.ExceptionObject as Exception ?? new Exception("OnCurrentDomainUnhandledException");
-            OnThreadException(sender, new ThreadExceptionEventArgs(ex));
-        }
-
-        private void OnThreadException(object sender, ThreadExceptionEventArgs e) =>
-            MessageBox.Show(e.Exception.Message, AssemblyUtils.AssemblyTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 }

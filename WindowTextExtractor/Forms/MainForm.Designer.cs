@@ -65,6 +65,7 @@
             this.menuItemMagnifierFactor = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemAlwaysOnTop = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemAlwaysRefreshTabs = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItemHighDpiSupport = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItemAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.btnTarget = new System.Windows.Forms.Button();
@@ -284,7 +285,8 @@
             this.menuItemTextList,
             this.menuItemMagnifier,
             this.menuItemAlwaysOnTop,
-            this.menuItemAlwaysRefreshTabs});
+            this.menuItemAlwaysRefreshTabs,
+            this.menuItemHighDpiSupport});
             this.menuItemOptions.Name = "menuItemOptions";
             this.menuItemOptions.Size = new System.Drawing.Size(61, 20);
             this.menuItemOptions.Text = "Options";
@@ -425,6 +427,15 @@
             this.menuItemAlwaysRefreshTabs.Size = new System.Drawing.Size(300, 22);
             this.menuItemAlwaysRefreshTabs.Text = "Always Refresh Tabs On Pointer Movement";
             this.menuItemAlwaysRefreshTabs.Click += new System.EventHandler(this.MenuItemCheckedClick);
+            // 
+            // menuItemHighDpiSupport
+            // 
+            this.menuItemHighDpiSupport.Checked = true;
+            this.menuItemHighDpiSupport.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.menuItemHighDpiSupport.Name = "menuItemHighDpiSupport";
+            this.menuItemHighDpiSupport.Size = new System.Drawing.Size(300, 22);
+            this.menuItemHighDpiSupport.Text = "Support of High DPI";
+            this.menuItemHighDpiSupport.Click += new System.EventHandler(this.MenuItemCheckedClick);
             // 
             // menuItemHelp
             // 
@@ -1107,6 +1118,7 @@
         private System.Windows.Forms.ToolStripMenuItem menuItemMagnifier;
         private System.Windows.Forms.ToolStripMenuItem menuItemMagnifierEnabled;
         private System.Windows.Forms.ToolStripMenuItem menuItemMagnifierFactor;
+        private System.Windows.Forms.ToolStripMenuItem menuItemHighDpiSupport;
     }
 }
 

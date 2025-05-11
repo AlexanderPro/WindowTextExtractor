@@ -88,7 +88,7 @@ namespace WindowTextExtractor.Utils
             {
                 var monitorFromPoint = User32.MonitorFromPoint(monitorPoint, 2);
 
-                Shcore.GetDpiForMonitor(monitorFromPoint, DpiType.Effective, out dpiX, out _);
+                SHCore.GetDpiForMonitor(monitorFromPoint, DpiType.Effective, out dpiX, out _);
             }
             else
             {

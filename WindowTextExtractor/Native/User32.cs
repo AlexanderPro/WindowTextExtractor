@@ -129,5 +129,11 @@ namespace WindowTextExtractor.Native
 
         [DllImport("User32.dll")]
         public static extern IntPtr MonitorFromPoint([In] Point pt, [In] uint dwFlags);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool SetProcessDpiAwarenessContext(DpiAwarenessContext context);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern bool SetProcessDPIAware();
     }
 }

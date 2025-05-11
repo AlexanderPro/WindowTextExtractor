@@ -7,6 +7,7 @@
         private const decimal DefaultScale = 1;
         private const int DefaultBorderWidth = 3;
         private const string DefaultBorderColor = "Blue";
+        private const bool DefaultHighDpiSupport = true;
 
         public const int ImageSize = 48;
         public const int IconSize = 32;
@@ -35,6 +36,8 @@
 
         public bool CaptureCursor { get; set; }
 
+        public bool HighDpiSupport { get; set; }
+
         public TargetIconType TargetIcon { get; set; }
 
         public FontSettings Font { get; set; }
@@ -55,6 +58,7 @@
             AlwaysRefreshTabs = true,
             RefreshImage = true,
             CaptureCursor = true,
+            HighDpiSupport = DefaultHighDpiSupport,
             TargetIcon = TargetIconType.Default,
             Font = new FontSettings(),
             Magnifier = new MagnifierSettings()

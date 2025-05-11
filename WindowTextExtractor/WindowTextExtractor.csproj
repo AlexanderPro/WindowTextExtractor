@@ -85,6 +85,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AForge.Video.FFMPEG, Version=2.2.5.0, Culture=neutral, PublicKeyToken=03563089b1be05dd, processorArchitecture=x86" Condition=" '$(Platform)' == 'x86' ">
       <SpecificVersion>False</SpecificVersion>
@@ -180,9 +183,11 @@
     <Compile Include="Forms\MainForm.Designer.cs" Condition=" '$(Platform)' == 'x86' ">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Native\Enums\DpiAwarenessContext.cs" />
     <Compile Include="Native\Enums\DpiType.cs" />
+    <Compile Include="Native\Enums\ProcessDpiAwareness.cs" />
     <Compile Include="Native\Enums\RedrawWindowFlags.cs" />
-    <Compile Include="Native\Shcore.cs" />
+    <Compile Include="Native\SHCore.cs" />
     <Compile Include="Native\Structs\CURSORINFO.cs" />
     <Compile Include="Native\Structs\ICONINFO.cs" />
     <Compile Include="Native\Structs\OSVERSIONINFOEXW.cs" />
@@ -224,6 +229,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Utils\AssemblyUtils.cs" />
+    <Compile Include="Utils\SystemUtils.cs" />
     <Compile Include="Utils\WindowUtils.cs" />
     <Compile Include="WindowInformation.cs" />
     <EmbeddedResource Include="Controls\Magnifier.resx">
@@ -249,6 +255,7 @@
     <None Include="App.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="app.manifest" />
     <None Include="Libs\Windows.WinMD" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
