@@ -78,6 +78,7 @@
             // pbImage
             // 
             this.pbImage.BackgroundImage = global::WindowTextExtractor.Properties.Resources.WindowTextExtractor;
+            this.pbImage.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pbImage.InitialImage = null;
             this.pbImage.Location = new System.Drawing.Point(8, 27);
             this.pbImage.Name = "pbImage";
